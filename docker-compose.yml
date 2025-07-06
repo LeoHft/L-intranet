@@ -1,0 +1,187 @@
+services:
+
+# =========== CERTIFICATS SSL ===========
+
+  ssl-init:
+    build:
+      context: ./ssl
+      dockerfile: Dockerfile
+    container_name: breezy-ssl-init
+    volumes:
+      - ./ssl:/ssl
+
+
+
+# =========== Databases ===========
+
+  intranetDB:
+    image: mariadb:10.11
+    container_name: intranetDB
+    ports:
+      - "3307:3306"    
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: '${DB_PASSWORD:-secret}'
+      MARIADB_DATABASE: '${DB_DATABASE:-intranet}'
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - intranetDB_data:/var/lib/mysql
+    networks:
+      - intra-net
+
+
+  imagesDB:
+    image: mongo:6.0
+    container_name: imagesDB
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: '${MONGO_INITDB_ROOT_USERNAME:-admin}'
+      MONGO_INITDB_ROOT_PASSWORD: '${MONGO_INITDB_ROOT_PASSWORD:-password}'
+    volumes:
+      - imagesDB_data:/data/db
+    networks:
+      - intra-net
+
+
+
+
+#=========== Administration =========== 
+  mongo-express:
+    profiles: 
+      - dev
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: imagesDB
+      ME_CONFIG_MONGODB_ADMINUSERNAME: '${MONGO_INITDB_ROOT_USERNAME:-admin}'
+      ME_CONFIG_MONGODB_ADMINPASSWORD: '${MONGO_INITDB_ROOT_PASSWORD:-password}'
+      ME_CONFIG_BASICAUTH_USERNAME: 'admin'
+      ME_CONFIG_BASICAUTH_PASSWORD: 'password'
+    depends_on:
+      - imagesDB
+    networks:
+      - intra-net
+
+  phpmyadmin:
+    profiles:
+      - dev
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=intranetDB
+      - PMA_USER=${DB_USERNAME:-root}
+      - PMA_PASSWORD=${DB_PASSWORD:-secret}
+    depends_on:
+      - intranetDB
+    networks:
+      - intra-net
+
+
+  # ============ DEV ============
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "8088:80" # Redirige vers 8443 (http vers https)
+      - "8443:443"
+    depends_on:
+      ssl-init:
+        condition: service_completed_successfully
+      intranet-backend-dev:
+        condition: service_started
+      intranet-frontend-dev:
+        condition: service_started
+    networks:
+      - intra-net
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
+      - ./ssl:/etc/nginx/ssl
+
+
+  intranet-backend-dev:
+    container_name: intranet-backend-dev
+    profiles:
+      - dev
+    build: 
+      context: ./intranet-backend
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      APP_NAME: intranet-backend-dev
+      APP_ENV: local
+      APP_KEY: '${APP_KEY:-base64:laclegénérée}'
+      APP_URL: '${APP_URL:-https://localhost:8443}'
+      APP_DEBUG: true
+      APP_LOCALE: '${APP_LOCALE:-fr}'
+      DB_CONNECTION: mysql
+      DB_HOST: intranetDB
+      DB_PORT: 3306
+      DB_DATABASE: '${DB_DATABASE:-intranet}'
+      DB_USERNAME: '${DB_USERNAME:-root}'
+      DB_PASSWORD: '${DB_PASSWORD:-secret}'
+      JWT_SECRET: '${JWT_SECRET:-base64:secret}' 
+    depends_on:
+      imagesDB:
+        condition: service_started
+      intranetDB:
+        condition: service_started 
+    networks:
+      - intra-net
+    volumes:
+      - ./intranet-backend:/var/www/intranet-backend
+      - ./ssl:/var/www/ssl
+
+
+  intranet-frontend-dev:
+    container_name: intranet-frontend-dev
+    profiles:
+      - dev
+    build:
+      context: ./intranet-frontend
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: '${REACT_APP_API_URL:-https://localhost:8443/api}'
+      # Pour le hot reloading
+      CHOKIDAR_USEPOLLING: "true" 
+      WATCHPACK_POLLING: "true"
+    stdin_open: true
+    tty: true
+    networks:
+      - intra-net
+    volumes:
+      - ./intranet-frontend:/var/www/frontend
+      - frontend_node_modules:/var/www/frontend/node_modules
+
+
+
+
+volumes:
+  intranetDB_data:
+    driver: local
+  imagesDB_data:
+    driver: local
+  frontend_node_modules:
+
+
+networks:
+  intra-net:
+    name: intra-net
+    driver: bridge
+
+    
