@@ -23,6 +23,13 @@ if [ ! -d "node_modules" ] || [ ! "$(ls -A node_modules)" ]; then
     npm install
 fi
 
+# Copier le fichier .env.example vers .env si .env n'existe pas
+if [ ! -f .env ]; then
+    echo "Creating .env file from .env.example..."
+    cp .env.example .env
+fi
+
+
 # Générer la clé d'application si elle n'existe pas ou est vide
 if ! grep -q "APP_KEY=base64:" .env 2>/dev/null || grep -q "APP_KEY=$" .env 2>/dev/null || grep -q "APP_KEY=\"\"" .env 2>/dev/null; then
     echo "Generating application key..."
@@ -45,9 +52,7 @@ fi
 
 # Nettoyer le cache
 echo "Clearing cache..."
-php artisan config:clear
-php artisan cache:clear
-php artisan route:clear
+php artisan optimize:clear
 
 echo "Starting Laravel development server..."
 exec php artisan serve --host=0.0.0.0 --port=8000

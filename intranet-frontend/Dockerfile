@@ -7,13 +7,10 @@ WORKDIR /var/www/frontend
 COPY package*.json ./
 
 # Installation des dépendances
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci
 
 # Stage de développement
 FROM base AS development
-
-# Installer toutes les dépendances (dev incluses)
-RUN npm ci
 
 # Copier le code source
 COPY . .
@@ -36,21 +33,3 @@ COPY . .
 # Build de l'application
 RUN npm run build
 
-# Stage final pour la production avec nginx
-FROM nginx:alpine AS production-final
-
-# Copier les fichiers buildés
-COPY --from=production /var/www/frontend/dist /usr/share/nginx/html
-
-# Configuration nginx simple pour SPA
-RUN echo 'server { \
-    listen 80; \
-    server_name localhost; \
-    location / { \
-        root /usr/share/nginx/html; \
-        index index.html; \
-        try_files $uri $uri/ /index.html; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
-
-CMD ["nginx", "-g", "daemon off;"]

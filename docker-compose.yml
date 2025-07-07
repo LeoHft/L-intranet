@@ -33,43 +33,7 @@ services:
     networks:
       - intra-net
 
-
-  imagesDB:
-    image: mongo:6.0
-    container_name: imagesDB
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: '${MONGO_INITDB_ROOT_USERNAME:-admin}'
-      MONGO_INITDB_ROOT_PASSWORD: '${MONGO_INITDB_ROOT_PASSWORD:-password}'
-    volumes:
-      - imagesDB_data:/data/db
-    networks:
-      - intra-net
-
-
-
-
 #=========== Administration =========== 
-  mongo-express:
-    profiles: 
-      - dev
-    image: mongo-express
-    container_name: mongo-express
-    restart: always
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_SERVER: imagesDB
-      ME_CONFIG_MONGODB_ADMINUSERNAME: '${MONGO_INITDB_ROOT_USERNAME:-admin}'
-      ME_CONFIG_MONGODB_ADMINPASSWORD: '${MONGO_INITDB_ROOT_PASSWORD:-password}'
-      ME_CONFIG_BASICAUTH_USERNAME: 'admin'
-      ME_CONFIG_BASICAUTH_PASSWORD: 'password'
-    depends_on:
-      - imagesDB
-    networks:
-      - intra-net
 
   phpmyadmin:
     profiles:
@@ -121,24 +85,15 @@ services:
       dockerfile: Dockerfile
       target: development
     environment:
-      APP_NAME: intranet-backend-dev
-      APP_ENV: local
-      APP_KEY: '${APP_KEY:-base64:laclegénérée}'
-      APP_URL: '${APP_URL:-https://localhost:8443}'
-      APP_DEBUG: true
-      APP_LOCALE: '${APP_LOCALE:-fr}'
       DB_CONNECTION: mysql
       DB_HOST: intranetDB
       DB_PORT: 3306
       DB_DATABASE: '${DB_DATABASE:-intranet}'
       DB_USERNAME: '${DB_USERNAME:-root}'
       DB_PASSWORD: '${DB_PASSWORD:-secret}'
-      JWT_SECRET: '${JWT_SECRET:-base64:secret}' 
     depends_on:
-      imagesDB:
-        condition: service_started
       intranetDB:
-        condition: service_started 
+        condition: service_healthy 
     networks:
       - intra-net
     volumes:
@@ -173,8 +128,6 @@ services:
 
 volumes:
   intranetDB_data:
-    driver: local
-  imagesDB_data:
     driver: local
   frontend_node_modules:
 

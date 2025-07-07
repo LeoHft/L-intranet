@@ -19,43 +19,34 @@ RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/
   && apt-get clean  \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+ 
+COPY composer.json composer.lock ./
+COPY package*.json ./
 
 # Stage de développement
 FROM base AS development
-
-# Copier les fichiers de configuration pour les dépendances
-COPY composer.json composer.lock ./
-COPY package*.json ./
 
 # Installer les dépendances PHP et Node.js
 RUN composer install --no-scripts --no-autoloader \
     && npm install
 
-# Copier le reste du code
 COPY . .
 
 # Configurer l'entrypoint
 RUN chmod +x ./entrypoint-dev.sh
-
-# # Exposer le port
-# EXPOSE 8000
 
 ENTRYPOINT ["./entrypoint-dev.sh"]
 
 # Stage de production
 FROM base AS production
 
-# Copier les fichiers de configuration pour les dépendances
-COPY composer.json composer.lock ./
-
 # Installer seulement les dépendances de production
 RUN composer install --no-dev --no-scripts --no-autoloader --optimize-autoloader
 
-# Copier le code source
 COPY . .
 
-# Finaliser l'installation
-RUN composer dump-autoloader --optimize --no-dev
+# Générer l'autoloader optimisé
+RUN composer dump-autoloader --optimize
 
 # # Exposer le port
 # EXPOSE 9000

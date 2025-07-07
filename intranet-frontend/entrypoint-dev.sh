@@ -3,12 +3,12 @@ set -e
 
 echo "=== Frontend Development Container Starting ==="
 
-# Attendre que les dépendances soient disponibles
-echo "Checking if node_modules exists..."
-if [ ! -d "node_modules" ] || [ ! "$(ls -A node_modules)" ]; then
-    echo "Installing dependencies..."
-    npm install
-fi
+# # Attendre que les dépendances soient disponibles
+# echo "Checking if node_modules exists..."
+# if [ ! -d "node_modules" ] || [ ! "$(ls -A node_modules)" ]; then
+#     echo "Installing dependencies..."
+#     npm install
+# fi
 
 echo "Starting Vite development server..."
 
