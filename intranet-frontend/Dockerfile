@@ -19,10 +19,13 @@ COPY . .
 # EXPOSE 5173
 
 # Créer un entrypoint pour le développement
-COPY entrypoint-dev.sh /entrypoint-dev.sh
-RUN chmod +x /entrypoint-dev.sh
+COPY entrypoint-dev.sh ./entrypoint-dev.sh
+# Convertir les fins de ligne Windows (CRLF) en Unix (LF)
+RUN sed -i 's/\r$//' ./entrypoint-dev.sh
+RUN chmod +x ./entrypoint-dev.sh
 
-ENTRYPOINT ["/entrypoint-dev.sh"]
+# Le script sera accessible via le volume mount
+ENTRYPOINT ["/bin/sh", "./entrypoint-dev.sh"]
 
 # Stage de production
 FROM base AS production

@@ -120,8 +120,7 @@ services:
     networks:
       - intra-net
     volumes:
-      - ./intranet-frontend:/var/www/frontend
-      - frontend_node_modules:/var/www/frontend/node_modules
+      - ./intranet-frontend:/var/www/intranet-frontend
 
 
 
@@ -129,7 +128,6 @@ services:
 volumes:
   intranetDB_data:
     driver: local
-  frontend_node_modules:
 
 
 networks:

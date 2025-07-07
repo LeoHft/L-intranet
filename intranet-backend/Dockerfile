@@ -33,6 +33,7 @@ RUN composer install --no-scripts --no-autoloader \
 COPY . .
 
 # Configurer l'entrypoint
+RUN sed -i 's/\r$//' ./entrypoint-dev.sh
 RUN chmod +x ./entrypoint-dev.sh
 
 ENTRYPOINT ["./entrypoint-dev.sh"]
