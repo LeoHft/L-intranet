@@ -42,13 +42,7 @@ php artisan storage:link
 
 # Exécuter les migrations
 echo "Running database migrations..."
-php artisan migrate --force
-
-# Optionnel : Seeder en développement
-if [ "$APP_ENV" = "local" ]; then
-    echo "Running database seeders..."
-    php artisan db:seed --force || echo "No seeders found or seeding failed"
-fi
+php artisan migrate --seed --force -n
 
 # Nettoyer le cache
 echo "Clearing cache..."

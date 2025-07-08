@@ -13,8 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
@@ -24,37 +22,36 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-
-        DB::table('categories')->insert([
+        DB::table('categories')->insertOrIgnore(
+            ['name' => 'Multimédia'],
             [
-                'name' => 'Multimédia',
-                'description' => "Tout ce qui est multimédia",
-                'created_at' => now(),
-                'updated_at' => now(),
+            'description' => "Tout ce qui est multimédia",
+            'created_at' => now(),
+            'updated_at' => now(),
             ]
-        ]);
+        );
 
-        DB::table('status')->insert([
+        DB::table('status')->insertOrIgnore([
             'name' => 'UP',
             'description' => 'Le service est accessible',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        DB::table('services')->insert([
+        DB::table('services')->insertOrIgnore([
             [
             'name' => 'test service',
             'description' => 'test service description',
             'internal_url' => 'http://localhost:8000',
             'external_url' => 'https://testservice.com',
-            'image_url' => 'http://localhost:8088/storage/images/no-photo-available.jpg',
+            'image_url' => 'http://localhost:8088/storage/images/no-image-available.jpg',
             'status_id' => 1,
             'created_at' => now(),
             'updated_at' => now(),
             ]
         ]);
 
-        DB::table('services_access')->insert([
+        DB::table('services_access')->insertOrIgnore([
             [
                 'user_id' => 1,
                 'service_id' => 1,
@@ -63,7 +60,7 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
 
-        DB::table('categories_services')->insert([
+        DB::table('categories_services')->insertOrIgnore([
             [
                 'service_id' => 1,
                 'category_id' => 1,
