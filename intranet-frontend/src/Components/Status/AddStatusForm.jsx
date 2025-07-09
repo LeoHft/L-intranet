@@ -3,26 +3,28 @@ import Modal from '@/Components/Utils/Modal';
 import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 
-import { useForm } from '@inertiajs/react';
 import { useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useState } from 'react';
+import axios from 'axios';
 
 
 export default function AddStatusForm() {
     const [showingAddStatusModal, setShowingAddStatusModal] = useState(false);
     const name = useRef();
     const description = useRef();
-
-
-    const {
-        data,
-        setData,
-        reset,
-    } = useForm({
+    const [data, setData] = useState({
         name: '',
         description: '',
     });
+
+    const reset = () => {
+        setData({
+            name: '',
+            description: '',
+        });
+        setShowingAddStatusModal(false);
+    };
 
     const AddStatus = () => {
         setShowingAddStatusModal(true);
@@ -59,7 +61,7 @@ export default function AddStatusForm() {
                             id="name"
                             ref={name}
                             value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
+                            onChange={(e) => setData({ ...data, name: e.target.value})}
                             type="text"
                             className="mt-1 block w-full"
                             placeholder="Nom du status"
@@ -72,7 +74,7 @@ export default function AddStatusForm() {
                             id="description"
                             ref={description}
                             value={data.description}
-                            onChange={(e) => setData('description', e.target.value)}
+                            onChange={(e) => setData({ ...data, description: e.target.value})}
                             type="text"
                             className="mt-1 block w-full"
                             placeholder="Description du status"
@@ -81,7 +83,6 @@ export default function AddStatusForm() {
                     <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
                         Valider
                     </button>
-                    
                 </form>
             </Modal>
             <Toaster />

@@ -1,6 +1,8 @@
-import { Link } from '@inertiajs/react';
 import NavLink from '@/Components/Utils/NavLink';
+
+import { Link } from 'react-router-dom';
 import { HouseWifi } from 'lucide-react';
+
 
 export default function GuestLayout({ children }) {
     return (
@@ -10,15 +12,15 @@ export default function GuestLayout({ children }) {
                             <div className="flex h-16 justify-between">
                                 <div className="flex">
                                     <div className="flex shrink-0 items-center">
-                                        <Link href="/">
+                                        <Link to="/">
                                             <HouseWifi className="h-7 w-7" />
                                         </Link>
                                     </div>
         
                                     <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                         <NavLink
-                                            href={route('login')}
-                                            active={route().current('login')}
+                                            href="/login"
+                                            active={window.location.pathname === '/login'}
                                         >
                                             Connexion
                                         </NavLink>

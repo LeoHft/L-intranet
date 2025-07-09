@@ -4,45 +4,89 @@ import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import TextInput from '@/Components/Utils/TextInput';
 
 import { Transition } from '@headlessui/react';
-import { useForm } from '@inertiajs/react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function UpdatePasswordForm({ className = '' }) {
     const passwordInput = useRef();
     const currentPasswordInput = useRef();
-
-    const {
-        data,
-        setData,
-        errors,
-        put,
-        reset,
-        processing,
-        recentlySuccessful,
-    } = useForm({
+    
+    const [data, setData] = useState({
         current_password: '',
         password: '',
         password_confirmation: '',
     });
+    const [errors, setErrors] = useState({});
+    const [processing, setProcessing] = useState(false);
+    const [recentlySuccessful, setRecentlySuccessful] = useState(false);
 
-    const updatePassword = (e) => {
+    const reset = (fields = null) => {
+        if (fields) {
+            // Reset de champs spécifiques
+            const newData = { ...data };
+            if (Array.isArray(fields)) {
+                fields.forEach(field => {
+                    newData[field] = '';
+                });
+            } else {
+                newData[fields] = '';
+            }
+            setData(newData);
+        } else {
+            // Reset complet
+            setData({
+                current_password: '',
+                password: '',
+                password_confirmation: '',
+            });
+        }
+    };
+
+    const updatePassword = async (e) => {
         e.preventDefault();
+        setProcessing(true);
+        setErrors({});
 
-        put(route('password.update'), {
-            preserveScroll: true,
-            onSuccess: () => reset(),
-            onError: (errors) => {
-                if (errors.password) {
-                    reset('password', 'password_confirmation');
-                    passwordInput.current.focus();
+        try {
+            await axios.put('/api/password', {
+                current_password: data.current_password,
+                password: data.password,
+                password_confirmation: data.password_confirmation,
+            });
+
+            toast.success('Mot de passe mis à jour avec succès');
+            setRecentlySuccessful(true);
+            reset();
+
+            // Masquer le message de succès après 3 secondes
+            setTimeout(() => {
+                setRecentlySuccessful(false);
+            }, 3000);
+
+        } catch (error) {
+            if (error.response && error.response.status === 422) {
+                const responseErrors = error.response.data.errors || {};
+                setErrors(responseErrors);
+
+                // Gestion du focus selon les erreurs
+                if (responseErrors.password) {
+                    reset(['password', 'password_confirmation']);
+                    passwordInput.current?.focus();
                 }
 
-                if (errors.current_password) {
+                if (responseErrors.current_password) {
                     reset('current_password');
-                    currentPasswordInput.current.focus();
+                    currentPasswordInput.current?.focus();
                 }
-            },
-        });
+
+                toast.error('Veuillez corriger les erreurs dans le formulaire');
+            } else {
+                toast.error('Erreur lors de la mise à jour du mot de passe');
+            }
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
@@ -68,7 +112,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                         ref={currentPasswordInput}
                         value={data.current_password}
                         onChange={(e) =>
-                            setData('current_password', e.target.value)
+                            setData({ ...data, current_password: e.target.value })
                         }
                         type="password"
                         className="mt-1 block w-full"
@@ -88,7 +132,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                         id="password"
                         ref={passwordInput}
                         value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
+                        onChange={(e) => setData({ ...data, password: e.target.value })}
                         type="password"
                         className="mt-1 block w-full"
                         autoComplete="new-password"
@@ -107,7 +151,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                         id="password_confirmation"
                         value={data.password_confirmation}
                         onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
+                            setData({ ...data, password_confirmation: e.target.value })
                         }
                         type="password"
                         className="mt-1 block w-full"
@@ -136,6 +180,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                     </Transition>
                 </div>
             </form>
+            <Toaster />
         </section>
     );
 }

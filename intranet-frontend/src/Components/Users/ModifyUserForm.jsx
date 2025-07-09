@@ -3,7 +3,6 @@ import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 import InputError from '@/Components/Utils/InputError';
 
-import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState, useRef } from 'react';
@@ -11,15 +10,25 @@ import { useEffect, useState, useRef } from 'react';
 
 export default function ModifyUserForm({ user, onClose }) {
     const [showingModifyUserModal, setShowingModifyUserModal] = useState(true);
+    const [errors, setErrors] = useState({});
     const name = useRef();
     const email = useRef();
     const is_admin = useRef();
-
-    const { data, setData, reset, errors } = useForm({
+    const [data, setData] = useState({
         name: '',
         email: '',
         is_admin: false,
     });
+
+    const reset = () => {
+        setData({
+            name: '',
+            email: '',
+            is_admin: false,
+        });
+        setErrors({});
+    };
+
 
     useEffect(() => {
         if (user) {
@@ -33,6 +42,7 @@ export default function ModifyUserForm({ user, onClose }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setErrors({});
 
         axios.put(`/api/updateUser/${user.id}`, {
             name: data.name,
@@ -62,7 +72,7 @@ export default function ModifyUserForm({ user, onClose }) {
                         id="name"
                         ref={name}
                         value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
+                        onChange={(e) => setData({ ...data, name: e.target.value})}
                         type="text"
                         className="mt-1 block w-full"
                         placeholder="Nom de l'utilisateur"
@@ -75,7 +85,7 @@ export default function ModifyUserForm({ user, onClose }) {
                         id="email"
                         ref={email}
                         value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
+                        onChange={(e) => setData({ ...data, email: e.target.value})}
                         type="text"
                         className="mt-1 block w-full"
                         placeholder="Email de l'utilisateur"
@@ -90,7 +100,7 @@ export default function ModifyUserForm({ user, onClose }) {
                         ref={is_admin}
                         checked={data.is_admin}
                         className="mt-1 w-4 h-4"
-                        onChange={(e) => setData('is_admin', e.target.checked)}
+                        onChange={(e) => setData({ ...data, is_admin: e.target.checked})}
                     />
                     <label htmlFor="is_admin" className="text-ml text-gray-700 cursor-pointer hover:text-gray-500 transition ml-2 ">
                         Administrateur

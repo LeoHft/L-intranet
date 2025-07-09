@@ -1,17 +1,18 @@
-import InputError from '@/Components/Utils.InputError';
+import InputError from '@/Components/Utils/InputError';
 import InputLabel from '@/Components/Utils/InputLabel';
 import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import TextInput from '@/Components/Utils/TextInput';
 import Modal from '@/Components/Utils/Modal';
 
-import { Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import axios from 'axios';
 import toast, {Toaster} from 'react-hot-toast';
 
 
 export default function AddUserForm() {
     const [showingAddUserModal, setShowingAddUserModal] = useState(false);
-    const { data, setData, errors, reset } = useForm({
+    const [errors, setErrors] = useState({});
+    const [data, setData] = useState({
         name: '',
         email: '',
         password: '',
@@ -19,12 +20,27 @@ export default function AddUserForm() {
         'is_admin': false,
     });
 
+    const reset = () => {
+        setData({
+            name: '',
+            email: '',
+            password: '',
+            password_confirmation: '',
+            'is_admin': false,
+        });
+        setErrors({});
+        setShowingAddUserModal(false);
+    };
+
+
     const AddUser = () => {
         setShowingAddUserModal(true);
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setErrors({}); // Reset des erreurs
+        
         axios.post('/api/storeUser', {
             name: data.name,
             email: data.email,
@@ -34,11 +50,17 @@ export default function AddUserForm() {
         })
         .then(response => {
             reset();
-            setShowingAddUserModal(false);
             toast.success('Utilisateur ajouté avec succès');
         }).catch(error => {
-            console.error("Error adding Category:", error);
-            toast.error('Erreur lors de l\'ajout de l\'utilisateur');
+            console.error("Error adding User:", error);
+            
+            // Gestion des erreurs de validation
+            if (error.response && error.response.status === 422) {
+                setErrors(error.response.data.errors || {});
+                toast.error('Veuillez corriger les erreurs dans le formulaire');
+            } else {
+                toast.error('Erreur lors de l\'ajout de l\'utilisateur');
+            }
         });
     }
 
@@ -63,7 +85,7 @@ export default function AddUserForm() {
                                 className="mt-1 block w-full"
                                 autoComplete="name"
                                 isFocused={true}
-                                onChange={(e) => setData('name', e.target.value)}
+                                onChange={(e) => setData({ ...data, name: e.target.value})}
                                 required
                             />
 
@@ -81,7 +103,7 @@ export default function AddUserForm() {
                                 value={data.email}
                                 className="mt-1 block w-full"
                                 autoComplete="username"
-                                onChange={(e) => setData('email', e.target.value)}
+                                onChange={(e) => setData({ ...data, email: e.target.value})}
                                 required
                             />
 
@@ -99,7 +121,7 @@ export default function AddUserForm() {
                                 value={data.password}
                                 className="mt-1 block w-full"
                                 autoComplete="new-password"
-                                onChange={(e) => setData('password', e.target.value)}
+                                onChange={(e) => setData({ ...data, password: e.target.value})}
                                 required
                             />
 
@@ -120,9 +142,7 @@ export default function AddUserForm() {
                                 value={data.password_confirmation}
                                 className="mt-1 block w-full"
                                 autoComplete="new-password"
-                                onChange={(e) =>
-                                    setData('password_confirmation', e.target.value)
-                                }
+                                onChange={(e) => setData({ ...data, password_confirmation: e.target.value})}
                                 required
                             />
 
@@ -139,7 +159,7 @@ export default function AddUserForm() {
                                 name="is_admin"
                                 checked={data.is_admin}
                                 className="mt-1 w-4 h-4"
-                                onChange={(e) => setData('is_admin', e.target.checked)}
+                                onChange={(e) => setData({ ...data, is_admin: e.target.checked})}
                             />
                             <label htmlFor="is_admin" className="text-ml text-gray-700 cursor-pointer hover:text-gray-500 transition ml-2 ">
                                 Administrateur

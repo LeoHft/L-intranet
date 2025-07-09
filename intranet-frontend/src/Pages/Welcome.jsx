@@ -1,52 +1,16 @@
 import GuestLayout from '@/Layouts/GuestLayout';
 
-import { Head } from '@inertiajs/react';
-import React, { useRef } from 'react';
-import { gsap } from 'gsap';
-import { useGSAP } from '@gsap/react';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React, { useRef, useEffect } from 'react';
 
 
-export default function Welcome({ auth, laravelVersion, phpVersion }) {
-    gsap.registerPlugin(useGSAP, ScrollTrigger);
-
+export default function Welcome() {
     const container = useRef();
     const sectionRefs = useRef([]);
-    const buttonRef = useRef();
 
-    useGSAP(() => {
-        // Animation scroll du bouton principal
-        gsap.to("#buttonLogin", {
-            y: 500,
-            scrollTrigger: {
-                trigger: container.current,
-                start: "top top",
-                end: "bottom bottom",
-                scrub: true,
-                markers: false,
-            },
-        });
-
-        // Animation fade/slide des blocs de sections
-        sectionRefs.current.forEach((el, i) => {
-            gsap.fromTo(el,
-                { opacity: 0, y: 100 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    scrollTrigger: {
-                        trigger: el,
-                        start: "top 80%",
-                        toggleActions: "play none none none",
-                        markers: false,
-                    },
-                    duration: 1,
-                    delay: i * 0.2
-                }
-            );
-        });
-
-    }, { scope: container });
+    // Gestion du titre de la page
+    useEffect(() => {
+        document.title = "Bienvenue - Intranet";
+    }, []);
 
     return (
         <GuestLayout>
@@ -54,8 +18,6 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                 ref={container}
                 className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center pt-8 min-h-[500vh]"
             >
-                <Head title="Bienvenue" />
-
                 {/* HERO */}
                 <div className="mt-20 space-y-4">
                     <h1 className="text-6xl font-bold font-serif">Intranet</h1>

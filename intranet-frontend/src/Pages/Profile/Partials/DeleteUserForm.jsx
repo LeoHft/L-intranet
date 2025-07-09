@@ -3,42 +3,61 @@ import InputError from '@/Components/Utils/InputError';
 import InputLabel from '@/Components/Utils/InputLabel';
 import Modal from '@/Components/Utils/Modal';
 import SecondaryButton from '@/Components/Utils/SecondaryButton';
-
 import TextInput from '@/Components/Utils/TextInput';
 
-import { useForm } from '@inertiajs/react';
 import { useRef, useState } from 'react';
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 
 
 export default function DeleteUserForm({ className = '' }) {
     const [confirmingUserDeletion, setConfirmingUserDeletion] = useState(false);
-    const passwordInput = useRef();
-
-    const {
-        data,
-        setData,
-        delete: destroy,
-        processing,
-        reset,
-        errors,
-        clearErrors,
-    } = useForm({
+    const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [data, setData] = useState({
         password: '',
     });
+    const passwordInput = useRef();
+
+    const reset = () => {
+        setData({
+            password: '',
+        });
+    };
+
+    const clearErrors = () => {
+        setErrors({});
+    };
 
     const confirmUserDeletion = () => {
         setConfirmingUserDeletion(true);
     };
 
-    const deleteUser = (e) => {
+    const deleteUser = async (e) => {
         e.preventDefault();
+        setProcessing(true);
+        setErrors({});
 
-        destroy(route('profile.destroy'), {
-            preserveScroll: true,
-            onSuccess: () => closeModal(),
-            onError: () => passwordInput.current.focus(),
-            onFinish: () => reset(),
-        });
+        try {
+            await axios.delete('/api/profile', {
+                data: { password: data.password }
+            });
+            
+            toast.success('Compte supprimé avec succès');
+            closeModal();
+            // Redirection vers la page de connexion ou d'accueil
+            window.location.href = '/login';
+        } catch (error) {
+            if (error.response && error.response.status === 422) {
+                setErrors(error.response.data.errors || {});
+            } else {
+                toast.error('Erreur lors de la suppression du compte');
+            }
+            passwordInput.current?.focus();
+        } finally {
+            setProcessing(false);
+            reset();
+        }
     };
 
     const closeModal = () => {
@@ -92,7 +111,7 @@ export default function DeleteUserForm({ className = '' }) {
                             ref={passwordInput}
                             value={data.password}
                             onChange={(e) =>
-                                setData('password', e.target.value)
+                                setData({ ...data, password: e.target.value })
                             }
                             className="mt-1 block w-3/4"
                             isFocused
@@ -116,6 +135,7 @@ export default function DeleteUserForm({ className = '' }) {
                     </div>
                 </form>
             </Modal>
+            <Toaster />
         </section>
     );
 }

@@ -7,7 +7,7 @@ import CategorySelect from '@/Components/Category/CategorySelect';
 import StatusSelect from '@/Components/Status/StatusSelect';
 import UsersSelect from '@/Components/Users/UsersSelect';
 
-import { useForm } from '@inertiajs/react';
+import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState, useRef } from 'react';
 
@@ -22,17 +22,7 @@ export default function AddServiceForm() {
     const internal_url = useRef();
     const external_url = useRef();
     const image = useRef();
-
-
-    const {
-        data,
-        setData,
-        errors,
-        post,
-        processing,
-        reset,
-        recentlySuccessful,
-    } = useForm({
+    const [data, setData] = useState({
         name: '',
         description: '',
         internal_url: '',
@@ -40,8 +30,24 @@ export default function AddServiceForm() {
         image: '',
         categories: [],
         status: null,
-        users: [],
+        users: [], 
     });
+
+    const reset = () => {
+        setData({
+            name: '',
+            description: '',
+            internal_url: '',
+            external_url: '',
+            image: '',
+            categories: [],
+            status: null,
+            users: [], 
+        });
+        setSelectedCategories([]);
+        setSelectedUsers([]);
+        setSelectedStatus(null);
+    };
 
     const AddService = () => {
         setShowingAddServiceModal(true);
@@ -90,7 +96,7 @@ export default function AddServiceForm() {
                             id="name"
                             ref={name}
                             value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
+                            onChange={(e) => setData({ ...data, name: e.target.value})}
                             type="text"
                             className="mt-1 block w-full"
                             placeholder="Nom du service"
@@ -103,7 +109,7 @@ export default function AddServiceForm() {
                             id="description"
                             ref={description}
                             value={data.description}
-                            onChange={(e) => setData('description', e.target.value)}
+                            onChange={(e) => setData({ ...data, description: e.target.value})}
                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             placeholder="Description du service"
                         />
@@ -114,7 +120,7 @@ export default function AddServiceForm() {
                             id="internal_url"
                             ref={internal_url}
                             value={data.internal_url}
-                            onChange={(e) => setData('internal_url', e.target.value)}
+                            onChange={(e) => setData({ ...data, internal_url: e.target.value})}
                             type="text"
                             className="mt-1 block w-full"
                             placeholder="Url interne"
@@ -126,7 +132,7 @@ export default function AddServiceForm() {
                             id="external_url"
                             ref={external_url}
                             value={data.external_url}
-                            onChange={(e) => setData('external_url', e.target.value)}
+                            onChange={(e) => setData({ ...data, external_url: e.target.value})}
                             type="text"
                             className="mt-1 block w-full"
                             placeholder="Url externe"
@@ -150,7 +156,7 @@ export default function AddServiceForm() {
                             id="image"
                             type="file"
                             className="mt-1 block w-full hover:cursor-pointer"
-                            onChange={(e) => setData('image', e.target.files[0])}
+                            onChange={(e) => setData({ ...data, image: e.target.files[0]})}
                             required
                         />
                     </div>

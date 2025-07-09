@@ -3,25 +3,26 @@ import Modal from '@/Components/Utils/Modal';
 import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 
-import {useState, useRef } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useState, useRef } from 'react';
+import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 
 export default function AddCategoryForm() {
     const [showingAddCategoryModal, setShowingAddCategoryModal] = useState(false);
-    const name = useRef();
-    const description = useRef();
-
-
-    const {
-        data,
-        setData,
-        reset,
-    } = useForm({
+    const [data, setData] = useState({
         name: '',
         description: '',
     });
+    const name = useRef();
+    const description = useRef();
+
+    const reset = () => {
+        setData({
+            name: '',
+            description: '',
+        });
+    };
 
     const AddCategory = () => {
         setShowingAddCategoryModal(true);
@@ -58,7 +59,7 @@ export default function AddCategoryForm() {
                             id="name"
                             ref={name}
                             value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
+                            onChange={(e) => setData({ ...data, name: e.target.value })}
                             type="text"
                             className="mt-1 block w-full"
                             placeholder="Nom de la catégorie"
@@ -71,7 +72,7 @@ export default function AddCategoryForm() {
                             id="description"
                             ref={description}
                             value={data.description}
-                            onChange={(e) => setData('description', e.target.value)}
+                            onChange={(e) => setData({ ...data, description: e.target.value })}
                             type="text"
                             className="mt-1 block w-full"
                             placeholder="Description de la catégorie"

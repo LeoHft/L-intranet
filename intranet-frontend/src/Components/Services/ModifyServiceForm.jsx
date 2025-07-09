@@ -7,7 +7,6 @@ import StatusSelect from '@/Components/Status/StatusSelect';
 import UsersSelect from '@/Components/Users/UsersSelect';
 
 import { useEffect, useState, useRef } from 'react';
-import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -18,8 +17,7 @@ export default function ModifyServiceForm({ service, onClose }) {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedStatus, setSelectedStatus] = useState(null);
     const [imageFile, setImageFile] = useState(null);
-
-    const { data, setData, reset } = useForm({
+    const [data, setData] = useState({
         name: '',
         description: '',
         internal_url: '',
@@ -29,6 +27,24 @@ export default function ModifyServiceForm({ service, onClose }) {
         users: [],
         status: null,
     });
+
+    const reset =  () => {
+        setData({
+            name: '',
+            description: '',
+            internal_url: '',
+            external_url: '',
+            image: '',
+            categories: [],
+            users: [],
+            status: null,
+        });
+        setSelectedCategories([]);
+        setSelectedUsers([]);
+        setSelectedStatus(null);
+        setImageFile(null);
+    };
+ 
 
     useEffect(() => {
         if (service) {
@@ -92,7 +108,7 @@ export default function ModifyServiceForm({ service, onClose }) {
                     <TextInput
                         id="name"
                         value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
+                        onChange={(e) => setData({ ...data, name: e.target.value})}
                         type="text"
                         className="mt-1 block w-full"
                         placeholder="Nom du service"
@@ -104,7 +120,7 @@ export default function ModifyServiceForm({ service, onClose }) {
                     <textarea
                         id="description"
                         value={data.description}
-                        onChange={(e) => setData('description', e.target.value)}
+                        onChange={(e) => setData({ ...data, description: e.target.value})}
                         type="text"
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         placeholder="Description du service"
@@ -115,7 +131,7 @@ export default function ModifyServiceForm({ service, onClose }) {
                     <TextInput
                         id="internal_url"
                         value={data.internal_url}
-                        onChange={(e) => setData('internal_url', e.target.value)}
+                        onChange={(e) => setData({ ...data, internal_url: e.target.value})}
                         type="text"
                         className="mt-1 block w-full"
                         placeholder="Url interne"
@@ -126,7 +142,7 @@ export default function ModifyServiceForm({ service, onClose }) {
                     <TextInput
                         id="external_url"
                         value={data.external_url}
-                        onChange={(e) => setData('external_url', e.target.value)}
+                        onChange={(e) => setData({ ...data, external_url: e.target.value})}
                         type="text"
                         className="mt-1 block w-full"
                         placeholder="URL externe"

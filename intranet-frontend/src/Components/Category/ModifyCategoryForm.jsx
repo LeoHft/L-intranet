@@ -3,20 +3,25 @@ import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 
 import { useEffect, useState, useRef } from 'react';
-import { useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 
 export default function ModifyCategoryForm({ category, onClose }) {
     const [showingModifyCategoryModal, setShowingModifyCategoryModal] = useState(true);
     const name = useRef();
     const description = useRef();
-
-    const { data, setData, reset } = useForm({
+    const [data, setData] = useState({
         name: '',
-        description: '',
-    });
+        description:'',
+    })
+
+    const reset = () => {
+        setData({
+            name: '',
+            description: '',
+        });
+    }
 
     useEffect(() => {
         if (category) {
@@ -57,7 +62,7 @@ export default function ModifyCategoryForm({ category, onClose }) {
                         id="name"
                         ref={name}
                         value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
+                        onChange={(e) => setData({ ...data, name: e.target.value })}
                         type="text"
                         className="mt-1 block w-full"
                         placeholder="Nom de la catégorie"
@@ -70,7 +75,7 @@ export default function ModifyCategoryForm({ category, onClose }) {
                         id="description"
                         ref={description}
                         value={data.description}
-                        onChange={(e) => setData('description', e.target.value)}
+                        onChange={(e) => setData({ ...data, description: e.target.value })}
                         type="text"
                         className="mt-1 block w-full"
                         placeholder="Description de la catégorie"
