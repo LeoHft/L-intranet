@@ -1,15 +1,16 @@
 import Modal from '@/Components/Utils/Modal';
 import { ToggleContext } from '@/Components/Utils/ToggleContext';
+import { useAuthAttributes } from '@/context/AuthAttributsContext';
 
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import toast, { Toaster } from 'react-hot-toast';
-import { usePage } from '@inertiajs/react';
 
 
 export default function CardServices() {
-    const user = usePage().props.auth.user;
+    const authContext = useAuthAttributes();
+    const user = authContext?.userAttributes;
     const { enabled } = useContext(ToggleContext);
     const [servicesList, setServicesList] = useState([]);
     const [showingServiceModal, setShowingServiceModal] = useState(false);

@@ -4,13 +4,17 @@ import Dropdown from '@/Components/Utils/Dropdown';
 import NavLink from '@/Components/Utils/NavLink';
 import ResponsiveNavLink from '@/Components/Utils/ResponsiveNavLink';
 
+import { useAuthAttributes } from '@/context/AuthAttributsContext';
+
 import { useState, useEffect } from 'react';
 import { HouseWifi } from 'lucide-react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, useLocation } from 'react-router-dom';
 
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const authContext = useAuthAttributes();
+    const user = authContext?.userAttributes;
+    const location = useLocation();
 
     const [enabled, setEnabled] = useState(() => localStorage.getItem('enabled') === 'true');
 
@@ -28,15 +32,15 @@ export default function AuthenticatedLayout({ header, children }) {
                     <div className="flex h-16 justify-between">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link href="/">
+                                <Link to="/">
                                     <HouseWifi className="h-7 w-7 hover:animate-bounce" />
                                 </Link>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex ">
                                 <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
+                                    to="/dashboard"
+                                    active={location.pathname === '/dashboard'}
                                 >
                                     Menu
                                 </NavLink>
@@ -44,8 +48,8 @@ export default function AuthenticatedLayout({ header, children }) {
                             {user.is_admin ? (
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink
-                                        href={route('adminDashboard')}
-                                        active={route().current('adminDashboard')}
+                                        to="/adminDashboard"
+                                        active={location.pathname === '/adminDashboard'}
                                     >
                                         Menu Administrateur
                                     </NavLink>
@@ -84,12 +88,12 @@ export default function AuthenticatedLayout({ header, children }) {
 
                                     <Dropdown.Content>
                                         <Dropdown.Link
-                                            href={route('profile.edit')}
+                                            to="/profile/edit"
                                         >
-                                            Profil
+                                            Profile
                                         </Dropdown.Link>
                                         <Dropdown.Link
-                                            href={route('logout')}
+                                            to="/logout"
                                             method="post"
                                             as="button"
                                         >
@@ -151,8 +155,8 @@ export default function AuthenticatedLayout({ header, children }) {
                 >
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
+                            to="/dashboard"
+                            active={location.pathname === '/dashboard'}
                         >
                             Menu
                         </ResponsiveNavLink>
@@ -169,12 +173,12 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>
-                                Profil
+                            <ResponsiveNavLink to="/profile/edit">
+                                Profile
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 method="post"
-                                href={route('logout')}
+                                to="/logout"
                                 as="button"
                             >
                                 Déconnexion

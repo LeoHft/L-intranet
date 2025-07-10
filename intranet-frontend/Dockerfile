@@ -1,7 +1,7 @@
 # Multi-stage build pour React
 FROM node:22-alpine AS base
 
-WORKDIR /var/www/frontend
+WORKDIR /var/www/intranet-frontend
 
 # Copier les fichiers de configuration pour les dépendances
 COPY package*.json ./
@@ -30,7 +30,7 @@ ENTRYPOINT ["/bin/sh", "./entrypoint-dev.sh"]
 # Stage de production
 FROM base AS production
 
-# Copier le code source
+# Copier le code sourced
 COPY . .
 
 # Build de l'application

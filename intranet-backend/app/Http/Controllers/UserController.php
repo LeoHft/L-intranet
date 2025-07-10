@@ -6,24 +6,64 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Log;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserController extends Controller
 {
+    /**
+     * Récupérer tous les utilisateurs (admin seulement)
+     */
     public function getUser()
     {
         try {
-            if (!JWTAuth::parseToken()->authenticate()) {
+            // Vérifier que l'utilisateur est authentifié
+            $user = JWTAuth::parseToken()->authenticate();
+            
+            if (!$user) {
                 return response()->json(['error' => 'User not found'], 404);
             }
+
+            // Vérifier que l'utilisateur est admin
+            if (!$user->is_admin) {
+                return response()->json(['error' => 'Unauthorized - Admin access required'], 403);
+            }
+
+            $users = User::select('id', 'name', 'email', 'created_at', 'updated_at','is_admin')->with('services')->get();
+
+            return response()->json($users);
+            
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Invalid token'], 400);
+            return response()->json(['error' => 'Invalid token'], 401);
         }
+    }
 
-        $users = User::select('id', 'name', 'email', 'created_at', 'updated_at','is_admin')->with('services')->get();
+    /**
+     * Récupérer les informations de l'utilisateur connecté
+     */
+    public function getCurrentUserInfo()
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            
+            if (!$user) {
+                return response()->json(['connected' => false]);
+            }
 
-        return response()->json($users);
+            return response()->json([
+                'connected' => true,
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'is_admin' => $user->is_admin,
+            ]);
+            
+        } catch (JWTException $e) {
+            return response()->json(['connected' => false]);
+        }
     }
 
     

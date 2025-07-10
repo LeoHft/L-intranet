@@ -10,7 +10,7 @@ if [ ! -d "node_modules" ] || [ ! "$(ls -A node_modules)" ]; then
     npm install
 fi
 
-echo "Starting Vite development server..."
+echo "Starting Vite development server with HMR..."
 
-# Démarrer le serveur de développement Vite
-exec npm run dev -- --host 0.0.0.0 --port 5173
+# Démarrer le serveur de développement Vite avec HMR explicite
+exec npm run dev -- --host 0.0.0.0 --port 5173 --force

@@ -14,6 +14,8 @@ Route::get('test', function (Request $request) {
     return response()->json(['message' => 'API is working']);
 });
 
+Route::get('getCurrentUserInfo', 'App\Http\Controllers\UserController@getCurrentUserInfo');
+
 
 // Pour les users normaux authentifiés
 Route::middleware('jwt')->group(function () {

@@ -5,28 +5,73 @@ import TextInput from '@/Components/Utils/TextInput';
 
 import GuestLayout from '@/Layouts/GuestLayout';
 
-import { Head, useForm } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 
-export default function ResetPassword({ token, email }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        token: token,
-        email: email,
+export default function ResetPassword() {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    
+    // Récupération des paramètres depuis l'URL
+    const token = searchParams.get('token');
+    const email = searchParams.get('email');
+
+    const [data, setData] = useState({
+        token: token || '',
+        email: email || '',
         password: '',
         password_confirmation: '',
     });
+    const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState({});
 
-    const submit = (e) => {
+    useEffect(() => {
+        document.title = "Reset Password - Intranet";
+    }, []);
+
+    const submit = async (e) => {
         e.preventDefault();
+        setProcessing(true);
+        setErrors({});
 
-        post(route('password.store'), {
-            onFinish: () => reset('password', 'password_confirmation'),
-        });
+        try {
+            const response = await fetch('/api/auth/password/reset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                // Réinitialiser le formulaire et rediriger vers la page de connexion
+                setData({
+                    token: token || '',
+                    email: email || '',
+                    password: '',
+                    password_confirmation: '',
+                });
+                navigate('/login', { 
+                    state: { message: 'Password reset successfully! Please login with your new password.' }
+                });
+            } else {
+                const errorData = await response.json();
+                setErrors(errorData.errors || { general: ['Password reset failed'] });
+            }
+        } catch (error) {
+            console.error('Error resetting password:', error);
+            setErrors({ general: ['An error occurred. Please try again.'] });
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
         <GuestLayout>
-            <Head title="Reset Password" />
+            <div className="mb-4">
+                <h2 className="text-xl font-semibold">Reset Password</h2>
+            </div>
 
             <form onSubmit={submit}>
                 <div>
@@ -39,10 +84,10 @@ export default function ResetPassword({ token, email }) {
                         value={data.email}
                         className="mt-1 block w-full"
                         autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
+                        onChange={(e) => setData({ ...data, email: e.target.value })}
                     />
 
-                    <InputError message={errors.email} className="mt-2" />
+                    <InputError message={errors.email?.[0]} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
@@ -56,10 +101,10 @@ export default function ResetPassword({ token, email }) {
                         className="mt-1 block w-full"
                         autoComplete="new-password"
                         isFocused={true}
-                        onChange={(e) => setData('password', e.target.value)}
+                        onChange={(e) => setData({ ...data, password: e.target.value })}
                     />
 
-                    <InputError message={errors.password} className="mt-2" />
+                    <InputError message={errors.password?.[0]} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
@@ -76,15 +121,21 @@ export default function ResetPassword({ token, email }) {
                         className="mt-1 block w-full"
                         autoComplete="new-password"
                         onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
+                            setData({ ...data, password_confirmation: e.target.value })
                         }
                     />
 
                     <InputError
-                        message={errors.password_confirmation}
+                        message={errors.password_confirmation?.[0]}
                         className="mt-2"
                     />
                 </div>
+
+                {errors.general && (
+                    <div className="mt-4">
+                        <InputError message={errors.general[0]} />
+                    </div>
+                )}
 
                 <div className="mt-4 flex items-center justify-end">
                     <PrimaryButton className="ms-4" disabled={processing}>

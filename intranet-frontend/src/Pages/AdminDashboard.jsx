@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/Utis/Tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/Utils/Tabs';
 
 import AddServiceForm from '@/Components/Services/AddServiceForm';
 import AddCategoryForm from '@/Components/Category/AddCategoryForm';
@@ -11,24 +11,17 @@ import ListServices from '@/Components/Services/ListServices';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 import { useEffect, useState } from 'react';
-import { Head } from '@inertiajs/react';
-
 
 export default function AdminDashboard() {
-    const [data, setData] = useState([]);
     const [activeTab, setActiveTab] = useState("overview");
 
     useEffect(() => {
-        fetch("/api/posts") // Appelle l'API Laravel
-            .then((res) => res.json())
-            .then((data) => setData(data));
+        document.title = "AdminDashboard - Intranet";
     }, []);
-
 
 
     return (
         <AuthenticatedLayout>
-        <Head title="AdminDashboard" />
 
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">

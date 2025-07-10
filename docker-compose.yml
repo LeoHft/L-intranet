@@ -84,13 +84,6 @@ services:
       context: ./intranet-backend
       dockerfile: Dockerfile
       target: development
-    environment:
-      DB_CONNECTION: mysql
-      DB_HOST: intranetDB
-      DB_PORT: 3306
-      DB_DATABASE: '${DB_DATABASE:-intranet}'
-      DB_USERNAME: '${DB_USERNAME:-root}'
-      DB_PASSWORD: '${DB_PASSWORD:-secret}'
     depends_on:
       intranetDB:
         condition: service_healthy 
@@ -112,15 +105,17 @@ services:
     environment:
       NODE_ENV: development
       VITE_API_URL: '${REACT_APP_API_URL:-https://localhost:8443/api}'
-      # Pour le hot reloading
+      # Variables pour Vite HMR
       CHOKIDAR_USEPOLLING: "true" 
-      WATCHPACK_POLLING: "true"
+      WATCHPACK_POLLING: "true" 
+      FAST_REFRESH: "true" 
     stdin_open: true
     tty: true
     networks:
       - intra-net
     volumes:
       - ./intranet-frontend:/var/www/intranet-frontend
+      - /var/www/intranet-frontend/node_modules
 
 
 

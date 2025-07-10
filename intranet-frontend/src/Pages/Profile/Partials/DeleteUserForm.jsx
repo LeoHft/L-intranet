@@ -10,7 +10,7 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function DeleteUserForm({ className = '' }) {
+export default function DeleteUserForm() {
     const [confirmingUserDeletion, setConfirmingUserDeletion] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
@@ -68,7 +68,7 @@ export default function DeleteUserForm({ className = '' }) {
     };
 
     return (
-        <section className={`space-y-6 ${className}`}>
+        <section className={'rounded-lg space-y-6 shadow-lg p-6 border border-rose-200/30'}>
             <header>
                 <h2 className="text-lg font-medium text-gray-900">
                     Supprimer le compte

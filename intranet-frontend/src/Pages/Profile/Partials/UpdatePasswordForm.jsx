@@ -8,7 +8,7 @@ import { useRef, useState } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
-export default function UpdatePasswordForm({ className = '' }) {
+export default function UpdatePasswordForm() {
     const passwordInput = useRef();
     const currentPasswordInput = useRef();
     
@@ -90,7 +90,7 @@ export default function UpdatePasswordForm({ className = '' }) {
     };
 
     return (
-        <section className={className}>
+        <section className={'rounded-lg shadow-lg p-6 border border-rose-200/30'}>
             <header>
                 <h2 className="text-lg font-medium text-gray-900">
                     Mettre à jour le mot de passe

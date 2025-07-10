@@ -1,6 +1,8 @@
-import { getUser } from '@/api/modules/users'
-import { createContext, useContext, useEffect, useState } from 'react'
 import BreezyLoader from '@/Components/Utils/BreezyLoader'
+
+import { getCurrentUserInfo } from '@/api/modules/users'
+
+import { createContext, useContext, useEffect, useState } from 'react'
 
 // Création du contexte
 const AuthAttributesContext = createContext(null)
@@ -14,7 +16,7 @@ export const AuthAttributesProvider = ({ children }) => {
     setHasError(false)
     setIsLoading(true)
     try {
-      const response = await getUser()
+      const response = await getCurrentUserInfo()
       console.log("Attributs de l'utilisateur récupérés:", response)
       setUserAttributes(response)
     } catch (err) {
