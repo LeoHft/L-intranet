@@ -27,7 +27,7 @@ Route::middleware('jwt')->group(function () {
     Route::get('getUserServices', 'App\Http\Controllers\ServicesController@getUserServices'); // Récupère un service
 
     //Catégories
-    Route::get('getCategories', 'App\Http\Controllers\CategoryController@getCategory'); // Récupère les catégories
+    Route::get('getAllCategory', 'App\Http\Controllers\CategoryController@getAllCategory'); // Récupère les catégories
 
     //Status
     Route::get('getStatus', 'App\Http\Controllers\StatusController@getStatus'); // Récupère les status

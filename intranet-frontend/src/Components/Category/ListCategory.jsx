@@ -3,9 +3,9 @@ import DangerButton from '@/Components/Utils/DangerButton';
 import Modal from '@/Components/Utils/Modal';
 
 import ModifyCategoryForm from '@/Components/Category/ModifyCategoryForm';
+import { getAllCategory, deleteCategory } from '@/api/modules/category';
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import dayjs from 'dayjs';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -13,19 +13,29 @@ import toast, { Toaster } from 'react-hot-toast';
 export default function ListCategory() {
     const [categoriesList, setCategoriesList] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [showModalModifyCategory, setShowModalModifyCategory] = useState(false);
     const [showModalDeleteCategory, setShowModalDeleteCategory] = useState(false);
 
 
     useEffect(() => {
-        axios.get('/api/getCategories')
-            .then(response => {
-                setCategoriesList(response.data);
-            })
-            .catch(error => {
-                toast.error('Erreur lors de la récupération des catégories');
-                console.error("Error fetching categories:", error);
-            });
+        setIsLoading(true);
+        
+        toast.promise(
+            getAllCategory(),
+            {
+                loading: 'Chargement des catégories...',
+                success: (response) => {
+                    setCategoriesList(response.data);
+                    setIsLoading(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    setIsLoading(false);
+                    return error.message;
+                }
+            }
+        );
     }, []);
 
     const ModifyCategory = (category) => {
@@ -40,16 +50,21 @@ export default function ListCategory() {
 
     const DeleteCategory = (e) => {
         e.preventDefault();
-        axios.delete(`/api/deleteCategory/${selectedCategory.id}`)
-            .then(response => {
-                toast.success('Catégorie supprimée avec succès');
-                setCategoriesList(categoriesList.filter(cat => cat.id !== selectedCategory.id));
-                setShowModalDeleteCategory(false);
-            })
-            .catch(error => {
-                console.error("Error deleting category:", error);
-                toast.error('Erreur lors de la suppression de la catégorie');
-            });
+        
+        toast.promise(
+            deleteCategory(selectedCategory.id),
+            {
+                loading: 'Suppression en cours...',
+                success: (response) => {
+                    setCategoriesList(categoriesList.filter(cat => cat.id !== selectedCategory.id));
+                    setShowModalDeleteCategory(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     }
 
     return (

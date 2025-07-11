@@ -1,7 +1,7 @@
-import { apiClient } from '../apiClient';
+import { apiClient } from '@/api/apiClient';
 
 
-
+// Vérification de l'authentication de l'utilisateur actuel
 export const getCurrentUserInfo = async () => {
   console.log("Récupération des informations de l'utilisateur connecté...");
   try {

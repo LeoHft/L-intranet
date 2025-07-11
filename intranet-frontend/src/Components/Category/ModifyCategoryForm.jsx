@@ -3,7 +3,7 @@ import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 
 import { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
+import { updateCategory } from '@/api/modules/category';
 import toast, { Toaster } from 'react-hot-toast';
 
 
@@ -35,19 +35,25 @@ export default function ModifyCategoryForm({ category, onClose }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.put(`/api/updateCategory/${category.id}`, {
-            name: data.name,
-            description: data.description,
-        })
-        .then(response => {
-            toast.success('Catégorie modifiée avec succès');
-            reset();
-            setShowingModifyCategoryModal(false);
-            onClose(); 
-        }).catch(error => {
-            console.error("Error modifying Category:", error);
-            toast.error('Erreur lors de la modification de la catégorie');
-        });
+        if (!data.name.trim()) {
+            toast.error('Le nom de la catégorie est requis');
+            return;
+        }
+
+        toast.promise(
+            updateCategory(data, category.id),
+            {
+                loading: 'Modification de la catégorie en cours ...',
+                success: (response) => {
+                    reset();
+                    setShowingModifyCategoryModal(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     };
 
     return (

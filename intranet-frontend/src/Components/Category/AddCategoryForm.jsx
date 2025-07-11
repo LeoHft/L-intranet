@@ -3,19 +3,22 @@ import Modal from '@/Components/Utils/Modal';
 import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 
+import { storeCategory } from '@/api/modules/category';
+
 import { useState, useRef } from 'react';
-import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function AddCategoryForm() {
+export default function AddCategoryForm({ onCategoryAdded }) {
     const [showingAddCategoryModal, setShowingAddCategoryModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const name = useRef();
+    const description = useRef();
     const [data, setData] = useState({
         name: '',
         description: '',
     });
-    const name = useRef();
-    const description = useRef();
+
 
     const reset = () => {
         setData({
@@ -28,20 +31,32 @@ export default function AddCategoryForm() {
         setShowingAddCategoryModal(true);
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        axios.post('/api/storeCategory', {
-            name: data.name,
-            description: data.description,
-        })
-        .then(response => {
-            reset();
-            setShowingAddCategoryModal(false);
-            toast.success('Catégorie ajoutée avec succès');
-        }).catch(error => {
-            console.error("Error adding Category:", error);
-            toast.error('Erreur lors de l\'ajout de la catégorie');
-        });
+        
+        if (!data.name.trim()) { // Si pas de texte, alors renvoie true
+            toast.error('Le nom de la catégorie est requis');
+            return;
+        }
+
+        setIsLoading(true);
+        
+        toast.promise(
+            storeCategory(data),
+            {
+                loading: 'Ajout de la catégorie en cours...',
+                success: (response) => {
+                    reset();
+                    setShowingAddCategoryModal(false);
+                    setIsLoading(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    setIsLoading(false);
+                    return error.message;
+                }
+            }
+        );
     }
 
     return (
@@ -78,8 +93,16 @@ export default function AddCategoryForm() {
                             placeholder="Description de la catégorie"
                         />
                     </div>
-                    <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-                        Valider
+                    <button 
+                        type="submit" 
+                        disabled={isLoading}
+                        className={`mt-4 px-4 py-2 rounded text-white ${
+                            isLoading 
+                                ? 'bg-gray-400 cursor-not-allowed' 
+                                : 'bg-blue-500 hover:bg-blue-600'
+                        }`}
+                    >
+                        {isLoading ? 'Ajout en cours...' : 'Valider'}
                     </button>
                     
                 </form>

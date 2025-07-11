@@ -18,9 +18,6 @@ function App() {
   const user = authContext?.userAttributes;
   const isAuth = !!user.connected;
   const isAdmin = !!user.is_admin;
-  console.log('App.jsx : ');
-  console.log(user);
-  console.log(isAdmin);
 
   return loading ? ( <BreezyLoader /> ) : (
     <>
