@@ -1,24 +1,28 @@
+import { getAllStatus } from '@/api/modules/status';
+
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import axios from 'axios';
+
 
 export default function StatusSelect({ selectedStatus, setSelectedStatus }) {
     const [statusOptions, setStatusOptions] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get("/api/getStatus")
-            .then((response) => {
-                setStatusOptions(response.data.map((status) => ({
-                    value: status.id,
-                    label: status.name, // Garde la majuscule
-                })));
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Erreur lors de la récupération des statuts:", error);
-                setLoading(false);
-            });
+        try {
+            getAllStatus()
+                .then((response) => {
+                    setStatusOptions(response.data.map((status) => ({
+                        value: status.id,
+                        label: status.name,
+                    })));
+                })
+        } catch (error) {
+            toast.error(error.message)
+        } finally {
+            setLoading(false);
+        }
+
     }, []);
 
     return (

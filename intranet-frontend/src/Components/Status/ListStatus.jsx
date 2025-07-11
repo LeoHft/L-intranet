@@ -3,9 +3,9 @@ import DangerButton from '@/Components/Utils/DangerButton';
 import Modal from '@/Components/Utils/Modal';
 
 import ModifyStatusForm from '@/Components/Status/ModifyStatusForm';
+import { getAllStatus, deleteStatus } from '@/api/modules/status';
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import dayjs from 'dayjs';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -18,14 +18,19 @@ export default function ListStatus() {
 
 
     useEffect(() => {
-        axios.get('/api/getStatus')
-            .then(response => {
-                setStatusList(response.data);
-            })
-            .catch(error => {
-                console.error("Error fetching Status:", error);
-                toast.error('Erreur lors de la récupération des statuts');
-            });
+        toast.promise(
+            getAllStatus(),
+            {
+                loading: 'Chargement des status ...',
+                success: (response) => {
+                    setStatusList(response.data);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     }, []);
 
     const ModifyStatus = (status) => {
@@ -40,16 +45,21 @@ export default function ListStatus() {
 
     const DeleteStatus = (e) => {
         e.preventDefault();
-        axios.delete(`/api/deleteStatus/${selectedStatus.id}`)
-            .then(response => {
-                toast.success('Statut supprimé avec succès');
-                setStatusList(StatusList.filter(stat => stat.id !== selectedStatus.id));
-                setShowModalDeleteStatus(false);
-            })
-            .catch(error => {
-                toast.error('Erreur lors de la suppression du statut');
-                console.error("Error deleting Status:", error);
-            });
+
+        toast.promise(
+            deleteStatus(selectedStatus.id),
+            {
+                loading: 'Suppression en cours ...',
+                success: (response) => {
+                    setStatusList(StatusList.filter(stat => stat.id !== selectedStatus.id));
+                    setShowModalDeleteStatus(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     }
 
     return (

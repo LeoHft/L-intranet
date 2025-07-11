@@ -30,7 +30,7 @@ Route::middleware('jwt')->group(function () {
     Route::get('getAllCategory', 'App\Http\Controllers\CategoryController@getAllCategory'); // Récupère les catégories
 
     //Status
-    Route::get('getStatus', 'App\Http\Controllers\StatusController@getStatus'); // Récupère les status
+    Route::get('getAllStatus', 'App\Http\Controllers\StatusController@getAllStatus'); // Récupère les status
 });
 
 

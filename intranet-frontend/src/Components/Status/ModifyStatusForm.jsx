@@ -2,8 +2,9 @@ import Modal from '@/Components/Utils/Modal';
 import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 
+import { updateStatus } from '@/api/modules/status';
+
 import { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 
@@ -35,19 +36,20 @@ export default function ModifyStatusForm({ status, onClose }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.put(`/api/updateStatus/${status.id}`, {
-            name: data.name,
-            description: data.description,
-        })
-        .then(response => {
-            toast.success('Statut modifié avec succès');
-            reset();
-            setShowingModifyStatusModal(false);
-            onClose(); 
-        }).catch(error => {
-            console.error("Error modifying status:", error);
-            toast.error('Erreur lors de la modification du statut');
-        });
+        toast.promise(
+            updateStatus(data, status.id),
+            {
+                loading: 'Modification du status en cours ...',
+                success: (response) => {
+                    reset();
+                    setShowingModifyStatusModal(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     };
 
     return (

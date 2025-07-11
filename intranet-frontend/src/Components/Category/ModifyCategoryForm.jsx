@@ -2,8 +2,9 @@ import Modal from '@/Components/Utils/Modal';
 import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 
-import { useEffect, useState, useRef } from 'react';
 import { updateCategory } from '@/api/modules/category';
+
+import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 

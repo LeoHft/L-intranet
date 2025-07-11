@@ -3,9 +3,10 @@ import Modal from '@/Components/Utils/Modal';
 import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 
+import { storeStatus } from '@/api/modules/status';
+
 import toast, { Toaster } from 'react-hot-toast';
 import { useState, useRef } from 'react';
-import axios from 'axios';
 
 
 export default function AddStatusForm() {
@@ -31,18 +32,26 @@ export default function AddStatusForm() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('/api/storeStatus', {
-            name: data.name,
-            description: data.description,
-        })
-        .then(response => {
-            toast.success('Statut ajouté avec succès');
-            reset();
-            setShowingAddStatusModal(false);
-        }).catch(error => {
-            console.error("Error adding Status:", error);
-            toast.error('Erreur lors de l\'ajout du statut');
-        });
+
+        if (!data.name.trim()) { // Si pas de texte, alors renvoie true
+            toast.error('Le nom du status est requis');
+            return;
+        }
+
+        toast.promise(
+            storeStatus(data),
+            {
+                loading: 'Ajout du status en cours ...',
+                success: (response) => {
+                    reset();
+                    setShowingAddStatusModal(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     }
 
     return (
