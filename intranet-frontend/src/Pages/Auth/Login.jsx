@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import TextInput from '@/Components/Utils/TextInput';
 
 import GuestLayout from '@/Layouts/GuestLayout';
+import { login, getCurrentUserInfo } from '@/api/modules/users'
 
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -20,59 +21,39 @@ export default function Login() {
         remember: false,
     });
     const [errors, setErrors] = useState({});
-    const [processing, setProcessing] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Gestion du titre de la page
     useEffect(() => {
         document.title = "Connexion - Intranet";
     }, []);
 
-    const reset = () => {
-        setData({
-            email: '',
-            password: '',
-            remember: false,
-        });
-        setErrors({});
-    };
 
     const submit = async (e) => {
         e.preventDefault();
-        setProcessing(true);
+        setIsLoading(true);
         setErrors({});
 
-        try {
-            const response = await axios.post('/api/login', {
-                email: data.email,
-                password: data.password,
-                remember: data.remember,
-            });
 
-            // Stocker le token JWT
-            localStorage.setItem('auth_token', response.data.token);
-            
-            // Configurer axios pour les futures requêtes
-            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-
-            toast.success('Connexion réussie !');
-            
-            // Redirection vers le dashboard
-            navigate('/dashboard');
-            
-        } catch (error) {
-            if (error.response && error.response.status === 422) {
-                setErrors(error.response.data.errors || {});
-                toast.error('Veuillez corriger les erreurs dans le formulaire');
-            } else if (error.response && error.response.status === 401) {
-                toast.error('Email ou mot de passe incorrect');
-            } else {
-                toast.error('Erreur lors de la connexion');
+        toast.promise(
+            login(data),
+            {
+                loading: 'Connexion en cours',
+                success: (response) => {
+                    localStorage.setItem('auth_token', response.data);
+                    getCurrentUserInfo();
+                    setData(prev => ({ ...prev, password: '' }));
+                    setIsLoading(false);
+                    window.location.href = '/dashboard';
+                    return response.message;
+                },
+                error: (error) => {
+                    setData(prev => ({ ...prev, password: '' }));
+                    setIsLoading(false);
+                    return error.message;
+                }
             }
-        } finally {
-            setProcessing(false);
-            // Reset du mot de passe seulement
-            setData(prev => ({ ...prev, password: '' }));
-        }
+        );
     };
 
     return (
@@ -136,8 +117,8 @@ export default function Login() {
                             Mot de passe oublié ?
                         </Link>
 
-                        <PrimaryButton className="ms-4 text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" disabled={processing}>
-                            {processing ? 'Connexion...' : 'Connexion'}
+                        <PrimaryButton className="ms-4 text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" disabled={isLoading}>
+                            {isLoading ? 'Connexion...' : 'Connexion'}
                         </PrimaryButton>
                     </div>
                 </form>

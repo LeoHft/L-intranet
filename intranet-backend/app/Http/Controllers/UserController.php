@@ -110,9 +110,18 @@ class UserController extends Controller
 
             $token = JWTAuth::claims(['is_admin' => $user->is_admin])->fromUser($user);
 
-            return response()->json(compact('token'));
+            return response()->json([
+                'message' => 'Utilisateur connecté avec succès',
+                'data' => $token
+            ], 200);
+
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not create token'], 500);
+            Log::error('Erreur lors de la connexion de l\'utilisateur: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Erreur lors de la connexion',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
         }
     }
 
