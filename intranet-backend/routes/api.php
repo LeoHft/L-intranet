@@ -58,5 +58,5 @@ Route::middleware(['jwt', 'admin'])->group(function() {
     Route::get('getUsers', 'App\Http\Controllers\UserController@getUsers'); // Récupère les utilisateurs
     Route::post('storeUser', 'App\Http\Controllers\UserController@store'); // Enregistre un utilisateur
     Route::put('updateUser/{id}', 'App\Http\Controllers\UserController@update'); // Modifie un utilisateur
-    Route::delete('deleteUser/{id}', 'App\Http\Controllers\UserController@destroy'); // Supprime un utilisateur
+    Route::delete('deleteUser/{id}', 'App\Http\Controllers\UserController@delete'); // Supprime un utilisateur
 });

@@ -5,16 +5,19 @@ import NavLink from '@/Components/Utils/NavLink';
 import ResponsiveNavLink from '@/Components/Utils/ResponsiveNavLink';
 
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
+import { logout } from '@/api/modules/users';
 
 import { useState, useEffect } from 'react';
 import { HouseWifi } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 
 
 export default function AuthenticatedLayout({ header, children }) {
     const authContext = useAuthAttributes();
     const user = authContext?.userAttributes;
     const location = useLocation();
+    const navigate = useNavigate();
 
     const [enabled, setEnabled] = useState(() => localStorage.getItem('enabled') === 'true');
 
@@ -23,6 +26,32 @@ export default function AuthenticatedLayout({ header, children }) {
     }, [enabled]);
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+
+    const handleLogout = async () => {
+        toast.promise(
+            logout(),
+            {
+                loading: 'Déconnexion en cours...',
+                success: (response) => {
+                    // Réinitialiser le contexte d'authentification
+                    if (authContext?.FetchUserAttributes) {
+                        authContext.FetchUserAttributes();
+                    }
+                    
+                    navigate('/login');
+                    return response.message;
+                },
+                error: (error) => {
+                    // Réinitialiser le contexte d'authentification
+                    if (authContext?.FetchUserAttributes) {
+                        authContext.FetchUserAttributes();
+                    }
+                    navigate('/login');
+                    return error.message;
+                }
+            }
+        );
+    };
 
     return (
         <ToggleContext.Provider value={{ enabled, setEnabled }}>
@@ -92,13 +121,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                         >
                                             Profile
                                         </Dropdown.Link>
-                                        <Dropdown.Link
-                                            to="/logout"
-                                            method="post"
-                                            as="button"
+                                        <button
+                                            onClick={handleLogout}
+                                            className="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                                         >
                                             Déconnexion
-                                        </Dropdown.Link>
+                                        </button>
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>
@@ -176,13 +204,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             <ResponsiveNavLink to="/profile/edit">
                                 Profile
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                method="post"
-                                to="/logout"
-                                as="button"
+                            <button
+                                onClick={handleLogout}
+                                className="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                             >
                                 Déconnexion
-                            </ResponsiveNavLink>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -197,6 +224,7 @@ export default function AuthenticatedLayout({ header, children }) {
             )}
 
             <main>{children}</main>
+            <Toaster />
         </div>
         </ToggleContext.Provider>
     );

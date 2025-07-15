@@ -3,6 +3,8 @@ import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
 import InputError from '@/Components/Utils/InputError';
 
+import { updateUser } from '@/api/modules/users';
+
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState, useRef } from 'react';
@@ -44,20 +46,25 @@ export default function ModifyUserForm({ user, onClose }) {
         e.preventDefault();
         setErrors({});
 
-        axios.put(`/api/updateUser/${user.id}`, {
-            name: data.name,
-            email: data.email,
-            is_admin: data.is_admin,
-        })
-        .then(response => {
-            toast.success('Utilisateur modifié avec succès');
-            reset();
-            setShowingModifyUserModal(false);
-            onClose(); 
-        }).catch(error => {
-            console.error("Error modifying user:", error);
-            toast.error('Erreur lors de la modification de l\'utilisateur');
-        });
+        toast.promise(
+            updateUser(data, user.id),
+            {
+                loading: 'Modification de l\'utilisateur ...',
+                success: (response) => {
+                    reset();
+                    setShowingModifyUserModal(false);
+                    onClose();   
+                    return response.message;
+                },
+                error: (error) => {
+                    // Gestion des erreurs de validation
+                    if (error.response?.data?.errors) {
+                        setErrors(error.response.data.errors);
+                    }
+                    return error.message;
+                }
+            }
+        );
     };
 
     return (
@@ -78,6 +85,7 @@ export default function ModifyUserForm({ user, onClose }) {
                         placeholder="Nom de l'utilisateur"
                         required
                     />
+                    <InputError message={errors.name} className="mt-2" />
                 </div>
                 <div>
                     <InputLabel htmlFor="email" value="Email*" />
@@ -91,6 +99,7 @@ export default function ModifyUserForm({ user, onClose }) {
                         placeholder="Email de l'utilisateur"
                         required
                     />
+                    <InputError message={errors.email} className="mt-2" />
                 </div>
                 <div className="mt-4 accent-black hover:green-500">
                     <input

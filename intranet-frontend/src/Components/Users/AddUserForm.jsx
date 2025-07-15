@@ -4,6 +4,8 @@ import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import TextInput from '@/Components/Utils/TextInput';
 import Modal from '@/Components/Utils/Modal';
 
+import { addUser } from '@/api/modules/users';
+
 import { useState } from 'react';
 import axios from 'axios';
 import toast, {Toaster} from 'react-hot-toast';
@@ -40,28 +42,20 @@ export default function AddUserForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setErrors({}); // Reset des erreurs
-        
-        axios.post('/api/storeUser', {
-            name: data.name,
-            email: data.email,
-            password: data.password,
-            password_confirmation: data.password_confirmation,
-            'is_admin': data.is_admin,
-        })
-        .then(response => {
-            reset();
-            toast.success('Utilisateur ajouté avec succès');
-        }).catch(error => {
-            console.error("Error adding User:", error);
-            
-            // Gestion des erreurs de validation
-            if (error.response && error.response.status === 422) {
-                setErrors(error.response.data.errors || {});
-                toast.error('Veuillez corriger les erreurs dans le formulaire');
-            } else {
-                toast.error('Erreur lors de l\'ajout de l\'utilisateur');
+
+        toast.promise(
+            addUser(data),
+            {
+                loading: 'Ajout de l\'utilisateur ...',
+                success: (response) => {
+                    reset();
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
             }
-        });
+        );
     }
 
 

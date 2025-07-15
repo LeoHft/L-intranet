@@ -12,7 +12,7 @@ class StatusController extends Controller
             $status = Status::all();
 
             return response()->json([
-                'message' => 'Récupération avec succès de tous les status',
+                'message' => 'Status récupérés avec succès',
                 'data' => $status
             ], 200);
 

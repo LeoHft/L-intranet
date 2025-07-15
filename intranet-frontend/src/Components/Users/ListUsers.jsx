@@ -4,6 +4,7 @@ import DangerButton from '@/Components/Utils/DangerButton';
 import Modal from '@/Components/Utils/Modal';
 
 import ModifyUserForm from '@/Components/Users/ModifyUserForm';
+import { getUsers, deleteUser } from '@/api/modules/users';
 
 import toast, { Toaster } from 'react-hot-toast';
 import React, { useState, useEffect } from 'react';
@@ -19,15 +20,19 @@ export default function ListUsers() {
 
 
     useEffect(() => {
-        axios.get('/api/getUsers')
-            .then(response => {
-                console.log("Users fetched:", response.data); // Debugging line
-                setUsersList(response.data);
-            })
-            .catch(error => {
-                toast.error('Erreur lors de la récupération des utilisateurs');
-                console.error("Error fetching users:", error);
-            });
+        toast.promise(
+            getUsers(),
+            {
+                loading: 'Chargement des utilisateurs ...',
+                success: (response) => {
+                    setUsersList(response.data);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     }, []);
 
     const ModifyUser = (user) => {
@@ -42,16 +47,20 @@ export default function ListUsers() {
 
     const DeleteUsers = (e) => {
         e.preventDefault();
-        axios.delete(`/api/deleteUser/${selectedUser.id}`)
-            .then(response => {
-                toast.success('Utilisateurs supprimé avec succès');
-                setUsersList(usersList.filter(use => use.id !== selectedUser.id));
-                setShowModalDeleteUser(false);
-            })
-            .catch(error => {
-                console.error("Error deleting user:", error);
-                toast.error('Erreur lors de la suppression de l\'utilisateur');
-            });
+        toast.promise(
+            deleteUser(selectedUser.id),
+            {
+                loading: 'Suppression de l\'utilisateur en cours ...',
+                success: (response) => {
+                    setUsersList(usersList.filter(use => use.id !== selectedUser.id));
+                    setShowModalDeleteUser(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     }
 
     return (

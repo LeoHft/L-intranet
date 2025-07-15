@@ -1,3 +1,5 @@
+import { getUsers } from '@/api/modules/users';
+
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import axios from 'axios';
@@ -6,7 +8,7 @@ export default function UsersSelect({ selectedUsers, setSelectedUsers }) {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        axios.get("/api/getUsers")
+            getUsers()
             .then((response) => {
                 setUsers(response.data.map((users) => ({
                     value: users.id,

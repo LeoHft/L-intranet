@@ -17,7 +17,7 @@ class UserController extends Controller
     /**
      * Récupérer tous les utilisateurs (admin seulement)
      */
-    public function getUser()
+    public function getUsers()
     {
         try {
             // Vérifier que l'utilisateur est authentifié
@@ -34,10 +34,18 @@ class UserController extends Controller
 
             $users = User::select('id', 'name', 'email', 'created_at', 'updated_at','is_admin')->with('services')->get();
 
-            return response()->json($users);
+            return response()->json([
+                'message' => 'Utilisateurs récupérés avec succès',
+                'data' => $users
+            ], 200);
             
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Invalid token'], 401);
+            Log::error('Erreur lors de la récupération des informations des utilisateurs: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Erreur lors de la récupération des informations des utilisateurs',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
         }
     }
 
@@ -54,6 +62,7 @@ class UserController extends Controller
             }
 
             return response()->json([
+                'message' => 'Informations de l\'utilisateur récupérées avec succès',
                 'connected' => true,
                 'id' => $user->id,
                 'name' => $user->name,
@@ -62,38 +71,13 @@ class UserController extends Controller
             ]);
             
         } catch (JWTException $e) {
-            return response()->json(['connected' => false]);
+            return response()->json([
+                'connected' => false,
+                'message' => 'Erreur lors de la récupération des informations de l\'utilisateur',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+        ]);
         }
     }
-
-    
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'is_admin' => 'boolean',
-        ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $user = User::create([
-            'name' => $request->get('name'),
-            'email' => $request->get('email'),
-            'password' => Hash::make($request->get('password')),
-            'is_admin' => $request->get('is_admin', false), 
-        ]);
-
-        // $token = JWTAuth::fromUser($user);
-
-        // return response()->json(compact('user','token'), 201);
-
-        return response()->json($user, 201); //TODO Attention à ce que ça ne renvoie pas le mot de passe
-    }
-
 
 
     public function login(Request $request)
@@ -124,30 +108,123 @@ class UserController extends Controller
             ], 500);
         }
     }
+    
+
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+            'is_admin' => 'required|boolean',
+        ]);
+
+        try {
+            $user = User::create($validatedData);
+
+            return response()->json([
+                'message' => 'Utilisateur créé avec succès',
+                'data' => $user->makeHidden('password')
+            ], 201);
+
+        } catch (JWTException $e) {
+            Log::error('Erreur lors de l\'ajout de l\'utilisateur: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Erreur lors de l\'ajout de l\'utilisateur',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
+        }
+    }
 
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-        $user->update($request->all());
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id, // Vérifie que le mail est unique dans la table users, colonne , email mais ignore l'enregistrement avec l'ID $id
+            'is_admin' => 'required|boolean',
+        ]);
 
-        return response()->json($user, 200);
+        try {
+            $user = User::findOrFail($id);
+
+            $user->update($validatedData);
+
+            return response()->json([
+                'message' => 'Utilisateur modifié avec succès',
+                'data' => $user->fresh()
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la mise à jour de l\'utilisateur: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Erreur lors de la mise à jour de l\'utilisateur',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
+        }
     }
 
     
-    public function destroy($id)
+    public function delete($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
+        try {
+            // Vérifier que l'utilisateur est authentifié
+            $user = JWTAuth::parseToken()->authenticate();
+            
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
 
-        return response()->json(null, 204);
+            // Vérifier que l'utilisateur est admin
+            if (!$user->is_admin) {
+                return response()->json(['error' => 'Unauthorized - Admin access required'], 403);
+            }
+
+            $user = User::findOrFail($id);
+            $user->delete();
+
+            return response()->json([
+                'message' => 'Utilisateur supprimé avec succès',
+            ], 200);
+        } catch (JWTException $e) {
+            Log::error('Erreur lors de la suppression de l\'utilisateur: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Erreur lors de la suppression de l\'utilisateur',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
+        }
     }
 
 
     public function logout()
     {
-        JWTAuth::invalidate(JWTAuth::getToken());
+        try {
+            // Récupérer le token depuis l'en-tête Authorization
+            $token = JWTAuth::parseToken();
+            
+            if (!$token) {
+                return response()->json([
+                    'message' => 'Token non fourni'
+                ], 401);
+            }
 
-        return response()->json(['message' => 'Successfully logged out']);
+            // Invalider le token
+            JWTAuth::invalidate($token);
+
+            return response()->json([
+                'message' => 'Déconnexion réussie'
+            ], 200);
+
+        } catch (JWTException $e) {
+            Log::error('Erreur lors de la déconnexion: ' . $e->getMessage());
+            
+            return response()->json([
+                'message' => 'Erreur lors de la déconnexion',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
+        }
     }
 }

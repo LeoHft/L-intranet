@@ -15,7 +15,7 @@ class CategoryController extends Controller
             $categories = Categories::all();
 
             return response()->json([
-                'message' => 'Récupération avec succès de toutes les catégories',
+                'message' => 'Catégories récupérées avec succès',
                 'data' => $categories
             ], 200);
 
