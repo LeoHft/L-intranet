@@ -1,5 +1,4 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 
@@ -29,9 +28,6 @@ export default function Edit({ mustVerifyEmail, status }) {
                         <UpdatePasswordForm/>
                     </div>
 
-                    <div>
-                        <DeleteUserForm/>
-                    </div>
                 </div>
             </div>
         </AuthenticatedLayout>

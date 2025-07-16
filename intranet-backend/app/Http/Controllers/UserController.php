@@ -166,6 +166,74 @@ class UserController extends Controller
         }
     }
 
+
+    public function updateCurrentUser(Request $request)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ]);
+
+        try {
+            $user->update($validatedData);
+
+            return response()->json([
+                'message' => 'Informations de l\'utilisateur mises à jour avec succès',
+                'data' => $user->fresh()
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la mise à jour des informations de l\'utilisateur: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Erreur lors de la mise à jour des informations de l\'utilisateur',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
+        }
+    }
+
+
+    public function updateCurrentUserPassword(Request $request)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => ['required', 'string', 'min:6', 'confirmed', Rules\Password::defaults()], // Utilise les règles de mot de passe par défaut de Laravel qui sont configurées dans config/auth.php
+        ]);
+
+        if (!Hash::check($validatedData['current_password'], $user->password)) {
+            return response()->json(['error' => 'Current password is incorrect'], 400);
+        }
+
+        try {
+            $user->password = Hash::make($validatedData['new_password']);
+            $user->save();
+
+            return response()->json([
+                'message' => 'Mot de passe mis à jour avec succès'
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la mise à jour du mot de passe de l\'utilisateur: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Erreur lors de la mise à jour du mot de passe',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
+        }
+    }
+
     
     public function delete($id)
     {

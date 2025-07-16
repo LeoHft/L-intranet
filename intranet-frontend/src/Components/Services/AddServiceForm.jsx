@@ -6,8 +6,8 @@ import TextInput from '@/Components/Utils/TextInput';
 import CategorySelect from '@/Components/Category/CategorySelect';
 import StatusSelect from '@/Components/Status/StatusSelect';
 import UsersSelect from '@/Components/Users/UsersSelect';
+import { storeService } from '@/api/modules/services';
 
-import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState, useRef } from 'react';
 
@@ -65,19 +65,20 @@ export default function AddServiceForm() {
         formData.append('user_id', JSON.stringify(selectedUsers.map(user => user.value)));
         formData.append('status_id', selectedStatus?.value || '');
     
-        axios.post('/api/storeService', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        })
-        .then(response => {
-            toast.success('Service ajouté avec succès');
-            console.log("Service ajouté :", response.data);
-            reset();
-            setShowingAddServiceModal(false);
-        })
-        .catch(error => {
-            toast.error('Erreur lors de l\'ajout du service');
-            console.error("Erreur :", error);
-        });
+        toast.promise(
+            storeService(formData),
+            {
+                loading: 'Ajout du service en cours ...',
+                success: (response) => {
+                    reset();
+                    setShowingAddServiceModal(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     }
 
     return (

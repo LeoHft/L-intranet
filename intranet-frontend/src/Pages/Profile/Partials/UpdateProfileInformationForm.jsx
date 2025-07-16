@@ -3,14 +3,14 @@ import InputLabel from '@/Components/Utils/InputLabel';
 import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import TextInput from '@/Components/Utils/TextInput';
 
+import { useAuthAttributes } from '@/context/AuthAttributsContext';
+import { updateCurrentUser } from '@/api/modules/users';
+
 import { Transition } from '@headlessui/react';
 import { useState, useEffect } from 'react';
-import { useAuthAttributes } from '@/context/AuthAttributsContext';
+import toast, { Toaster } from 'react-hot-toast';
 
-export default function UpdateProfileInformation({
-    mustVerifyEmail,
-    status,
-}) {
+export default function UpdateProfileInformation() {
     const authContext = useAuthAttributes();
     const user = authContext?.userAttributes;
 
@@ -19,8 +19,6 @@ export default function UpdateProfileInformation({
         email: user?.email || '',
     });
     const [processing, setProcessing] = useState(false);
-    const [errors, setErrors] = useState({});
-    const [recentlySuccessful, setRecentlySuccessful] = useState(false);
 
     // Mettre à jour les données si l'utilisateur change
     useEffect(() => {
@@ -32,64 +30,27 @@ export default function UpdateProfileInformation({
         }
     }, [user]);
 
-    const sendVerificationEmail = async () => {
-        try {
-            const response = await fetch('/api/auth/email/verification-notification', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
-
-            if (response.ok) {
-                // Vous pouvez gérer le succès ici
-                console.log('Verification email sent');
-            }
-        } catch (error) {
-            console.error('Error sending verification email:', error);
-        }
-    };
-
     const submit = async (e) => {
         e.preventDefault();
         setProcessing(true);
-        setErrors({});
 
-        try {
-            const response = await fetch('/api/profile/update', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (response.ok) {
-                const updatedUser = await response.json();
-                
-                // Mettre à jour le contexte d'authentification
-                if (authContext?.setUserAttributes) {
-                    authContext.setUserAttributes(updatedUser.user || updatedUser);
-                }
-
-                // Mettre à jour localStorage
-                localStorage.setItem('user', JSON.stringify(updatedUser.user || updatedUser));
-
-                // Afficher le message de succès
-                setRecentlySuccessful(true);
-                setTimeout(() => setRecentlySuccessful(false), 3000);
-            } else {
-                const errorData = await response.json();
-                setErrors(errorData.errors || { general: ['Update failed'] });
-            }
-        } catch (error) {
-            console.error('Error updating profile:', error);
-            setErrors({ general: ['An error occurred. Please try again.'] });
-        } finally {
+        const handleSuccess = (response) => {
+            authContext.FetchUserAttributes(); // Met à jour les attributs de l'utilisateur dans le contexte
             setProcessing(false);
-        }
+            return response.message;
+        };
+
+        toast.promise(
+            updateCurrentUser(data),
+            {
+                loading: 'Modification de votre profil en cours',
+                success: handleSuccess,
+                error: (error) => {
+                    setProcessing(false);
+                    return error.message;
+                }
+            }
+        );
     };
 
     return (
@@ -118,7 +79,6 @@ export default function UpdateProfileInformation({
                         autoComplete="name"
                     />
 
-                    <InputError className="mt-2" message={errors.name?.[0]} />
                 </div>
 
                 <div>
@@ -134,48 +94,11 @@ export default function UpdateProfileInformation({
                         autoComplete="username"
                     />
 
-                    <InputError className="mt-2" message={errors.email?.[0]} />
                 </div>
 
-                {mustVerifyEmail && user?.email_verified_at === null && (
-                    <div>
-                        <p className="mt-2 text-sm text-gray-800">
-                            Votre adresse e-mail n'est pas vérifiée.
-                            <button
-                                type="button"
-                                onClick={sendVerificationEmail}
-                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ml-1"
-                            >
-                                Cliquez ici pour renvoyer l'e-mail de vérification.
-                            </button>
-                        </p>
-
-                        {status === 'verification-link-sent' && (
-                            <div className="mt-2 text-sm font-medium text-green-600">
-                                Un nouveau lien de vérification a été envoyé à votre adresse e-mail.
-                            </div>
-                        )}
-                    </div>
-                )}
 
                 <div className="flex items-center gap-4">
                     <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
-
-                    {errors.general && (
-                        <InputError message={errors.general[0]} />
-                    )}
-
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-gray-600">
-                            Enregistré.
-                        </p>
-                    </Transition>
                 </div>
             </form>
         </section>

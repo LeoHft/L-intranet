@@ -2,6 +2,8 @@ import Modal from '@/Components/Utils/Modal';
 import { ToggleContext } from '@/Components/Utils/ToggleContext';
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
 
+import { getUserServices } from '@/api/modules/services';
+
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -17,14 +19,19 @@ export default function CardServices() {
     const [selectedService, setSelectedService] = useState(null);
 
     useEffect(() => {
-        axios.get('/api/getUserServices')
-        .then (response => {
-            setServicesList(response.data);
-        })
-        .catch (error => {
-            console.error("Error fetching services:", error);
-            toast.error('Erreur lors de la récupération des services');
-        });
+        toast.promise(
+            getUserServices(),
+            {
+                loading: 'Chargements des services ...',
+                success: (response) => {
+                    setServicesList(response.data);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     }, []);
 
     const DetailService = (service) => {

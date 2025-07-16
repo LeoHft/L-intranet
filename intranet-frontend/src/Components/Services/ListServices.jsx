@@ -4,9 +4,9 @@ import DangerButton from '@/Components/Utils/DangerButton';
 import Modal from '@/Components/Utils/Modal';
 
 import ModifyServiceForm from '@/Components/Services/ModifyServiceForm';
+import { getAllServices, deleteService } from '@/api/modules/services';
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 
@@ -17,15 +17,19 @@ export default function ListServices() {
     const [showModalDeleteService, setShowModalDeleteService] = useState(false);
 
     useEffect(() => {
-        axios.get('/api/getServices')
-            .then(response => {
-                console.log("Services fetched:", response.data); // Debugging line
-                setServicesList(response.data);
-            })
-            .catch(error => {
-                console.error("Error fetching services:", error);
-                toast.error('Erreur lors de la récupération des services');
-            });
+        toast.promise(
+            getAllServices(),
+            {
+                loading: 'Chargement des services ...',
+                success: (response) => {
+                    setServicesList(response.data);
+                    return response.message
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     }, []);
 
     const modifyService = (service) => {
@@ -38,18 +42,22 @@ export default function ListServices() {
         setShowModalDeleteService(true);
     };
 
-    const deleteService = (e) => {
+    const deleteServiceForm = (e) => {
         e.preventDefault();
-        axios.delete(`/api/deleteService/${selectedService.id}`)
-            .then(response => {
-                toast.success('Service supprimé avec succès');
-                setServicesList(servicesList.filter(service => service.id !== selectedService.id));
-                setShowModalDeleteService(false);
-            })
-            .catch(error => {
-                toast.error('Erreur lors de la suppression du service');
-                console.error("Error deleting service:", error);
-            });
+        toast.promise(
+            deleteService(selectedService.id),
+            {
+                loading: 'Chargement des services ...',
+                success: (response) => {
+                    setServicesList(servicesList.filter(service => service.id !== selectedService.id));
+                    setShowModalDeleteService(false);
+                    return response.message
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     };
 
     return (
@@ -132,7 +140,7 @@ export default function ListServices() {
             )}
 
             <Modal show={showModalDeleteService} onClose={() => setShowModalDeleteService(false)}>
-                <form onSubmit={deleteService} className="mt-6 p-6 space-y-6">
+                <form onSubmit={deleteServiceForm} className="mt-6 p-6 space-y-6">
                     <h1 className="text-lg font-medium text-gray-900">
                         Supprimer un service
                     </h1>

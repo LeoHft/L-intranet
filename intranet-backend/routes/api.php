@@ -20,8 +20,10 @@ Route::get('getCurrentUserInfo', 'App\Http\Controllers\UserController@getCurrent
 // Pour les users normaux authentifiés
 Route::middleware('jwt')->group(function () {
 
-    //Logout
+    //User
     Route::post('logout', [UserController::class, 'logout']);
+    Route::put('updateCurrentUser', 'App\Http\Controllers\UserController@updateCurrentUser'); // Met à jour les informations de l'utilisateur actuel
+    Route::put('updateCurrentUserPassword', 'App\Http\Controllers\UserController@updateCurrentUserPassword'); // Met à jour le mot de passe de l'utilisateur actuel
 
     //Services
     Route::get('getUserServices', 'App\Http\Controllers\ServicesController@getUserServices'); // Récupère un service
@@ -41,7 +43,7 @@ Route::middleware(['jwt', 'admin'])->group(function() {
     //Services
     Route::get('getServices', 'App\Http\Controllers\ServicesController@getServices'); // Récupère les services
     Route::post('storeService', 'App\Http\Controllers\ServicesController@store'); // Enregistre un service 
-    Route::put('updateService/{id}', 'App\Http\Controllers\ServicesController@update'); // Modifie un service
+    Route::post('updateService/{id}', 'App\Http\Controllers\ServicesController@update'); // Modifie un service
     Route::delete('deleteService/{id}', 'App\Http\Controllers\ServicesController@destroy'); // Supprime un service
 
     //Catégories

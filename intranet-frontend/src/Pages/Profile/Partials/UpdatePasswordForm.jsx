@@ -3,23 +3,25 @@ import InputLabel from '@/Components/Utils/InputLabel';
 import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import TextInput from '@/Components/Utils/TextInput';
 
-import { Transition } from '@headlessui/react';
+import { useAuthAttributes } from '@/context/AuthAttributsContext';
+import { updateCurrentUserPassword } from '@/api/modules/users';
+
 import { useRef, useState } from 'react';
-import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function UpdatePasswordForm() {
+    const authContext = useAuthAttributes();
+    const user = authContext?.userAttributes;
     const passwordInput = useRef();
     const currentPasswordInput = useRef();
     
     const [data, setData] = useState({
         current_password: '',
-        password: '',
-        password_confirmation: '',
+        new_password: '',
+        new_password_confirmation: '',
     });
-    const [errors, setErrors] = useState({});
     const [processing, setProcessing] = useState(false);
-    const [recentlySuccessful, setRecentlySuccessful] = useState(false);
+
 
     const reset = (fields = null) => {
         if (fields) {
@@ -37,8 +39,8 @@ export default function UpdatePasswordForm() {
             // Reset complet
             setData({
                 current_password: '',
-                password: '',
-                password_confirmation: '',
+                new_password: '',
+                new_password_confirmation: '',
             });
         }
     };
@@ -46,47 +48,24 @@ export default function UpdatePasswordForm() {
     const updatePassword = async (e) => {
         e.preventDefault();
         setProcessing(true);
-        setErrors({});
 
-        try {
-            await axios.put('/api/password', {
-                current_password: data.current_password,
-                password: data.password,
-                password_confirmation: data.password_confirmation,
-            });
-
-            toast.success('Mot de passe mis à jour avec succès');
-            setRecentlySuccessful(true);
-            reset();
-
-            // Masquer le message de succès après 3 secondes
-            setTimeout(() => {
-                setRecentlySuccessful(false);
-            }, 3000);
-
-        } catch (error) {
-            if (error.response && error.response.status === 422) {
-                const responseErrors = error.response.data.errors || {};
-                setErrors(responseErrors);
-
-                // Gestion du focus selon les erreurs
-                if (responseErrors.password) {
-                    reset(['password', 'password_confirmation']);
-                    passwordInput.current?.focus();
-                }
-
-                if (responseErrors.current_password) {
-                    reset('current_password');
-                    currentPasswordInput.current?.focus();
-                }
-
-                toast.error('Veuillez corriger les erreurs dans le formulaire');
-            } else {
-                toast.error('Erreur lors de la mise à jour du mot de passe');
-            }
-        } finally {
+        const handleSuccess = (response) => {
+            authContext.FetchUserAttributes(); // Met à jour les attributs de l'utilisateur dans le contexte
             setProcessing(false);
-        }
+            return response.message;
+        };
+
+        toast.promise(
+            updateCurrentUserPassword(data),
+            {
+                loading: 'Modification de votre profil en cours',
+                success: handleSuccess,
+                error: (error) => {
+                    setProcessing(false);
+                    return error.message;
+                }
+            }
+        );
     };
 
     return (
@@ -119,10 +98,6 @@ export default function UpdatePasswordForm() {
                         autoComplete="current-password"
                     />
 
-                    <InputError
-                        message={errors.current_password}
-                        className="mt-2"
-                    />
                 </div>
 
                 <div>
@@ -131,14 +106,13 @@ export default function UpdatePasswordForm() {
                     <TextInput
                         id="password"
                         ref={passwordInput}
-                        value={data.password}
-                        onChange={(e) => setData({ ...data, password: e.target.value })}
+                        value={data.new_password}
+                        onChange={(e) => setData({ ...data, new_password: e.target.value })}
                         type="password"
                         className="mt-1 block w-full"
                         autoComplete="new-password"
                     />
 
-                    <InputError message={errors.password} className="mt-2" />
                 </div>
 
                 <div>
@@ -149,35 +123,20 @@ export default function UpdatePasswordForm() {
 
                     <TextInput
                         id="password_confirmation"
-                        value={data.password_confirmation}
+                        value={data.new_password_confirmation}
                         onChange={(e) =>
-                            setData({ ...data, password_confirmation: e.target.value })
+                            setData({ ...data, new_password_confirmation: e.target.value })
                         }
                         type="password"
                         className="mt-1 block w-full"
                         autoComplete="new-password"
                     />
 
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
                 </div>
 
                 <div className="flex items-center gap-4">
                     <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
 
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-gray-600">
-                            Enregistré.
-                        </p>
-                    </Transition>
                 </div>
             </form>
             <Toaster />

@@ -13,7 +13,7 @@ export const getCurrentUserInfo = async () => {
     return response.data;
 
   } catch (error) {
-    const message = error.response?.data?.message || "Erreur lors de la récupération de l'utilisateur";
+    const message = error.response?.data?.message || "Erreur cliente lors de la récupération de l'utilisateur";
     console.error(error.response?.data?.error);
     throw new Error(message);
   }
@@ -31,7 +31,7 @@ export const getUsers = async () => {
     return response.data;
 
   } catch (error) {
-    const message = error.response?.data?.message || "Erreur lors de la récupération des utilisateurs";
+    const message = error.response?.data?.message || "Erreur cliente lors de la récupération des utilisateurs";
     console.error(error.response?.data?.error);
     throw new Error(message);
   }
@@ -44,7 +44,7 @@ export const login = async (loginData) => {
     const response = await apiClient.post('/login', loginData)
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || "Erreur lors de la connexion de l'utilisateur";
+    const message = error.response?.data?.message || "Erreur cliente lors de la connexion de l'utilisateur";
     console.error(error.response?.data?.error);
     throw new Error(message);
   }
@@ -61,7 +61,7 @@ export const addUser = async (userData) => {
     });
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || "Erreur lors de l'ajout de l'utilisateur";
+    const message = error.response?.data?.message || "Erreur cliente lors de l'ajout de l'utilisateur";
     console.error(error.response?.data?.error);
     throw new Error(message);
   }
@@ -78,7 +78,41 @@ export const updateUser = async (userData, userId) => {
     });
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || "Erreur lors de la modification de l'utilisateur";
+    const message = error.response?.data?.message || "Erreur cliente lors de la modification de l'utilisateur";
+    console.error(error.response?.data?.error);
+    throw new Error(message);
+  }
+}
+
+
+export const updateCurrentUser = async (userData) => {
+  console.log("Modification de l\'utilisateur actuel en cours ...");
+  try {
+    const response = await apiClient.put('/updateCurrentUser', userData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || "Erreur cliente lors de la modification de l'utilisateur";
+    console.error(error.response?.data?.error);
+    throw new Error(message);
+  }
+}
+
+
+export const updateCurrentUserPassword = async (userData) => {
+  console.log("Modification du mdp de l\'utilisateur actuel en cours ...");
+  try {
+    const response = await apiClient.put('/updateCurrentUserPassword', userData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || "Erreur cliente lors de la modification du mot de passe de l'utilisateur";
     console.error(error.response?.data?.error);
     throw new Error(message);
   }
@@ -95,7 +129,7 @@ export const deleteUser = async (userId) => {
     });
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || "Erreur lors de la suppression de l'utilisateur";
+    const message = error.response?.data?.message || "Erreur cliente lors de la suppression de l'utilisateur";
     console.error(error.response?.data?.error);
     throw new Error(message);
   }
@@ -117,7 +151,7 @@ export const logout = async () => {
   } catch (error) {
     localStorage.removeItem("auth_token");
     
-    const message = error.response?.data?.message || "Erreur lors de la déconnexion";
+    const message = error.response?.data?.message || "Erreur cliente lors de la déconnexion";
     console.error(error.response?.data?.error);
     throw new Error(message);
   }

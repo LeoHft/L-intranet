@@ -6,13 +6,18 @@ import CategorySelect from '@/Components/Category/CategorySelect';
 import StatusSelect from '@/Components/Status/StatusSelect';
 import UsersSelect from '@/Components/Users/UsersSelect';
 
+import { editService } from '@/api/modules/services';
+
 import { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 
 export default function ModifyServiceForm({ service, onClose }) {
     const [showingModifyServiceModal, setShowingModifyServiceModal] = useState(true);
+    const name = useRef();
+    const description = useRef();
+    const internal_url = useRef();
+    const external_url = useRef();
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [selectedStatus, setSelectedStatus] = useState(null);
@@ -28,7 +33,7 @@ export default function ModifyServiceForm({ service, onClose }) {
         status: null,
     });
 
-    const reset =  () => {
+    const reset = () => {
         setData({
             name: '',
             description: '',
@@ -65,10 +70,9 @@ export default function ModifyServiceForm({ service, onClose }) {
         }
     }, [service]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();   
+    const handleSubmit = (e) => {
+        e.preventDefault();
         const formData = new FormData();
-        formData.append('_method', 'PUT'); 
         formData.append('name', data.name);
         formData.append('description', data.description);
         formData.append('internal_url', data.internal_url);
@@ -78,28 +82,28 @@ export default function ModifyServiceForm({ service, onClose }) {
         }
         formData.append('category_id', JSON.stringify(selectedCategories.map(cat => cat.value)));
         formData.append('user_id', JSON.stringify(selectedUsers.map(user => user.value)));
-        formData.append('status_id', selectedStatus?.value || '');
-    
-        try {
-            await axios.post(`/api/updateService/${service.id}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-    
-            toast.success('Service modifié avec succès');
-            reset();
-            setShowingModifyServiceModal(false);
-            onClose();
-        } catch (error) {
-            console.error("Erreur lors de la modification du service:", error);
-            toast.error('Erreur lors de la modification du service');
-        }
+        formData.append('status_id', selectedStatus?.value);
+
+        toast.promise(
+            editService(formData, service.id),
+            {
+                loading: 'Modification du service en cours ...',
+                success: (response) => {
+                    reset();
+                    setShowingModifyServiceModal(false);
+                    return response.message;
+                },
+                error: (error) => {
+                    return error.message;
+                }
+            }
+        );
     };
     
 
     return (
         <Modal show={showingModifyServiceModal} onClose={() => { setShowingModifyServiceModal(false); onClose(); }}>
-            <div className="max-h-[90vh] overflow-y-auto">
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
                 <h1 className="text-lg font-medium text-gray-900">
                     Modifier un service
                 </h1>
@@ -107,6 +111,7 @@ export default function ModifyServiceForm({ service, onClose }) {
                     <InputLabel htmlFor="name" value="Nom du service*" />
                     <TextInput
                         id="name"
+                        ref={name}
                         value={data.name}
                         onChange={(e) => setData({ ...data, name: e.target.value})}
                         type="text"
@@ -119,6 +124,7 @@ export default function ModifyServiceForm({ service, onClose }) {
                     <InputLabel htmlFor="description" value="Description max: 255" />
                     <textarea
                         id="description"
+                        ref={description}
                         value={data.description}
                         onChange={(e) => setData({ ...data, description: e.target.value})}
                         type="text"
@@ -130,6 +136,7 @@ export default function ModifyServiceForm({ service, onClose }) {
                     <InputLabel htmlFor="internal_url" value="Url interne" />
                     <TextInput
                         id="internal_url"
+                        ref={internal_url}
                         value={data.internal_url}
                         onChange={(e) => setData({ ...data, internal_url: e.target.value})}
                         type="text"
@@ -141,6 +148,7 @@ export default function ModifyServiceForm({ service, onClose }) {
                     <InputLabel htmlFor="external_url" value="Url externe" />
                     <TextInput
                         id="external_url"
+                        ref={external_url}
                         value={data.external_url}
                         onChange={(e) => setData({ ...data, external_url: e.target.value})}
                         type="text"
@@ -179,7 +187,6 @@ export default function ModifyServiceForm({ service, onClose }) {
                     Valider
                 </button>
             </form>
-            </div>
             <Toaster />
         </Modal>
     );
