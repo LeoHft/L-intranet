@@ -22,14 +22,12 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        DB::table('categories')->insertOrIgnore(
-            ['name' => 'Multimédia'],
-            [
+        DB::table('categories')->insertOrIgnore([
+            'name' => 'Multimédia',
             'description' => "Tout ce qui est multimédia",
             'created_at' => now(),
             'updated_at' => now(),
-            ]
-        );
+        ]);
 
         DB::table('status')->insertOrIgnore([
             'name' => 'UP',
