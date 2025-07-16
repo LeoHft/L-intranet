@@ -8,8 +8,7 @@ import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function ModifyStatusForm({ status, onClose }) {
-    const [showingModifyStatusModal, setShowingModifyStatusModal] = useState(true);
+export default function ModifyStatusForm({ status, onClose, onSuccess }) {
     const name = useRef();
     const description = useRef();
     const [data, setData] = useState({
@@ -42,7 +41,12 @@ export default function ModifyStatusForm({ status, onClose }) {
                 loading: 'Modification du status en cours ...',
                 success: (response) => {
                     reset();
-                    setShowingModifyStatusModal(false);
+                    if (onClose) {
+                        onClose(); // Ferme le modal dans le parent
+                    }
+                    if (onSuccess) {
+                        onSuccess(); // Rafraîchit la liste
+                    }
                     return response.message;
                 },
                 error: (error) => {
@@ -53,7 +57,7 @@ export default function ModifyStatusForm({ status, onClose }) {
     };
 
     return (
-        <Modal show={showingModifyStatusModal} onClose={() => { setShowingModifyStatusModal(false); onClose(); }}>
+        <Modal show={true} onClose={() => { onClose(); }}>
             <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
                 <h1 className="text-lg font-medium text-gray-900">
                     Modifier un status

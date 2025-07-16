@@ -8,8 +8,7 @@ import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function ModifyCategoryForm({ category, onClose }) {
-    const [showingModifyCategoryModal, setShowingModifyCategoryModal] = useState(true);
+export default function ModifyCategoryForm({ category, onClose, onSuccess }) {
     const name = useRef();
     const description = useRef();
     const [data, setData] = useState({
@@ -47,7 +46,12 @@ export default function ModifyCategoryForm({ category, onClose }) {
                 loading: 'Modification de la catégorie en cours ...',
                 success: (response) => {
                     reset();
-                    setShowingModifyCategoryModal(false);
+                    if (onClose) {
+                        onClose(); // Ferme le modal dans le parent
+                    }
+                    if (onSuccess) {
+                        onSuccess(); // Rafraîchit la liste
+                    }
                     return response.message;
                 },
                 error: (error) => {
@@ -58,7 +62,7 @@ export default function ModifyCategoryForm({ category, onClose }) {
     };
 
     return (
-        <Modal show={showingModifyCategoryModal} onClose={() => { setShowingModifyCategoryModal(false); onClose(); }}>
+        <Modal show={true} onClose={() => { onClose(); }}>
             <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
                 <h1 className="text-lg font-medium text-gray-900">
                     Modifier une catégorie

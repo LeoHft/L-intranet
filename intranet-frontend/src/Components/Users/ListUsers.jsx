@@ -8,11 +8,10 @@ import { getUsers, deleteUser } from '@/api/modules/users';
 
 import toast, { Toaster } from 'react-hot-toast';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import dayjs from 'dayjs';
 
 
-export default function ListUsers() {
+export default function ListUsers({ refreshTrigger }) {
     const [usersList, setUsersList] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [showModalModifyUser, setShowModalModifyUser] = useState(false);
@@ -20,6 +19,10 @@ export default function ListUsers() {
 
 
     useEffect(() => {
+        fetchUsers()
+    }, [refreshTrigger]);
+
+    const fetchUsers = () => {
         toast.promise(
             getUsers(),
             {
@@ -33,7 +36,7 @@ export default function ListUsers() {
                 }
             }
         );
-    }, []);
+    }
 
     const ModifyUser = (user) => {
         setSelectedUser(user);
@@ -123,6 +126,7 @@ export default function ListUsers() {
             <ModifyUserForm
                 user={selectedUser}
                 onClose={() => setShowModalModifyUser(false)}
+                onSuccess={() => fetchUsers()}
             />
         )}
 

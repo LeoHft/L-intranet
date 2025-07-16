@@ -10,13 +10,17 @@ import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function ListServices() {
+export default function ListServices({ refreshTrigger }) {
     const [servicesList, setServicesList] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
     const [showModalModifyService, setShowModalModifyService] = useState(false);
     const [showModalDeleteService, setShowModalDeleteService] = useState(false);
 
     useEffect(() => {
+        fetchServices()
+    }, [refreshTrigger]);
+
+    const fetchServices = () => {
         toast.promise(
             getAllServices(),
             {
@@ -30,7 +34,7 @@ export default function ListServices() {
                 }
             }
         );
-    }, []);
+    }
 
     const modifyService = (service) => {
         setSelectedService(service);
@@ -136,6 +140,7 @@ export default function ListServices() {
                 <ModifyServiceForm
                     service={selectedService}
                     onClose={() => setShowModalModifyService(false)}
+                    onSuccess={() => fetchServices()}
                 />
             )}
 

@@ -49,6 +49,7 @@ export default function AddCategoryForm({ onCategoryAdded }) {
                     reset();
                     setShowingAddCategoryModal(false);
                     setIsLoading(false);
+                    onCategoryAdded();
                     return response.message;
                 },
                 error: (error) => {

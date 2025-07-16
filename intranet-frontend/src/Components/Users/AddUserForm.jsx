@@ -11,7 +11,7 @@ import axios from 'axios';
 import toast, {Toaster} from 'react-hot-toast';
 
 
-export default function AddUserForm() {
+export default function AddUserForm({ onUserAdded }) {
     const [showingAddUserModal, setShowingAddUserModal] = useState(false);
     const [errors, setErrors] = useState({});
     const [data, setData] = useState({
@@ -49,6 +49,7 @@ export default function AddUserForm() {
                 loading: 'Ajout de l\'utilisateur ...',
                 success: (response) => {
                     reset();
+                    onUserAdded();
                     return response.message;
                 },
                 error: (error) => {

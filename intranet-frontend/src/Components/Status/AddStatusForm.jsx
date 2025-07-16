@@ -9,7 +9,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useState, useRef } from 'react';
 
 
-export default function AddStatusForm() {
+export default function AddStatusForm({ onStatusAdded }) {
     const [showingAddStatusModal, setShowingAddStatusModal] = useState(false);
     const name = useRef();
     const description = useRef();
@@ -33,11 +33,6 @@ export default function AddStatusForm() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!data.name.trim()) { // Si pas de texte, alors renvoie true
-            toast.error('Le nom du status est requis');
-            return;
-        }
-
         toast.promise(
             storeStatus(data),
             {
@@ -45,6 +40,7 @@ export default function AddStatusForm() {
                 success: (response) => {
                     reset();
                     setShowingAddStatusModal(false);
+                    onStatusAdded();
                     return response.message;
                 },
                 error: (error) => {

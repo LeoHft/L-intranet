@@ -12,8 +12,7 @@ import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function ModifyServiceForm({ service, onClose }) {
-    const [showingModifyServiceModal, setShowingModifyServiceModal] = useState(true);
+export default function ModifyServiceForm({ service, onClose, onSuccess }) {
     const name = useRef();
     const description = useRef();
     const internal_url = useRef();
@@ -90,7 +89,12 @@ export default function ModifyServiceForm({ service, onClose }) {
                 loading: 'Modification du service en cours ...',
                 success: (response) => {
                     reset();
-                    setShowingModifyServiceModal(false);
+                    if (onClose) {
+                        onClose(); // Ferme le modal dans le parent
+                    }
+                    if (onSuccess) {
+                        onSuccess(); // Rafraîchit la liste
+                    }
                     return response.message;
                 },
                 error: (error) => {
@@ -102,7 +106,7 @@ export default function ModifyServiceForm({ service, onClose }) {
     
 
     return (
-        <Modal show={showingModifyServiceModal} onClose={() => { setShowingModifyServiceModal(false); onClose(); }}>
+        <Modal show={true} onClose={() => { onClose(); }}>
             <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
                 <h1 className="text-lg font-medium text-gray-900">
                     Modifier un service

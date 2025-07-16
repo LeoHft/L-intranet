@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function ListStatus() {
+export default function ListStatus({ refreshTrigger }) {
     const [StatusList, setStatusList] = useState([]);
     const [selectedStatus, setSelectedStatus] = useState(null);
     const [showModalModifyStatus, setShowModalModifyStatus] = useState(false);
@@ -18,6 +18,10 @@ export default function ListStatus() {
 
 
     useEffect(() => {
+        fetchStatus()
+    }, [refreshTrigger]);
+
+    const fetchStatus = () => {
         toast.promise(
             getAllStatus(),
             {
@@ -31,7 +35,7 @@ export default function ListStatus() {
                 }
             }
         );
-    }, []);
+    }
 
     const ModifyStatus = (status) => {
         setSelectedStatus(status);
@@ -102,6 +106,7 @@ export default function ListStatus() {
             <ModifyStatusForm
                 status={selectedStatus}
                 onClose={() => setShowModalModifyStatus(false)}
+                onSuccess={() => fetchStatus()}
             />
         )}
 

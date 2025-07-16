@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function ListCategory() {
+export default function ListCategory({ refreshTrigger }) {
     const [categoriesList, setCategoriesList] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +20,10 @@ export default function ListCategory() {
 
     useEffect(() => {
         setIsLoading(true);
-        
+        fetchCategories()
+    }, [refreshTrigger]);
+
+    const fetchCategories = () => {
         toast.promise(
             getAllCategory(),
             {
@@ -36,7 +39,7 @@ export default function ListCategory() {
                 }
             }
         );
-    }, []);
+    }
 
     const ModifyCategory = (category) => {
         setSelectedCategory(category);
@@ -107,6 +110,7 @@ export default function ListCategory() {
             <ModifyCategoryForm
                 category={selectedCategory}
                 onClose={() => setShowModalModifyCategory(false)}
+                onSuccess={() => fetchCategories()}
             />
         )}
 

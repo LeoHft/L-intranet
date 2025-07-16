@@ -10,8 +10,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState, useRef } from 'react';
 
 
-export default function ModifyUserForm({ user, onClose }) {
-    const [showingModifyUserModal, setShowingModifyUserModal] = useState(true);
+export default function ModifyUserForm({ user, onClose, onSuccess }) {
     const [errors, setErrors] = useState({});
     const name = useRef();
     const email = useRef();
@@ -52,8 +51,12 @@ export default function ModifyUserForm({ user, onClose }) {
                 loading: 'Modification de l\'utilisateur ...',
                 success: (response) => {
                     reset();
-                    setShowingModifyUserModal(false);
-                    onClose();   
+                    if (onClose) {
+                        onClose(); // Ferme le modal dans le parent
+                    }
+                    if (onSuccess) {
+                        onSuccess(); // Rafraîchit la liste
+                    }  
                     return response.message;
                 },
                 error: (error) => {
@@ -68,7 +71,7 @@ export default function ModifyUserForm({ user, onClose }) {
     };
 
     return (
-        <Modal show={showingModifyUserModal} onClose={() => { setShowingModifyUserModal(false); onClose(); }}>
+        <Modal show={true} onClose={() => { onClose(); }}>
             <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
                 <h1 className="text-lg font-medium text-gray-900">
                     Modifier un utilisateur

@@ -12,7 +12,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState, useRef } from 'react';
 
 
-export default function AddServiceForm() {
+export default function AddServiceForm({ onServiceAdded }) {
     const [showingAddServiceModal, setShowingAddServiceModal] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
@@ -71,6 +71,7 @@ export default function AddServiceForm() {
                 loading: 'Ajout du service en cours ...',
                 success: (response) => {
                     reset();
+                    onServiceAdded();
                     setShowingAddServiceModal(false);
                     return response.message;
                 },
