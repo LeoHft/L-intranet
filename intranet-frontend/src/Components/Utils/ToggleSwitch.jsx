@@ -11,10 +11,14 @@ export default function ToggleSwitch() {
 
     const notification = () => {
         if (!enabled) { 
-            toast.success('Accès depuis le réseau local');
+            toast('Accès depuis le réseau local', {
+                icon: '🏠',
+            });
         }
         else {
-            toast.error("Accès depuis l'extérieur");
+            toast('Accès depuis l\'extérieur du réseau', {
+                icon: '🌐',
+            });
         }
     }
 

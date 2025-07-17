@@ -1,4 +1,4 @@
-import BreezyLoader from '@/Components/Utils/BreezyLoader';
+import IntranetLoader from '@/Components/Utils/IntranetLoader';
 
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
 import '@/App.css';
@@ -7,6 +7,7 @@ import Login from '@/Pages/Auth/Login';
 import Dashboard from '@/Pages/Dashboard';
 import AdminDashboard from '@/Pages/AdminDashboard';
 import Edit from '@/Pages/Profile/Edit';
+import ForgotPassword from '@/Pages/Auth/ForgotPassword';
 
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -19,7 +20,7 @@ function App() {
   const isAuth = !!user.connected;
   const isAdmin = !!user.is_admin;
 
-  return loading ? ( <BreezyLoader /> ) : (
+  return loading ? ( <IntranetLoader /> ) : (
     <>
       <BrowserRouter>
         <Routes>
@@ -28,6 +29,7 @@ function App() {
           <Route path="/dashboard" element={isAuth ? <Dashboard /> : <Login /> } />
           <Route path="/adminDashboard" element={isAdmin && isAuth ? <AdminDashboard /> : isAuth ? <Dashboard /> : <Login /> } />
           <Route path="/profile/edit" element={isAuth ? <Edit /> : <Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </BrowserRouter>
     </>

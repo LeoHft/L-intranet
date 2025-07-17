@@ -9,7 +9,6 @@ import { login, getCurrentUserInfo } from '@/api/modules/users'
 
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 
@@ -22,6 +21,7 @@ export default function Login() {
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+
 
     // Gestion du titre de la page
     useEffect(() => {
@@ -58,7 +58,7 @@ export default function Login() {
 
     return (
         <GuestLayout>
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex items-center justify-center min-h-screen"> 
                 <form onSubmit={submit} className="rounded-md shadow-xl p-6 max-w-96 mx-auto w-full bg-white/10 backdrop-blur-sm">
                    
                     <div>
@@ -94,7 +94,8 @@ export default function Login() {
                         <InputError message={errors.password} className="mt-2" />
                     </div>
 
-                    <div className="mt-4 block">
+                    {/* Si besoin, modifier le backend pour y inclure le remember */}
+                    {/* <div className="mt-4 block">
                         <label className="flex items-center">
                             <Checkbox
                                 name="remember"
@@ -107,7 +108,7 @@ export default function Login() {
                                 Se souvenir de moi
                             </span>
                         </label>
-                    </div>
+                    </div> */}
 
                     <div className="mt-4 flex items-center justify-end">
                         <Link

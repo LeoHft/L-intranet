@@ -6,6 +6,7 @@ import ResponsiveNavLink from '@/Components/Utils/ResponsiveNavLink';
 
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
 import { logout } from '@/api/modules/users';
+import SearchBar from '@/Components/Utils/SearchBar';
 
 import { useState, useEffect } from 'react';
 import { HouseWifi } from 'lucide-react';
@@ -86,6 +87,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             ) : null}
                         </div>
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
+                            <SearchBar/>
                             {user.is_admin ? (
                                 <ToggleSwitch />
                             ) : null}

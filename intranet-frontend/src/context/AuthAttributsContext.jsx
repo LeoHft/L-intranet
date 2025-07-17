@@ -1,4 +1,4 @@
-import BreezyLoader from '@/Components/Utils/BreezyLoader'
+import IntranetLoader from '@/Components/Utils/IntranetLoader'
 
 import { getCurrentUserInfo } from '@/api/modules/users'
 
@@ -34,7 +34,7 @@ export const AuthAttributesProvider = ({ children }) => {
 
 
   if (isLoading) {
-    return <BreezyLoader />
+    return <IntranetLoader />
   }
 
   return (

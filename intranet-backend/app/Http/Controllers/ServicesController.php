@@ -58,7 +58,7 @@ class ServicesController extends Controller
                 ->get();
     
             return response()->json([
-                'message' => 'Services utilisateur récupérés avec succès',
+                'message' => 'Services récupérés avec succès',
                 'data' => $services
             ], 200);
 
