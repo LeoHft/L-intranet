@@ -5,16 +5,16 @@ import { useAuthAttributes } from '@/context/AuthAttributsContext';
 import { getUserServices } from '@/api/modules/services';
 
 import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
 import dayjs from 'dayjs';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function CardServices() {
+export default function CardServices({ selectedCategories, selectedStatus }) {
     const authContext = useAuthAttributes();
     const user = authContext?.userAttributes;
     const { enabled } = useContext(ToggleContext);
     const [servicesList, setServicesList] = useState([]);
+    const [filteredServices, setFilteredServices] = useState([]);
     const [showingServiceModal, setShowingServiceModal] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
 
@@ -34,6 +34,27 @@ export default function CardServices() {
         );
     }, []);
 
+    // Effet pour filtrer les services selon les critères sélectionnés
+    useEffect(() => {
+        let filtered = servicesList;
+
+        // Filtrage par statut
+        if (selectedStatus && selectedStatus.length > 0) {
+            const statusIds = selectedStatus.map(status => status.value);
+            filtered = filtered.filter(service => service.status_id && statusIds.includes(service.status_id));
+        }
+
+        // Filtrage par catégories
+        if (selectedCategories && selectedCategories.length > 0) {
+            const categoryIds = selectedCategories.map(cat => cat.value);
+            filtered = filtered.filter(service => 
+                service.categories && service.categories.some(cat => categoryIds.includes(cat.id))
+            );
+        }
+
+        setFilteredServices(filtered);
+    }, [servicesList, selectedCategories, selectedStatus]);
+
     const DetailService = (service) => {
         setSelectedService(service);
         setShowingServiceModal(true);
@@ -43,7 +64,7 @@ export default function CardServices() {
     return (
     <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-4">
         {
-            servicesList.length > 0 ? servicesList.map(service => (
+            filteredServices.length > 0 ? filteredServices.map(service => (
                 <div key={service.id} onClick={() => DetailService(service)} className="max-w-sm rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out bg-white">
                     <div className="relative overflow-hidden">
                         <img 
@@ -67,14 +88,14 @@ export default function CardServices() {
                             <p className="font-bold text-lg">{service.name}</p>
                             { enabled ? (
                             service.internal_url ? (
-                            <a href={service.internal_url} target='blank' className="text-center bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-gray-300 transition">
+                            <a href={service.internal_url} target='blank' onClick={(e) => e.stopPropagation()} className="text-center bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-gray-300 transition"> 
                                 {service.internal_url}
-                            </a>
+                            </a>// Evite la propagation du click pour ne pas ouvrir le modal
                             ) : (<p> Pas de lien dispo </p>)
                             ) : (service.external_url ? (
-                                <a href={service.external_url} target='blank' className="text-center bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-gray-300 transition">
+                                <a href={service.external_url} target='blank' onClick={(e) => e.stopPropagation()} className="text-center bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-gray-300 transition"> 
                                 {service.external_url}
-                            </a>
+                            </a>// Evite la propagation du click pour ne pas ouvrir le modal
                             ) :(<p> Pas de lien dispo </p>))}
                         </div>                         
                     </div>
@@ -143,14 +164,6 @@ export default function CardServices() {
                 </div>
             )}
         </Modal>
-
-
-
-
-
-
-
-
     </section>
 
     );
