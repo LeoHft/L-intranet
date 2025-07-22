@@ -26,14 +26,14 @@ RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/
 FROM base AS development
 
 # Installer les dépendances PHP et Node.js
-RUN composer install --no-scripts --no-autoloader \
+RUN composer install \
     && npm install
 
 # Configurer l'entrypoint
-RUN sed -i 's/\r$//' ./entrypoint-dev.sh
-RUN chmod +x ./entrypoint-dev.sh
+RUN sed -i 's/\r$//' ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
-ENTRYPOINT ["./entrypoint-dev.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
 
 # Stage de production
 FROM base AS production
@@ -45,7 +45,7 @@ RUN composer install --no-dev \
 RUN npm run build
 
 # Configurer l'entrypoint
-RUN sed -i 's/\r$//' ./entrypoint-prod.sh
-RUN chmod +x ./entrypoint-prod.sh
+RUN sed -i 's/\r$//' ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
-ENTRYPOINT ["./entrypoint-prod.sh"]
+ENTRYPOINT ["./entrypoint.sh"]

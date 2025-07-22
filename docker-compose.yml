@@ -75,7 +75,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
       - ./ssl:/etc/nginx/ssl
-
+      - frontend-dist:/var/www/html:ro
+      - backend-dist:/var/www/intranet-backend:ro
 
   intranet-backend-dev:
     container_name: intranet-backend-dev
@@ -91,8 +92,29 @@ services:
     networks:
       - intra-net
     volumes:
-      - ./intranet-backend:/var/www/intranet-backend
+      - backend-dist:/var/www/intranet-backend
       - ./ssl:/var/www/ssl
+    develop:
+      watch:
+        - action: sync
+          path: ./intranet-backend/app
+          target: /var/www/intranet-backend/app
+        - action: sync
+          path: ./intranet-backend/config
+          target: /var/www/intranet-backend/config
+        - action: sync
+          path: ./intranet-backend/database
+          target: /var/www/intranet-backend/database
+        - action: sync
+          path: ./intranet-backend/resources
+          target: /var/www/intranet-backend/resources
+        - action: sync
+          path: ./intranet-backend/routes
+          target: /var/www/intranet-backend/routes
+        - action: rebuild
+          path: ./intranet-backend/composer.json
+        - action: rebuild
+          path: ./intranet-backend/package.json
 
 
   intranet-frontend-dev:
@@ -115,8 +137,18 @@ services:
     networks:
       - intra-net
     volumes:
-      - ./intranet-frontend:/var/www/intranet-frontend
-      - /var/www/intranet-frontend/node_modules
+      - frontend-dist:/var/www/intranet-frontend
+    develop:
+      watch:
+        - action: sync
+          path: ./intranet-frontend/src
+          target: /var/www/intranet-frontend/src
+        - action: sync
+          path: ./intranet-frontend/public
+          target: /var/www/intranet-frontend/public
+        - action: rebuild
+          path: ./intranet-frontend/package.json
+
 
 # ============ PROD ============
   nginx:
