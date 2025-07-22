@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
+                'id' => 1,
                 'name' => 'admin',
                 'password' => bcrypt('password'),
                 'is_admin' => true,
@@ -23,6 +24,7 @@ class DatabaseSeeder extends Seeder
         );
 
         DB::table('categories')->insertOrIgnore([
+            'id' => 1,
             'name' => 'Multimédia',
             'description' => "Tout ce qui est multimédia",
             'created_at' => now(),
@@ -30,6 +32,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('status')->insertOrIgnore([
+            'id' => 1,
             'name' => 'UP',
             'description' => 'Le service est accessible',
             'created_at' => now(),
@@ -38,6 +41,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('services')->insertOrIgnore([
             [
+            'id' => 1,
             'name' => 'test service',
             'description' => 'test service description',
             'internal_url' => 'http://localhost:8000',
@@ -51,6 +55,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('services_access')->insertOrIgnore([
             [
+                'id' => 1,
                 'user_id' => 1,
                 'service_id' => 1,
                 'created_at' => now(),
@@ -60,6 +65,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('categories_services')->insertOrIgnore([
             [
+                'id' => 1,
                 'service_id' => 1,
                 'category_id' => 1,
                 'created_at' => now(),
