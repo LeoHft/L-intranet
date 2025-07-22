@@ -54,10 +54,11 @@ services:
 
 
   # ============ DEV ============
-  nginx:
+  nginx-dev:
+    container_name: nginx-dev
+    profiles:
+      - dev
     image: nginx:latest
-    container_name: nginx
-    restart: always
     ports:
       - "8088:80" # Redirige vers 8443 (http vers https)
       - "8443:443"
@@ -117,12 +118,72 @@ services:
       - ./intranet-frontend:/var/www/intranet-frontend
       - /var/www/intranet-frontend/node_modules
 
+# ============ PROD ============
+  nginx:
+    container_name: nginx
+    profiles:
+      - prod
+    image: nginx:latest
+    ports:
+      - "8088:80" # Redirige vers 8443 (http vers https)
+      - "8443:443"
+    depends_on:
+      ssl-init:
+        condition: service_completed_successfully
+      intranet-backend:
+        condition: service_started
+      intranet-frontend:
+        condition: service_completed_successfully
+    networks:
+      - intra-net
+    volumes:
+      - ./nginx/nginx-prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
+      - ./ssl:/etc/nginx/ssl
+      - frontend-dist:/var/www/html:ro
+      - backend-dist:/var/www/intranet-backend:ro
 
+
+  intranet-backend:
+    container_name: intranet-backend
+    profiles:
+      - prod
+    build: 
+      context: ./intranet-backend
+      dockerfile: Dockerfile
+      target: production
+    depends_on:
+      intranetDB:
+        condition: service_healthy 
+    networks:
+      - intra-net
+    volumes:
+      - backend-dist:/var/www/intranet-backend
+      - ./ssl:/var/www/ssl
+
+
+  intranet-frontend:
+    container_name: intranet-frontend
+    profiles:
+      - prod
+    build:
+      context: ./intranet-frontend
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      NODE_ENV: production
+      VITE_API_URL: '${REACT_APP_API_URL:-https://localhost:8443/api}'
+    networks:
+      - intra-net
+    volumes:
+      - frontend-dist:/var/www/intranet-frontend/dist
 
 
 volumes:
   intranetDB_data:
     driver: local
+  frontend-dist:
+  backend-dist:
 
 
 networks:

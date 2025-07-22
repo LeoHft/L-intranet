@@ -15,9 +15,6 @@ FROM base AS development
 # Copier le code source
 COPY . .
 
-# # Exposer le port pour Vite dev server
-# EXPOSE 5173
-
 # Créer un entrypoint pour le développement
 COPY entrypoint-dev.sh ./entrypoint-dev.sh
 # Convertir les fins de ligne Windows (CRLF) en Unix (LF)

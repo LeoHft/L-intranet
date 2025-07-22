@@ -3,6 +3,8 @@ FROM php:8.2-fpm AS base
 # Définir le répertoire de travail
 WORKDIR /var/www/intranet-backend
 
+COPY . .
+
 # Installation des dépendances système et PHP
 RUN apt-get update \
   && apt-get install -y build-essential libpng-dev libjpeg-dev libonig-dev \
@@ -19,9 +21,6 @@ RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/
   && apt-get clean  \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
- 
-COPY composer.json composer.lock ./
-COPY package*.json ./
 
 # Stage de développement
 FROM base AS development
@@ -29,8 +28,6 @@ FROM base AS development
 # Installer les dépendances PHP et Node.js
 RUN composer install --no-scripts --no-autoloader \
     && npm install
-
-COPY . .
 
 # Configurer l'entrypoint
 RUN sed -i 's/\r$//' ./entrypoint-dev.sh
@@ -41,15 +38,14 @@ ENTRYPOINT ["./entrypoint-dev.sh"]
 # Stage de production
 FROM base AS production
 
-# Installer seulement les dépendances de production
-RUN composer install --no-dev --no-scripts --no-autoloader --optimize-autoloader
+# Installation des dépendances (sans dev) et build
+RUN composer install --no-dev \
+  && npm ci
 
-COPY . .
+RUN npm run build
 
-# Générer l'autoloader optimisé
-RUN composer dump-autoloader --optimize
+# Configurer l'entrypoint
+RUN sed -i 's/\r$//' ./entrypoint-prod.sh
+RUN chmod +x ./entrypoint-prod.sh
 
-# # Exposer le port
-# EXPOSE 9000
-
-CMD ["php-fpm"]
+ENTRYPOINT ["./entrypoint-prod.sh"]

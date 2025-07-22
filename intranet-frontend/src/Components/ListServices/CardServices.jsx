@@ -70,7 +70,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                     <div className="relative overflow-hidden">
                         <img 
                             className="w-full h-48 object-cover hover:scale-110 transition-transform duration-100 ease-in-out" 
-                            src={service.image_url || "storage/images/no-photo-available.jpg"} 
+                            src={service.image_url || "storage/images/no-image-available.jpg"} 
                             alt={service.name} 
                         />
                         {service.status !== null && (
@@ -204,7 +204,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                         >
                             <motion.img 
                                 className="w-full h-58 object-cover transition-transform duration-300 ease-in-out" 
-                                src={selectedService.image_url || "storage/images/no-photo-available.jpg"} 
+                                src={selectedService.image_url || "storage/images/no-image-available.jpg"} 
                                 alt={selectedService.name}
                                 whileHover={{ 
                                     scale: 1.05,
