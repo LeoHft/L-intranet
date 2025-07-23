@@ -200,7 +200,6 @@ services:
     container_name: intranet-frontend
     profiles:
       - prod
-    restart: always
     build:
       context: ./intranet-frontend
       dockerfile: Dockerfile
