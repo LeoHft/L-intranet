@@ -55,6 +55,13 @@ export default function AddServiceForm({ onServiceAdded }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // Validation des utilisateurs obligatoires
+        if (!selectedUsers || selectedUsers.length === 0) {
+            toast.error('Veuillez sélectionner au moins un utilisateur');
+            return;
+        }
+        
         const formData = new FormData();
         formData.append('name', data.name);
         formData.append('description', data.description);
@@ -151,6 +158,7 @@ export default function AddServiceForm({ onServiceAdded }) {
                     <UsersSelect
                         selectedUsers={selectedUsers} 
                         setSelectedUsers={setSelectedUsers}
+                        required
                     />
                     <div>
                         <InputLabel htmlFor="image" value="Image*" />
@@ -159,7 +167,6 @@ export default function AddServiceForm({ onServiceAdded }) {
                             type="file"
                             className="mt-1 block w-full hover:cursor-pointer"
                             onChange={(e) => setData({ ...data, image: e.target.files[0]})}
-                            required
                         />
                     </div>
                     <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">

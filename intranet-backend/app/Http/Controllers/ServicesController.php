@@ -87,9 +87,9 @@ class ServicesController extends Controller
             'description' => 'nullable|string',
             'internal_url' => 'nullable|string',
             'external_url' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'status_id' => 'required|exists:status,id',
-            'category_id' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'status_id' => 'nullable|exists:status,id',
+            'category_id' => 'nullable|string',
             'user_id' => 'required|string',
         ]);
 
@@ -150,7 +150,7 @@ class ServicesController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status_id' => 'nullable|exists:status,id',
             'category_id' => 'nullable|string',
-            'user_id' => 'nullable|string',
+            'user_id' => 'required|string',
         ]);
 
         try {
