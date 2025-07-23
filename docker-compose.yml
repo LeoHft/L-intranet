@@ -156,6 +156,7 @@ services:
     profiles:
       - prod
     image: nginx:latest
+    restart: always
     ports:
       - "8088:80" # Redirige vers 8443 (http vers https)
       - "8443:443"
@@ -180,6 +181,7 @@ services:
     container_name: intranet-backend
     profiles:
       - prod
+    restart: always
     build: 
       context: ./intranet-backend
       dockerfile: Dockerfile
@@ -198,6 +200,7 @@ services:
     container_name: intranet-frontend
     profiles:
       - prod
+    restart: always
     build:
       context: ./intranet-frontend
       dockerfile: Dockerfile
