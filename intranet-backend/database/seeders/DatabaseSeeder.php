@@ -53,25 +53,35 @@ class DatabaseSeeder extends Seeder
             ]
         ]);
 
-        DB::table('services_access')->insertOrIgnore([
-            [
-                'id' => 1,
+        // On vérifie si la relation service-user existe déjà
+        $serviceAccessExists = DB::table('services_access')
+            ->where('user_id', 1)
+            ->where('service_id', 1)
+            ->exists();
+
+        if (!$serviceAccessExists) {
+            DB::table('services_access')->insert([
                 'user_id' => 1,
                 'service_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
-        ]);
+            ]);
+        }
 
-        DB::table('categories_services')->insertOrIgnore([
-            [
-                'id' => 1,
+        // On vérifie si la relation service-catégorie existe déjà
+        $categoryServiceExists = DB::table('categories_services')
+            ->where('service_id', 1)
+            ->where('category_id', 1)
+            ->exists();
+
+        if (!$categoryServiceExists) {
+            DB::table('categories_services')->insert([
                 'service_id' => 1,
                 'category_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
-        ]);
+            ]);
+        }
 
     }
 }
