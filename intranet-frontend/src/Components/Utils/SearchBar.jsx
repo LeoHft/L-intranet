@@ -34,7 +34,7 @@ export default function SearchBar() {
     }, []);
 
     return (
-        <div className="search-container">
+        <div className="search-container mr-2">
             <form onSubmit={handleSearchSubmit} className="relative group">
                 <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
