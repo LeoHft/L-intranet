@@ -24,7 +24,7 @@ export default function ToggleSwitch() {
 
     return (
         <>
-            <div>
+            <div className="flex items-center space-x-3">
                 <button
                     onClick={() => {
                         setEnabled(!enabled);
@@ -40,9 +40,9 @@ export default function ToggleSwitch() {
                         {enabled ? <Check className="h-4 w-4 text-indigo-600" /> : <X className="h-4 w-4 text-gray-500" />}
                     </div>
                 </button>
+                <HouseWifi />
                 <Toaster />
             </div>
-            <HouseWifi />
         </>
     );
 }

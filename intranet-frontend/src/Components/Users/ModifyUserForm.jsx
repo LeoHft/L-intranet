@@ -119,7 +119,7 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
                     </label>
                     <InputError message={errors.is_admin} className="mt-3" />
                 </div>
-                <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+                <button type="submit" className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
                     Valider
                 </button>
             </form>

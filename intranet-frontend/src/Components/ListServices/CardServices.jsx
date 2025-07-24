@@ -169,7 +169,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
         </AnimatePresence>
 
 
-        <Modal show={showingServiceModal} onClose={() => setShowingServiceModal(false)}>
+        <Modal show={showingServiceModal} onClose={() => setShowingServiceModal(false)} className="max-h-[90vh] w-full sm:w-auto overflow-y-auto flex items-center justify-center px-2">
             <AnimatePresence mode="wait">
                 {selectedService && (
                     <motion.div 

@@ -100,7 +100,7 @@ export default function AddCategoryForm({ onCategoryAdded }) {
                         className={`mt-4 px-4 py-2 rounded text-white ${
                             isLoading 
                                 ? 'bg-gray-400 cursor-not-allowed' 
-                                : 'bg-blue-500 hover:bg-blue-600'
+                                : 'bg-purple-500 hover:bg-purple-600'
                         }`}
                     >
                         {isLoading ? 'Ajout en cours...' : 'Valider'}

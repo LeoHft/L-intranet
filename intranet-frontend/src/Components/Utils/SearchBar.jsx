@@ -48,7 +48,7 @@ export default function SearchBar() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Rechercher... (Ctrl+B)"
-                        className="block w-48 group-hover:w-64 pl-10 pr-12 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 focus:w-64 transition-all duration-300 text-sm hover:bg-white/15"
+                        className="block w-48 group-hover:w-64 pl-10 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 focus:w-64 transition-all duration-300 text-sm hover:bg-white/15"
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center opacity-70 group-hover:opacity-100 transition-opacity duration-300">
                         <kbd className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-white/20 text-gray-300 border border-white/20">
