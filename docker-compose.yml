@@ -21,8 +21,8 @@ services:
       - "3307:3306"    
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: '${DB_PASSWORD:-secret}'
-      MARIADB_DATABASE: '${DB_DATABASE:-intranet}'
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: 'intranet'
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
       interval: 10s
@@ -45,8 +45,8 @@ services:
     environment:
       - PMA_ARBITRARY=1
       - PMA_HOST=intranetDB
-      - PMA_USER=${DB_USERNAME:-root}
-      - PMA_PASSWORD=${DB_PASSWORD:-secret}
+      - PMA_USER=root
+      - PMA_PASSWORD=${DB_PASSWORD}
     depends_on:
       - intranetDB
     networks:
@@ -91,6 +91,11 @@ services:
         condition: service_healthy 
     networks:
       - intra-net
+    environment:
+      APP_ENV: development
+      APP_DEBUG: true
+      APP_URL: ${APP_URL}
+      DB_PASSWORD: ${DB_PASSWORD}
     volumes:
       - backend-dist:/var/www/intranet-backend
       - ./ssl:/var/www/ssl
@@ -127,7 +132,7 @@ services:
       target: development
     environment:
       NODE_ENV: development
-      VITE_API_URL: '${REACT_APP_API_URL:-https://localhost:8443/api}'
+      VITE_API_URL: ${REACT_APP_API_URL}
       # Variables pour Vite HMR
       CHOKIDAR_USEPOLLING: "true" 
       WATCHPACK_POLLING: "true" 
@@ -186,6 +191,11 @@ services:
       context: ./intranet-backend
       dockerfile: Dockerfile
       target: production
+    environment:
+      APP_ENV: production
+      APP_DEBUG: false
+      APP_URL: ${APP_URL}
+      DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       intranetDB:
         condition: service_healthy 
@@ -206,11 +216,11 @@ services:
       target: production
     environment:
       NODE_ENV: production
-      VITE_API_URL: '${REACT_APP_API_URL:-https://localhost:8443/api}'
+      VITE_API_URL: ${VITE_API_URL}
     networks:
       - intra-net
     volumes:
-      - frontend-dist:/var/www/intranet-frontend/dist
+      - frontend-dist:/var/www/intranet-frontend
 
 
 volumes:

@@ -22,6 +22,7 @@ fi
 if ! grep -q "APP_KEY=base64:" .env 2>/dev/null || grep -q "APP_KEY=$" .env 2>/dev/null || grep -q "APP_KEY=\"\"" .env 2>/dev/null; then
     echo "Generating application key..."
     php artisan key:generate --no-interaction
+    php artisan jwt:secret --force
 fi
 
 # Créer le lien de stockage

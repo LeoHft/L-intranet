@@ -30,6 +30,8 @@ FROM base AS production
 # Copier le code sourced
 COPY . .
 
+COPY .env.example .env
+
 # Build de l'application
 RUN npm run build
 
