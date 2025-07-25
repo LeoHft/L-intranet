@@ -53,7 +53,6 @@ $rng.Dispose()
 $envContent = Get-Content $envFile
 
 # Remplacer les valeurs dans le fichier .env
-$envContent = $envContent -replace '^APP_URL=.*', "APP_URL=$domain"
 $envContent = $envContent -replace '^VITE_API_URL=.*', "VITE_API_URL=$domain/api"
 $envContent = $envContent -replace '^DB_PASSWORD=.*', "DB_PASSWORD=$DB_PASSWORD"
 

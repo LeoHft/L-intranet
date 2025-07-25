@@ -32,11 +32,20 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('status')->insertOrIgnore([
-            'id' => 1,
-            'name' => 'UP',
-            'description' => 'Le service est accessible',
-            'created_at' => now(),
-            'updated_at' => now(),
+            [
+                'id' => 1,
+                'name' => 'UP',
+                'description' => 'Le service est accessible',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 2,
+                'name' => 'DOWN',
+                'description' => 'Le service est inaccessible',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         DB::table('services')->insertOrIgnore([

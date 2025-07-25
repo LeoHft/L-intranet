@@ -94,7 +94,6 @@ services:
     environment:
       APP_ENV: development
       APP_DEBUG: true
-      APP_URL: ${APP_URL}
       DB_PASSWORD: ${DB_PASSWORD}
     volumes:
       - backend-dist:/var/www/intranet-backend
@@ -161,7 +160,7 @@ services:
     profiles:
       - prod
     image: nginx:latest
-    restart: always
+    restart: unless-stopped
     ports:
       - "8088:80" # Redirige vers 8443 (http vers https)
       - "8443:443"
@@ -186,7 +185,7 @@ services:
     container_name: intranet-backend
     profiles:
       - prod
-    restart: always
+    restart: unless-stopped
     build: 
       context: ./intranet-backend
       dockerfile: Dockerfile
@@ -194,7 +193,6 @@ services:
     environment:
       APP_ENV: production
       APP_DEBUG: false
-      APP_URL: ${APP_URL}
       DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       intranetDB:
@@ -220,7 +218,7 @@ services:
     networks:
       - intra-net
     volumes:
-      - frontend-dist:/var/www/intranet-frontend
+      - frontend-dist:/var/www/intranet-frontend/dist
 
 
 volumes:

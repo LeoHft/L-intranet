@@ -33,7 +33,6 @@ read domain
 DB_PASSWORD=$(openssl rand -base64 16)
 
 sed -i \
-    -e "s|^APP_URL=.*|APP_URL=$domain|" \
     -e "s|^VITE_API_URL=.*|VITE_API_URL=$domain/api|" \
     -e "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" \
     "$envFile"
