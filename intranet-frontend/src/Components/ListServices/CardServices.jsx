@@ -163,12 +163,12 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                         >
                                             { enabled ? (
                                             service.internal_url ? (
-                                            <a href={service.internal_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, selectedService.internal_url); }} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
+                                            <a href={service.internal_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, service.internal_url); }} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
                                                 {service.internal_url}
                                             </a>// Evite la propagation du click pour ne pas ouvrir le modal
                                             ) : (<p className="w-full text-center text-gray-500"> Pas de lien dispo </p>)
                                             ) : (service.external_url ? (
-                                                <a href={service.external_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, selectedService.external_url); }} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
+                                                <a href={service.external_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, service.external_url); }} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
                                                 {service.external_url}
                                             </a>// Evite la propagation du click pour ne pas ouvrir le modal
                                             ) :(<p className="w-full text-center text-gray-500"> Pas de lien dispo </p>))}
