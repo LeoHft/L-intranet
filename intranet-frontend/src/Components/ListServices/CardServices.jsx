@@ -2,7 +2,7 @@ import Modal from '@/Components/Utils/Modal';
 import { ToggleContext } from '@/Components/Utils/ToggleContext';
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
 
-import { getUserServices } from '@/api/modules/services';
+import { getUserServices, updateNumberServiceClick } from '@/api/modules/services';
 
 import React, { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -59,6 +59,29 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
     const DetailService = (service) => {
         setSelectedService(service);
         setShowingServiceModal(true);
+    }
+
+    const UpdateNumberClick = (service, url) => {
+        if (service && url !== '') {
+            let isInternalUrl = false;
+
+            // Normalisation des URLs pour comparaison
+            const urlObj = new URL(url);
+            const internalUrlObj = new URL(service.internal_url);
+            
+            // Comparaison
+            isInternalUrl = urlObj.origin === internalUrlObj.origin &&  urlObj.pathname === internalUrlObj.pathname;
+
+            try {
+                updateNumberServiceClick(service.id, isInternalUrl, user.id);
+            }
+            catch (error) {
+                console.error("Erreur lors de la mise à jour du nombre de clics :", error);
+                toast.error("Erreur lors de la mise à jour du nombre de clics.");
+                console.error(error.response?.data?.error);
+                throw new Error(error.response?.data?.message || "Erreur lors de la mise à jour du nombre de clics");
+            }
+        }
     }
 
 
@@ -140,12 +163,12 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                         >
                                             { enabled ? (
                                             service.internal_url ? (
-                                            <a href={service.internal_url} target='blank' onClick={(e) => e.stopPropagation()} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
+                                            <a href={service.internal_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, selectedService.internal_url); }} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
                                                 {service.internal_url}
                                             </a>// Evite la propagation du click pour ne pas ouvrir le modal
                                             ) : (<p className="w-full text-center text-gray-500"> Pas de lien dispo </p>)
                                             ) : (service.external_url ? (
-                                                <a href={service.external_url} target='blank' onClick={(e) => e.stopPropagation()} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
+                                                <a href={service.external_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, selectedService.external_url); }} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
                                                 {service.external_url}
                                             </a>// Evite la propagation du click pour ne pas ouvrir le modal
                                             ) :(<p className="w-full text-center text-gray-500"> Pas de lien dispo </p>))}
@@ -302,6 +325,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                     {selectedService.internal_url && user.is_admin ? (
                                     <motion.a 
                                         href={selectedService.internal_url} 
+                                        onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, selectedService.internal_url); }}
                                         target='blank' 
                                         className="text-center text-gray-700 px-3 py-1 rounded-full text-sm transition-all"
                                         style={{
@@ -329,6 +353,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                     {selectedService.external_url && (
                                         <motion.a 
                                             href={selectedService.external_url} 
+                                            onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, selectedService.external_url); }}
                                             target='blank' 
                                             className="text-center text-gray-700 px-3 py-1 rounded-full text-sm transition-all"
                                             style={{

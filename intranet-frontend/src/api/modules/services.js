@@ -90,3 +90,22 @@ export const deleteService = async (serviceId) => {
     throw new Error(message);
   }
 }
+
+
+export const updateNumberServiceClick = async (service_id, isInternalUrl, userId) => {
+  console.log("Mise à jour du nombre de clics en cours ...");
+  console.log("Service ID :", service_id, "isInternalUrl :", isInternalUrl, "User ID :", userId);
+  try {
+    const response = await apiClient.post(`/updateNumberClick/${service_id}`, { isInternalUrl, userId }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+      }
+    });
+    return response.data;
+
+  } catch (error) {
+    const message = error.response?.data?.message || "Erreur cliente lors de la mise à jour du nombre de clics";
+    console.error(error.response?.data?.error);
+    throw new Error(message);
+  }
+}

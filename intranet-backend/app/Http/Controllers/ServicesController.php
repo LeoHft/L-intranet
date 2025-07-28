@@ -12,6 +12,7 @@ use App\Models\ServicesAccess;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\NumberClickByServiceByUserByDay;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -235,6 +236,43 @@ class ServicesController extends Controller
             
             return response()->json([
                 'message' => 'Erreur lors de la suppression du service',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
+        }
+    }
+
+    public function updateNumberClick(Request $request, $service_id): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'isInternalUrl' => 'boolean',
+            'userId' => 'nullable|exists:users,id',
+        ]);
+
+        try {
+            $columnToIncrement = $validatedData['isInternalUrl'] ? 'internal_url_click' : 'external_url_click';
+
+            NumberClickByServiceByUserByDay::updateOrCreate(
+                [
+                    'service_id' => $service_id,
+                    'user_id' => $validatedData['userId'],
+                    'click_date' => now()->format('Y-m-d'),
+                ],
+                [$columnToIncrement => \DB::raw($columnToIncrement . ' + 1')]
+            );
+
+            Log::info('Nombre de clics mis à jour pour le service ID: ' . $service_id . ', User ID: ' . $validatedData['userId'] . ', Date: ' . now()->format('Y-m-d') . ', Type: ' . ($validatedData['isInternalUrl'] ? 'interne' : 'externe'));
+
+
+            return response()->json([
+                'message' => 'Nombre de clics mis à jour avec succès',
+                'data' => null
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la mise à jour du nombre de clics: ' . $e->getMessage());
+            
+            return response()->json([
+                'message' => 'Erreur lors de la mise à jour du nombre de clics',
                 'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
             ], 500);
         }

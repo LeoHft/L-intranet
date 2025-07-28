@@ -27,6 +27,7 @@ Route::middleware('jwt')->group(function () {
 
     //Services
     Route::get('getUserServices', 'App\Http\Controllers\ServicesController@getUserServices'); // Récupère un service
+    Route::post('updateNumberClick/{service_id}', 'App\Http\Controllers\ServicesController@updateNumberClick'); // Augmente le nombre de clics sur un service
 
     //Catégories
     Route::get('getAllCategory', 'App\Http\Controllers\CategoryController@getAllCategory'); // Récupère les catégories

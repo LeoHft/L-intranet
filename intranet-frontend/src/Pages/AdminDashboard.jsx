@@ -29,7 +29,7 @@ export default function AdminDashboard() {
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
                     <TabsList>
                         {/* <TabsTrigger value="overview">Menu</TabsTrigger> //TODO : ajouter les statistiques */} 
-                        <TabsTrigger value="Servicessettings">Paramètres de services</TabsTrigger>
+                        <TabsTrigger value="Servicessettings">Services</TabsTrigger>
                         <TabsTrigger value="CategoriesSettings">Catégories</TabsTrigger>
                         <TabsTrigger value="StatusSettings">Status</TabsTrigger>
                         <TabsTrigger value="users">Utilisateurs</TabsTrigger>
