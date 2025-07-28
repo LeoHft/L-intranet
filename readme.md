@@ -1,5 +1,10 @@
 # Quel est le but de cette application ?
-L'Intranet permet aux utilisateurs hébergeant des services chez eux, sur leur serveur, de regrouper l'accès à tous leurs services en un seul lieu comme un Dashboard. L'Intranet a des fonctionnalités en plus : Il permet d'ajouter des utilisateurs et de leurs attribuer l'accès à seulement certaines applications comme l'admin le souhaite. L’admin peut ajouter des catégories, des services, des statuts, et des users le tout dans une base de donnée mariaDB complètement modulable. L'Intranet permet aussi d'attribuer un lien local et externe à chaque service, une description, et permet d’attribuer des catégories et status aux services. De plus l'admin peut consulter les statistiques d'accès à chaque services par user, par lien, par date et par service. Les utilisateurs peuvent se connecter avec le compte crée par l’admin et voir les services auxquels ils ont accès
+L'Intranet permet aux utilisateurs hébergeant des services chez eux, sur leur serveur, de regrouper l'accès à tous leurs services en un seul endroit, comme un tableau de bord (dashboard).
+Il propose également des fonctionnalités supplémentaires : l’admin peut ajouter des utilisateurs et leur attribuer l’accès à certaines applications uniquement, selon ses préférences.
+Il peut aussi ajouter des catégories, des services, des statuts et des utilisateurs, le tout dans une base de données MariaDB entièrement modulable.
+L’Intranet permet d’attribuer à chaque service un lien local et un lien externe, une description, ainsi que des catégories et des statuts.
+De plus, l’admin peut consulter les statistiques d’accès à chaque service, par utilisateur, par lien et par date.
+Les utilisateurs peuvent se connecter via le compte créé par l’admin et voir les services auxquels ils ont accès, le tout sur une interface épurée intégrant plusieurs animations.
 
 ## [Installation](https://github.com/LeoHft/L-intranet/wiki/Installation-en-local-du-projet) 
 
