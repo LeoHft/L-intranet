@@ -36,37 +36,45 @@ export default function FilterServices({selectedCategories, setSelectedCategorie
 
     }, []);
 
-    return (
-        <>
-            <Toaster />
-            <div className="flex gap-4 items-end">
-                <div className="min-w-[180px]">
-                    <label className="block text-sm font-medium text-gray-700">Statuts</label>
-                    <Select
-                        options={status}
-                        isMulti
-                        className="mt-1 block w-full"
-                        styles={glassStyles}
-                        value={selectedStatus || null}
-                        onChange={setSelectedStatus}
-                        placeholder="Sélectionnez des statuts..."
-                    />
-                </div>
-                <div className="min-w-[220px]">
-                    <label className="block text-sm font-medium text-gray-700">Catégories</label>
-                    <Select
-                        options={categories}
-                        isMulti
-                        className="mt-1 block w-full"
-                        styles={glassStyles}
-                        value={selectedCategories || []}
-                        onChange={setSelectedCategories}
-                        placeholder="Sélectionnez des catégories..."
-                    />
-                </div>
+return (
+    <>
+        <Toaster />
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-end justify-end">
+            <div className="w-full min-w-[180px]">
+                <label className="block text-sm font-medium text-gray-700">Statuts</label>
+                <Select
+                    options={status}
+                    isMulti
+                    className="mt-1 block w-full"
+                    styles={{
+                        ...glassStyles,
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 })
+                    }}
+                    menuPortalTarget={document.body}
+                    value={selectedStatus || null}
+                    onChange={setSelectedStatus}
+                    placeholder="Sélectionnez des statuts..."
+                />
             </div>
-        </>
-    )
+            <div className="w-full sm:min-w-[220px]">
+                <label className="block text-sm font-medium text-gray-700">Catégories</label>
+                <Select
+                    options={categories}
+                    isMulti
+                    className="mt-1 block w-full"
+                    styles={{
+                        ...glassStyles,
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 })
+                    }}
+                    menuPortalTarget={document.body}
+                    value={selectedCategories || []}
+                    onChange={setSelectedCategories}
+                    placeholder="Sélectionnez des catégories..."
+                />
+            </div>
+        </div>
+    </>
+)
 }
 
 // Styles custom pour effet liquid glass
