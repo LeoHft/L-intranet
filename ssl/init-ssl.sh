@@ -41,7 +41,7 @@ subjectAltName = @alt_names
 DNS.1 = localhost
 DNS.2 = www.localhost
 DNS.3 = 127.0.0.1
-DNS.4 = breezy.local
+DNS.4 = intranet.local
 IP.1 = 127.0.0.1
 IP.2 = ::1
 EOF

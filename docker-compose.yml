@@ -6,7 +6,7 @@ services:
     build:
       context: ./ssl
       dockerfile: Dockerfile
-    container_name: breezy-ssl-init
+    container_name: intranet-ssl-init
     volumes:
       - ./ssl:/ssl
 
