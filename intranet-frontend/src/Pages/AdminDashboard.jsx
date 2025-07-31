@@ -9,6 +9,7 @@ import ListUsers from '@/Components/Users/ListUsers';
 import AddUserForm from '@/Components/Users/AddUserForm';
 import ListServices from '@/Components/Services/ListServices';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import ListStatistiques from '@/Components/Statistiques/ListStatistiques';
 
 import { useEffect, useState } from 'react';
 
@@ -28,16 +29,16 @@ export default function AdminDashboard() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
                     <TabsList>
-                        {/* <TabsTrigger value="overview">Menu</TabsTrigger> //TODO : ajouter les statistiques */} 
+                        <TabsTrigger value="overview">Statistiques</TabsTrigger>
                         <TabsTrigger value="Servicessettings">Services</TabsTrigger>
                         <TabsTrigger value="CategoriesSettings">Catégories</TabsTrigger>
                         <TabsTrigger value="StatusSettings">Status</TabsTrigger>
                         <TabsTrigger value="users">Utilisateurs</TabsTrigger>
                     </TabsList>
 
-                    {/* <TabsContent value="overview" className="space-y-8">
-                        <p> Statistiques prochainements </p>
-                    </TabsContent> */}
+                    <TabsContent value="overview" className="space-y-8">
+                        <ListStatistiques />
+                    </TabsContent>
 
 
                     <TabsContent value="Servicessettings" className="space-y-8">

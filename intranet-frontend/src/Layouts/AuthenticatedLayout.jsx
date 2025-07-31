@@ -70,7 +70,7 @@ export default function AuthenticatedLayout({ header, children }) {
             <div className="min-h-screen relative">
                 {/* Navigation principale */}
                 <nav className="sticky top-0 z-50">
-                    <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+                    <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 bg-rose/20 backdrop-blur-sm">
                         <div className="flex h-16 sm:h-18 justify-between items-center">
                             {/* Logo et navigation desktop */}
                             <div className="flex items-center space-x-4 sm:space-x-8">

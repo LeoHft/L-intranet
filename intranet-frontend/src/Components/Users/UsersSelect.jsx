@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import axios from 'axios';
 
-export default function UsersSelect({ selectedUsers, setSelectedUsers, required = false }) {
+export default function UsersSelect({ selectedUsers, setSelectedUsers, required = false, styles }) {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
@@ -28,20 +28,14 @@ export default function UsersSelect({ selectedUsers, setSelectedUsers, required 
             <Select
                 options={users}
                 isMulti
+                isClearable
                 className="mt-1 block w-full"
                 value={selectedUsers || []}
                 onChange={setSelectedUsers}
                 placeholder={required ? "Sélectionnez des utilisateurs (obligatoire)..." : "Sélectionnez des utilisateurs..."}
                 styles={{
-                    menu: base => ({ ...base, maxHeight: "150px", overflowY: "auto" }),
-                    control: (base, state) => ({
-                        ...base,
-                        borderColor: required && (!selectedUsers || selectedUsers.length === 0) 
-                            ? '#ef4444' 
-                            : state.isFocused 
-                                ? '#6366f1' 
-                                : '#d1d5db'
-                    })
+                    ...styles,
+                    menu: base => ({ ...base, maxHeight: "150px", overflowY: "auto", zIndex: 9999 }),
                 }}
             />
             {required && (!selectedUsers || selectedUsers.length === 0) && (

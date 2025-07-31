@@ -62,4 +62,7 @@ Route::middleware(['jwt', 'admin'])->group(function() {
     Route::post('storeUser', 'App\Http\Controllers\UserController@store'); // Enregistre un utilisateur
     Route::put('updateUser/{id}', 'App\Http\Controllers\UserController@update'); // Modifie un utilisateur
     Route::delete('deleteUser/{id}', 'App\Http\Controllers\UserController@delete'); // Supprime un utilisateur
+
+    //Statistiques
+    Route::get('getStatByUserByServiceByDate', 'App\Http\Controllers\StatistiquesController@getStatByUserByServiceByDate'); // Récupère les statistiques 'barres' par utilisateur, service et date
 });
