@@ -36,10 +36,12 @@ services:
 #=========== Administration =========== 
 
   phpmyadmin:
+    build:
+      dockerfile: ./phpmyadmin/Dockerfile
+    container_name: phpMyAdmin
     profiles:
       - dev
-    image: phpmyadmin
-    restart: always
+    restart: unless-stopped
     ports:
       - 8080:80
     environment:
@@ -77,6 +79,11 @@ services:
       - ./ssl:/etc/nginx/ssl
       - frontend-dist:/var/www/html:ro
       - backend-dist:/var/www/intranet-backend:ro
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./nginx/
+          target: /etc/nginx/
 
   intranet-backend-dev:
     container_name: intranet-backend-dev
@@ -218,7 +225,7 @@ services:
     networks:
       - intra-net
     volumes:
-      - frontend-dist:/var/www/intranet-frontend/dist
+      - frontend-dist:/var/www/intranet-frontend
 
 
 volumes:
