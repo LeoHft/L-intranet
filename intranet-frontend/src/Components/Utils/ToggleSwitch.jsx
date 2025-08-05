@@ -2,7 +2,7 @@ import { ToggleContext } from './ToggleContext';
 
 import { useState, useContext } from 'react';
 import { Check, X } from 'lucide-react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { HouseWifi } from 'lucide-react';
 
 
@@ -10,6 +10,7 @@ export default function ToggleSwitch() {
     const { enabled, setEnabled } = useContext(ToggleContext);
 
     const notification = () => {
+        console.log("Notification triggered");
         if (!enabled) { 
             toast('Accès depuis le réseau local', {
                 icon: '🏠',
@@ -41,7 +42,6 @@ export default function ToggleSwitch() {
                     </div>
                 </button>
                 <HouseWifi />
-                <Toaster />
             </div>
         </>
     );

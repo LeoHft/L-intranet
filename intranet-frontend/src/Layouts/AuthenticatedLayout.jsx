@@ -87,7 +87,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     >
                                         Menu
                                     </NavLink>
-                                    {user?.is_admin && (
+                                    {user?.is_admin ? (
                                         <NavLink
                                             to="/adminDashboard"
                                             active={location.pathname === '/adminDashboard'}
@@ -95,7 +95,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         >
                                             Admin
                                         </NavLink>
-                                    )}
+                                    ) : null}
                                 </div>
                             </div>
                             
@@ -105,11 +105,11 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <SearchBar />
                                 </div>
                                 
-                                {user?.is_admin && (
+                                {user?.is_admin ? (
                                     <div className="hidden sm:ms-6 sm:flex sm:items-center">
                                         <ToggleSwitch />
                                     </div>
-                                )}
+                                ) : null}
                                 
                                 <div className="relative flex-shrink-0">
                                     <Dropdown>
@@ -216,7 +216,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <span className="ml-1">Menu Principal</span>
                                 </ResponsiveNavLink>
                                 
-                                {user?.is_admin && (
+                                {user?.is_admin ? (
                                     <ResponsiveNavLink
                                         to="/adminDashboard"
                                         active={location.pathname === '/adminDashboard'}
@@ -224,15 +224,15 @@ export default function AuthenticatedLayout({ header, children }) {
                                     >
                                         <span className="ml-1">Administration</span>
                                     </ResponsiveNavLink>
-                                )}
+                                ) : null}
                             </div>
 
                             {/* Toggle admin pour mobile */}
-                            {user?.is_admin && (
+                            {user?.is_admin ? (
                                 <div className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
                                     <ToggleSwitch />
                                 </div>
-                            )}
+                            ) : null}
 
                             {/* Actions utilisateur mobile */}
                             <div className="space-y-2 pt-4 border-t border-gray-200">
@@ -269,6 +269,8 @@ export default function AuthenticatedLayout({ header, children }) {
                 </main>
 
             </div>
+            
+            <Toaster />
         </ToggleContext.Provider>
     );
 }
