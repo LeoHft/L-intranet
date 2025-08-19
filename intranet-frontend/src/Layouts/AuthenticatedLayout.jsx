@@ -62,43 +62,48 @@ export default function AuthenticatedLayout({ header, children }) {
     return (
         <ToggleContext.Provider value={{ enabled, setEnabled }}>
             {/* Fond d'écran fixe pour éviter les conflits avec les modals */}
-            <div 
-                className="fixed inset-0 bg-[url('/background.jpg')] bg-cover bg-no-repeat bg-center"
-                style={{ zIndex: -1 }}
-            />
+            <div />
             
             <div className="min-h-screen relative">
                 {/* Navigation principale */}
-                <nav className="sticky top-0 z-50">
-                    <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 bg-rose/20 backdrop-blur-sm">
-                        <div className="flex h-16 sm:h-18 justify-between items-center">
+                <nav className="navbar sticky top-0 z-50 bg-base-200/20 backdrop-blur-sm">
+                    <div className="container mx-auto">
+                        <div className="navbar-start">
                             {/* Logo et navigation desktop */}
                             <div className="flex items-center space-x-4 sm:space-x-8">
-                                <Link to="/">
+                                <Link to="/" className="btn btn-ghost">
                                     <HouseWifi className="h-7 w-7 hover:animate-bounce" />
                                 </Link>
 
                                 {/* Navigation desktop */}
-                                <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
-                                    <NavLink
-                                        to="/dashboard"
-                                        active={location.pathname === '/dashboard'}
-                                        className="text-white/90 font-medium transition-colors duration-200"
-                                    >
-                                        Menu
-                                    </NavLink>
-                                    {user?.is_admin ? (
-                                        <NavLink
-                                            to="/adminDashboard"
-                                            active={location.pathname === '/adminDashboard'}
-                                            className="text-white/90 font-medium transition-colors duration-200 text-sm lg:text-base"
-                                        >
-                                            Admin
-                                        </NavLink>
-                                    ) : null}
+                                <div className="hidden md:flex">
+                                    <ul className="menu menu-horizontal px-1">
+                                        <li>
+                                            <NavLink
+                                                to="/dashboard"
+                                                active={location.pathname === '/dashboard'}
+                                                className="text-base-content/90 font-medium"
+                                            >
+                                                Menu
+                                            </NavLink>
+                                        </li>
+                                        {user?.is_admin ? (
+                                            <li>
+                                                <NavLink
+                                                    to="/adminDashboard"
+                                                    active={location.pathname === '/adminDashboard'}
+                                                    className="text-base-content/90 font-medium"
+                                                >
+                                                    Admin
+                                                </NavLink>
+                                            </li>
+                                        ) : null}
+                                    </ul>
                                 </div>
                             </div>
-                            
+                        </div>
+                        
+                        <div className="navbar-end">
                             {/* Actions utilisateur desktop */}
                             <div className="hidden md:flex items-center space-x-3 lg:space-x-4">
                                 <div className="max-w-xs lg:max-w-sm">
@@ -106,17 +111,17 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </div>
                                 
                                 {user?.is_admin ? (
-                                    <div className="hidden sm:ms-6 sm:flex sm:items-center">
+                                    <div className="hidden sm:flex sm:items-center">
                                         <ToggleSwitch />
                                     </div>
                                 ) : null}
                                 
-                                <div className="relative flex-shrink-0">
+                                <div className="dropdown dropdown-end">
                                     <Dropdown>
                                         <Dropdown.Trigger>
                                             <button
                                                 type="button"
-                                                className="flex items-center rounded-lg bg-white/20 backdrop-blur-sm px-3 py-2 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
+                                                className="btn btn-ghost bg-base-200/20 backdrop-blur-sm"
                                             >
                                                 <span className="max-w-[100px] lg:max-w-none truncate">
                                                     {user?.name}
@@ -136,16 +141,16 @@ export default function AuthenticatedLayout({ header, children }) {
                                             </button>
                                         </Dropdown.Trigger>
 
-                                        <Dropdown.Content className="mt-2 backdrop-blur-md bg-white/95 border border-white/20 shadow-xl">
+                                        <Dropdown.Content className="dropdown-content menu bg-base-100 rounded-box shadow">
                                             <Dropdown.Link
                                                 to="/profile/edit"
-                                                className="text-gray-700 hover:bg-gray-100/80 transition-colors duration-200"
+                                                className="btn btn-ghost w-full justify-start text-left"
                                             >
                                                 Profil
                                             </Dropdown.Link>
                                             <button
                                                 onClick={handleLogout}
-                                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100/80 focus:bg-gray-100/80 focus:outline-none"
+                                                className="btn btn-ghost w-full justify-start text-left"
                                             >
                                                 Déconnexion
                                             </button>
@@ -155,10 +160,10 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
 
                             {/* Bouton menu mobile */}
-                            <div className="flex md:hidden">
+                            <div className="md:hidden">
                                 <button
                                     onClick={() => setShowingNavigationDropdown(!showingNavigationDropdown)}
-                                    className="inline-flex items-center justify-center rounded-lg p-2 text-white/90 transition-all duration-200 hover:bg-white/20 hover:text-white focus:bg-white/20 focus:text-white focus:outline-none active:scale-95"
+                                    className="btn btn-ghost"
                                     aria-expanded={showingNavigationDropdown}
                                     aria-label="Menu principal"
                                 >
@@ -175,26 +180,28 @@ export default function AuthenticatedLayout({ header, children }) {
                     {/* Menu mobile avec animation */}
                     <div
                     
-                        className={`md:hidden transition-all duration-300 ease-in-out backdrop-blur-md bg-white/95 border-t border-white/20 ${
+                        className={`md:hidden drawer-side ${
                             showingNavigationDropdown 
                                 ? 'max-h-screen opacity-100 visible' 
                                 : 'max-h-0 opacity-0 invisible overflow-hidden'
                         }`}
                     >
-                        <div className="px-4 py-6 space-y-6">
+                        <div className="menu bg-base-100 p-4 space-y-6">
                             {/* Informations utilisateur */}
-                            <div className="pb-4 border-b border-gray-200">
+                            <div className="pb-4 border-b border-base-300">
                                 <div className="flex items-center space-x-3">
-                                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                        <span className="text-white font-semibold text-sm">
-                                            {user?.name?.charAt(0)?.toUpperCase()}
-                                        </span>
+                                    <div className="avatar placeholder">
+                                        <div className="bg-primary text-primary-content rounded-full w-10 h-10">
+                                            <span className="text-sm font-semibold">
+                                                {user?.name?.charAt(0)?.toUpperCase()}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-base font-semibold text-gray-900 truncate">
+                                        <p className="text-base font-semibold truncate">
                                             {user?.name}
                                         </p>
-                                        <p className="text-sm text-gray-500 truncate">
+                                        <p className="text-sm opacity-70 truncate">
                                             {user?.email}
                                         </p>
                                     </div>
@@ -211,7 +218,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 <ResponsiveNavLink
                                     to="/dashboard"
                                     active={location.pathname === '/dashboard'}
-                                    className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/80 transition-colors duration-200"
+                                    className="btn btn-ghost w-full justify-start"
                                 >
                                     <span className="ml-1">Menu Principal</span>
                                 </ResponsiveNavLink>
@@ -220,7 +227,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <ResponsiveNavLink
                                         to="/adminDashboard"
                                         active={location.pathname === '/adminDashboard'}
-                                        className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/80 transition-colors duration-200"
+                                        className="btn btn-ghost w-full justify-start"
                                     >
                                         <span className="ml-1">Administration</span>
                                     </ResponsiveNavLink>
@@ -229,23 +236,23 @@ export default function AuthenticatedLayout({ header, children }) {
 
                             {/* Toggle admin pour mobile */}
                             {user?.is_admin ? (
-                                <div className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
+                                <div className="card bg-base-200 p-3">
                                     <ToggleSwitch />
                                 </div>
                             ) : null}
 
                             {/* Actions utilisateur mobile */}
-                            <div className="space-y-2 pt-4 border-t border-gray-200">
+                            <div className="space-y-2 pt-4 border-t border-base-300">
                                 <ResponsiveNavLink 
                                     to="/profile/edit"
-                                    className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/80 transition-colors duration-200"
+                                    className="btn btn-ghost w-full justify-start"
                                 >
                                     <span className="ml-1">Mon Profil</span>
                                 </ResponsiveNavLink>
                                 
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center w-full px-3 py-2 text-left rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200 focus:outline-none focus:bg-red-50"
+                                    className="btn btn-ghost w-full justify-start text-error"
                                 >
                                     <span className="ml-1">Déconnexion</span>
                                 </button>
@@ -256,15 +263,15 @@ export default function AuthenticatedLayout({ header, children }) {
 
                 {/* Header conditionnel */}
                 {header && (
-                    <header className="bg-white/90 backdrop-blur-sm shadow-sm relative z-40">
-                        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                    <header className="bg-base-100/90 backdrop-blur-sm shadow-sm relative z-40">
+                        <div className="container mx-auto px-4 py-6">
                             {header}
                         </div>
                     </header>
                 )}
 
                 {/* Contenu principal */}
-                <main className="relative z-30 px-3 sm:px-6 lg:px-8 py-6">
+                <main className="container mx-auto relative z-30 px-3 py-6">
                     {children}
                 </main>
 

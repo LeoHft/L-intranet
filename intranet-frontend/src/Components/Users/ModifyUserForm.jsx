@@ -72,11 +72,11 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
 
     return (
         <Modal show={true} onClose={() => { onClose(); }}>
-            <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
-                <h1 className="text-lg font-medium text-gray-900">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <h1 className="text-lg font-medium">
                     Modifier un utilisateur
                 </h1>
-                <div>
+                <div className="form-control">
                     <InputLabel htmlFor="name" value="Nom de l'utilisateur*" />
                     <TextInput
                         id="name"
@@ -84,13 +84,13 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
                         value={data.name}
                         onChange={(e) => setData({ ...data, name: e.target.value})}
                         type="text"
-                        className="mt-1 block w-full"
+                        className="w-full"
                         placeholder="Nom de l'utilisateur"
                         required
                     />
                     <InputError message={errors.name} className="mt-2" />
                 </div>
-                <div>
+                <div className="form-control">
                     <InputLabel htmlFor="email" value="Email*" />
                     <TextInput
                         id="email"
@@ -98,28 +98,28 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
                         value={data.email}
                         onChange={(e) => setData({ ...data, email: e.target.value})}
                         type="text"
-                        className="mt-1 block w-full"
+                        className="w-full"
                         placeholder="Email de l'utilisateur"
                         required
                     />
                     <InputError message={errors.email} className="mt-2" />
                 </div>
-                <div className="mt-4 accent-black hover:green-500">
-                    <input
-                        id="is_admin"
-                        type="checkbox"
-                        name="is_admin"
-                        ref={is_admin}
-                        checked={data.is_admin}
-                        className="mt-1 w-4 h-4"
-                        onChange={(e) => setData({ ...data, is_admin: e.target.checked})}
-                    />
-                    <label htmlFor="is_admin" className="text-ml text-gray-700 cursor-pointer hover:text-gray-500 transition ml-2 ">
-                        Administrateur
+                <div className="form-control">
+                    <label className="label cursor-pointer">
+                        <input
+                            id="is_admin"
+                            type="checkbox"
+                            name="is_admin"
+                            ref={is_admin}
+                            checked={data.is_admin}
+                            className="checkbox checkbox-primary"
+                            onChange={(e) => setData({ ...data, is_admin: e.target.checked})}
+                        />
+                        <span className="label-text ml-2">Administrateur</span>
                     </label>
                     <InputError message={errors.is_admin} className="mt-3" />
                 </div>
-                <button type="submit" className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
+                <button type="submit" className="btn btn-primary">
                     Valider
                 </button>
             </form>

@@ -57,38 +57,48 @@ export default function VerifyEmail() {
 
     return (
         <GuestLayout>
-            <div className="mb-4">
-                <h2 className="text-xl font-semibold">Email Verification</h2>
-            </div>
+            <div className="hero min-h-screen">
+                <div className="hero-content w-full max-w-md">
+                    <div className="card bg-base-100/10 backdrop-blur-sm shadow-xl w-full">
+                        <div className="card-body space-y-6">
+                            <div className="mb-4">
+                                <h2 className="card-title text-xl">Email Verification</h2>
+                            </div>
 
-            <div className="mb-4 text-sm text-gray-600">
-                Thanks for signing up! Before getting started, could you verify
-                your email address by clicking on the link we just emailed to
-                you? If you didn't receive the email, we will gladly send you
-                another.
-            </div>
+                            <div className="text-sm opacity-70">
+                                Thanks for signing up! Before getting started, could you verify
+                                your email address by clicking on the link we just emailed to
+                                you? If you didn't receive the email, we will gladly send you
+                                another.
+                            </div>
 
-            {status === 'verification-link-sent' && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address
-                    you provided during registration.
+                            {status === 'verification-link-sent' && (
+                                <div className="alert alert-success">
+                                    <span className="text-sm">
+                                        A new verification link has been sent to the email address
+                                        you provided during registration.
+                                    </span>
+                                </div>
+                            )}
+
+                            <form onSubmit={submit}>
+                                <div className="flex items-center justify-between">
+                                    <PrimaryButton disabled={processing}>
+                                        Resend Verification Email
+                                    </PrimaryButton>
+
+                                    <button
+                                        onClick={handleLogout}
+                                        className="link link-hover text-sm opacity-70"
+                                    >
+                                        Déconnexion
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            )}
-
-            <form onSubmit={submit}>
-                <div className="mt-4 flex items-center justify-between">
-                    <PrimaryButton disabled={processing}>
-                        Resend Verification Email
-                    </PrimaryButton>
-
-                    <button
-                        onClick={handleLogout}
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Déconnexion
-                    </button>
-                </div>
-            </form>
+            </div>
         </GuestLayout>
     );
 }

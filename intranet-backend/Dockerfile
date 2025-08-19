@@ -9,6 +9,7 @@ COPY . .
 RUN apt-get update \
   && apt-get install -y build-essential libpng-dev libjpeg-dev libonig-dev \
      libxml2-dev libzip-dev pkg-config zip unzip curl gnupg netcat-openbsd \
+     libicu-dev \
   && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
   && apt-get install -y nodejs
 

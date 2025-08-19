@@ -58,11 +58,11 @@ export default function ModifyStatusForm({ status, onClose, onSuccess }) {
 
     return (
         <Modal show={true} onClose={() => { onClose(); }}>
-            <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
-                <h1 className="text-lg font-medium text-gray-900">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <h1 className="text-lg font-medium">
                     Modifier un status
                 </h1>
-                <div>
+                <div className="form-control">
                     <InputLabel htmlFor="name" value="Nom du status*" />
                     <TextInput
                         id="name"
@@ -70,12 +70,12 @@ export default function ModifyStatusForm({ status, onClose, onSuccess }) {
                         value={data.name}
                         onChange={(e) => setData({ ...data, name: e.target.value})}
                         type="text"
-                        className="mt-1 block w-full"
+                        className="w-full"
                         placeholder="Nom du status"
                         required
                     />
                 </div>
-                <div>
+                <div className="form-control">
                     <InputLabel htmlFor="description" value="Description max: 255" />
                     <TextInput
                         id="description"
@@ -83,11 +83,11 @@ export default function ModifyStatusForm({ status, onClose, onSuccess }) {
                         value={data.description}
                         onChange={(e) => setData({ ...data, description: e.target.value})}
                         type="text"
-                        className="mt-1 block w-full"
+                        className="w-full"
                         placeholder="Description du status"
                     />
                 </div>
-                <button type="submit" className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
+                <button type="submit" className="btn btn-primary">
                     Valider
                 </button>
             </form>

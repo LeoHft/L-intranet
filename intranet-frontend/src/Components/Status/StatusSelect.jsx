@@ -26,14 +26,14 @@ export default function StatusSelect({ selectedStatus, setSelectedStatus }) {
     }, []);
 
     return (
-        <div>
-            <label className="block text-sm font-medium text-gray-700">Statut</label>
+        <div className="form-control">
+            <label className="label-text">Statut</label>
             {loading ? (
-                <p className="text-sm text-gray-500">Chargement des statuts...</p>
+                <p className="text-sm opacity-70">Chargement des statuts...</p>
             ) : (
                 <Select
                     options={statusOptions}
-                    className="mt-1 block w-full"
+                    className="w-full"
                     value={selectedStatus || null}
                     onChange={setSelectedStatus}
                     placeholder="Sélectionnez un statut..."

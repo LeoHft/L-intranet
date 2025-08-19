@@ -40,12 +40,12 @@ return (
     <>
         <Toaster />
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-end justify-end">
-            <div className="w-full min-w-[180px]">
-                <label className="block text-sm font-medium text-gray-700">Statuts</label>
+            <div className="form-control w-full min-w-[180px]">
+                <label className="label-text font-medium">Statuts</label>
                 <Select
                     options={status}
                     isMulti
-                    className="mt-1 block w-full"
+                    className="w-full"
                     styles={{
                         ...glassStyles,
                         menuPortal: (base) => ({ ...base, zIndex: 9999 })
@@ -56,12 +56,12 @@ return (
                     placeholder="Sélectionnez des statuts..."
                 />
             </div>
-            <div className="w-full sm:min-w-[220px]">
-                <label className="block text-sm font-medium text-gray-700">Catégories</label>
+            <div className="form-control w-full sm:min-w-[220px]">
+                <label className="label-text font-medium">Catégories</label>
                 <Select
                     options={categories}
                     isMulti
-                    className="mt-1 block w-full"
+                    className="w-full"
                     styles={{
                         ...glassStyles,
                         menuPortal: (base) => ({ ...base, zIndex: 9999 })

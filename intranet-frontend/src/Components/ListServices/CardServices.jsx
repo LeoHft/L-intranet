@@ -86,7 +86,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
 
 
     return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-4">
+    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
         <AnimatePresence>
             {
                 filteredServices.length > 0 ? filteredServices.map((service, index) => (
@@ -124,7 +124,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                         }}
                         layout
                     >
-                        <div onClick={() => DetailService(service)} className="max-w-sm rounded-2xl overflow-hidden backdrop-blur-xl bg-white/20 border border-white/30 shadow-xl hover:shadow-2xl hover:bg-white/30 transition-all duration-300 ease-in-out cursor-pointer">
+                        <div onClick={() => DetailService(service)} className="card card-compact bg-base-100/20 backdrop-blur-xl border border-base-300/30 shadow-xl hover:shadow-2xl hover:bg-base-100/30 transition-all duration-300 cursor-pointer">
                             <>
                                 <motion.div 
                                     className="relative overflow-hidden"
@@ -139,23 +139,23 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                         transition={{ duration: 0.3 }}
                                     />
                                     {service.status !== null && (
-                                        <span className="absolute top-2 right-2 backdrop-blur-md bg-black/30 text-white px-3 py-1 rounded-full text-xs border border-white/20">
+                                        <span className="badge badge-primary absolute top-2 right-2 backdrop-blur-md bg-base-100/30 border-base-300/20">
                                             {service.status.name}
                                         </span>
                                     )}
                                     <div className="absolute top-2 left-2 space-y-1">
                                         {Array.isArray(service.categories) && service.categories.map((category, catIndex) => (
-                                            <span className="inline-block backdrop-blur-md bg-black/30 text-white px-3 py-1 text-xs rounded-full mr-1 border border-white/20">
+                                            <span className="badge badge-secondary backdrop-blur-md bg-base-100/30 border-base-300/20">
                                                 {category.name}
                                             </span>
                                         ))}
                                     </div>
                                 </motion.div>
                                 <div 
-                                    className="p-4"
+                                    className="card-body"
                                 >
                                     <div className="flex items-center justify-between">
-                                        <p className="font-bold text-lg text-gray-800">
+                                        <p className="card-title text-base-content">
                                             {service.name}
                                         </p>
 
@@ -163,15 +163,15 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                         >
                                             { enabled ? (
                                             service.internal_url ? (
-                                            <a href={service.internal_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.internal_url); }} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
+                                            <a href={service.internal_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.internal_url); }} className="btn btn-sm btn-outline backdrop-blur-md bg-base-100/20 border-base-300/30"> 
                                                 {service.internal_url}
                                             </a>// Evite la propagation du click pour ne pas ouvrir le modal
-                                            ) : (<p className="w-full text-center text-gray-500"> Pas de lien dispo </p>)
+                                            ) : (<p className="text-base-content/50"> Pas de lien dispo </p>)
                                             ) : (service.external_url ? (
-                                                <a href={service.external_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.external_url); }} className="text-center backdrop-blur-md bg-white/20 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white/30 transition-all duration-300 block border border-white/30"> 
+                                                <a href={service.external_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.external_url); }} className="btn btn-sm btn-outline backdrop-blur-md bg-base-100/20 border-base-300/30"> 
                                                 {service.external_url}
                                             </a>// Evite la propagation du click pour ne pas ouvrir le modal
-                                            ) :(<p className="w-full text-center text-gray-500"> Pas de lien dispo </p>))}
+                                            ) :(<p className="text-base-content/50"> Pas de lien dispo </p>))}
                                         </div>
                                     </div>
                                 </div>      
@@ -185,14 +185,14 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <p className="text-gray-500">Aucun service trouvé</p>
+                        <p className="text-base-content/50">Aucun service trouvé</p>
                     </motion.div>
                 )
             }
         </AnimatePresence>
 
 
-        <Modal show={showingServiceModal} onClose={() => setShowingServiceModal(false)} className="max-h-[90vh] w-full sm:w-auto overflow-y-auto flex items-center justify-center px-2">
+        <Modal show={showingServiceModal} onClose={() => setShowingServiceModal(false)} noPadding={true}>
             <AnimatePresence mode="wait">
                 {selectedService && (
                     <motion.div 
@@ -221,7 +221,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                             stiffness: 300,
                             duration: 0.3
                         }}
-                        className="max-w overflow-hidden relative"
+                        className="w-full max-w-2xl overflow-hidden relative rounded-lg"
                         style={{
                             background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
                             backdropFilter: 'blur(40px) saturate(200%)',
@@ -312,9 +312,9 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: 0.1, duration: 0.3 }}
                                 >
-                                    <p className="font-bold text-lg text-gray-800">{selectedService.name}</p>
-                                    <p className="text-gray-600 text-sm"> Créer le : {dayjs(selectedService.created_at).format('DD/MM/YYYY')} </p>
-                                    <p className="text-gray-600 text-sm"> Modifié le : {dayjs(selectedService.modified_at).format('DD/MM/YYYY')} </p>
+                                    <p className="font-bold text-lg text-base-content">{selectedService.name}</p>
+                                    <p className="text-base-content/70 text-sm"> Créer le : {dayjs(selectedService.created_at).format('DD/MM/YYYY')} </p>
+                                    <p className="text-base-content/70 text-sm"> Modifié le : {dayjs(selectedService.modified_at).format('DD/MM/YYYY')} </p>
                                 </motion.div>
                                 <motion.div 
                                     className="flex flex-col space-y-2 justify-end"
@@ -386,7 +386,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.1, duration: 0.3 }}
                             > 
-                                <p className="text-gray-600 text-ml text-center">
+                                <p className="text-base-content/70 text-ml text-center">
                                     {selectedService.description}
                                 </p>
                             </motion.div>

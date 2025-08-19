@@ -26,7 +26,7 @@ export default function AdminDashboard() {
     return (
         <AuthenticatedLayout>
 
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
+            <div className="container mx-auto px-4 mt-8">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
                     <TabsList>
                         <TabsTrigger value="overview">Statistiques</TabsTrigger>

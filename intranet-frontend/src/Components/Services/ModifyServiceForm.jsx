@@ -107,11 +107,11 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
 
     return (
         <Modal show={true} onClose={() => { onClose(); }}>
-            <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
-                <h1 className="text-lg font-medium text-gray-900">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <h1 className="text-lg font-medium">
                     Modifier un service
                 </h1>
-                <div>
+                <div className="form-control">
                     <InputLabel htmlFor="name" value="Nom du service*" />
                     <TextInput
                         id="name"
@@ -119,12 +119,12 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
                         value={data.name}
                         onChange={(e) => setData({ ...data, name: e.target.value})}
                         type="text"
-                        className="mt-1 block w-full"
+                        className="w-full"
                         placeholder="Nom du service"
                         required
                     />
                 </div>
-                <div>
+                <div className="form-control">
                     <InputLabel htmlFor="description" value="Description max: 255" />
                     <textarea
                         id="description"
@@ -132,11 +132,11 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
                         value={data.description}
                         onChange={(e) => setData({ ...data, description: e.target.value})}
                         type="text"
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        className="textarea textarea-bordered w-full"
                         placeholder="Description du service"
                     />
                 </div>
-                <div>
+                <div className="form-control">
                     <InputLabel htmlFor="internal_url" value="Url interne" />
                     <TextInput
                         id="internal_url"
@@ -144,11 +144,11 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
                         value={data.internal_url}
                         onChange={(e) => setData({ ...data, internal_url: e.target.value})}
                         type="text"
-                        className="mt-1 block w-full"
+                        className="w-full"
                         placeholder="Url interne"
                     />
                 </div>
-                <div>
+                <div className="form-control">
                     <InputLabel htmlFor="external_url" value="Url externe" />
                     <TextInput
                         id="external_url"
@@ -156,14 +156,14 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
                         value={data.external_url}
                         onChange={(e) => setData({ ...data, external_url: e.target.value})}
                         type="text"
-                        className="mt-1 block w-full"
+                        className="w-full"
                         placeholder="URL externe"
                     />
                 </div>
-                <div>
+                <div className="form-control">
                     <InputLabel htmlFor="image" value="Image" />
                     {data.image && (
-                        <div className="mt-2">
+                        <div>
                             <p>Image actuelle :</p>
                             <img src={data.image} alt="Aperçu" className="w-32 h-32 object-cover rounded" />
                         </div>
@@ -171,7 +171,7 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
                     <input
                         id="image"
                         type="file"
-                        className="mt-1 block w-full"
+                        className="file-input file-input-bordered w-full"
                         onChange={(e) => setImageFile(e.target.files[0])}
                     />
                 </div>
@@ -187,7 +187,7 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
                     selectedUsers={selectedUsers}
                     setSelectedUsers={setSelectedUsers}
                 />
-                <button type="submit" className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
+                <button type="submit" className="btn btn-primary">
                     Valider
                 </button>
             </form>

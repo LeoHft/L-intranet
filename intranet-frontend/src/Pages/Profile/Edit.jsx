@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
+import ThemeSettings from '@/Components/Utils/ThemeSettings';
 
 import { useEffect } from 'react';
 
@@ -16,6 +17,9 @@ export default function Edit({ mustVerifyEmail, status }) {
                 </h2>
             <div className="py-5">
                 <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
+                    <div>
+                        <ThemeSettings />
+                    </div>
                     <div>
                         <UpdateProfileInformationForm
                             mustVerifyEmail={mustVerifyEmail}

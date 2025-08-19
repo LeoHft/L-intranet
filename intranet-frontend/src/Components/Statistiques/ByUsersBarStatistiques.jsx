@@ -44,15 +44,16 @@ export default function ByUsersBarStatistiques({ statisticsData }) {
             const displayName = userData ? userData.user_name : label;
             
             return (
-                <div className="bg-white/10 backdrop-blur-xl p-4 border border-white/20 rounded-2xl shadow-2xl ring-1 ring-white/10">
-                    <p className="font-semibold text-gray-800 mb-2">{`${displayName}`}</p>
+                <div className="card bg-base-200/80 p-4 shadow-xl">
+                    <p className="font-semibold text-base-content mb-2">{`${displayName}`}</p>
                     {payload.map((entry, index) => (
                         <p key={index} className='text-sm mb-1' style={{ color: entry.color }}>
                             {`${entry.name}: ${entry.value} accès`}
                         </p>
                     ))}
-                    <div className='border-t border-white/20 pt-2 mt-2'>
-                        <p className="font-medium text-gray-700">
+                    <div className="divider my-2"></div>
+                    <div>
+                        <p className="font-medium text-base-content">
                             {`Total: ${total} accès`}
                         </p>
                     </div>
@@ -67,24 +68,18 @@ export default function ByUsersBarStatistiques({ statisticsData }) {
         {/* Affichage du graphique */}
         {statisticsData && statisticsData.length > 0 && (
                 /* Carte principale */
-                <div className="relative overflow-hidden">
-                    {/* Grand background */}
-                    <div className="absolute inset-0 rounded-3xl">
-                        <div className="h-full w-full rounded-3xl bg-white/30 backdrop-blur-xl"></div>
-                    </div>
+                <div className="card bg-base-100 shadow-xl">
                     {/* Contenu principal */}
-                    <div className="relative z-10 p-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-2xl font-medium">
+                    <div className="card-body">
+                        <div className="card-title justify-between mb-6">
+                            <h3 className="text-2xl">
                                 Graphique des accès par utilisateurs
                             </h3>
                         </div>
                         {/* Container du graphique */}
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-white/10 rounded-2xl backdrop-blur-sm"></div>
-                            <div className="relative z-10 p-6 rounded-2xl border border-white/20">
-                                <div style={{ width: '100%', height: '400px' }}>
-                                    <ResponsiveContainer>
+                        <div className="card bg-base-200 p-6">
+                            <div style={{ width: '100%', height: '400px' }}>
+                                <ResponsiveContainer>
                                         <BarChart
                                             data={chartData}
                                             margin={{
@@ -149,7 +144,6 @@ export default function ByUsersBarStatistiques({ statisticsData }) {
                                             />
                                         </BarChart>
                                     </ResponsiveContainer>
-                                </div>
                             </div>
                         </div>
                     </div>

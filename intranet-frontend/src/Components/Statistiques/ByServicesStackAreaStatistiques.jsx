@@ -22,7 +22,7 @@ const generateColors = (count) => {
         if (i < baseColors.length) {
             // Utiliser les couleurs de base d'abord
             colors.push(baseColors[i]);
-        } else {
+        } else { 
             // Générer des variations pour les services supplémentaires
             const baseIndex = i % baseColors.length;
             const variation = Math.floor(i / baseColors.length);
@@ -156,10 +156,11 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
             const total = sortedPayload.reduce((sum, entry) => sum + entry.value, 0);
             
             return (
-                <div className="bg-white/10 backdrop-blur-xl p-4 border border-white/20 rounded-2xl shadow-2xl ring-1 ring-white/10">
-                    <p className="font-semibold text-gray-800 mb-3 border-b border-white/20 pb-2">
+                <div className="card bg-base-200/80 p-4 shadow-xl">
+                    <p className="font-semibold text-base-content mb-3">
                         {`Date : ${label}`}
                     </p>
+                    <div className="divider my-0"></div>
                     <div className="max-h-40 overflow-y-auto space-y-1">
                         {sortedPayload
                             .filter(entry => entry.value > 0)
@@ -181,8 +182,9 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
                             ))}
                     </div>
                     {total > 0 && (
-                        <div className="border-t border-white/20 pt-2 mt-3">
-                            <p className="font-semibold text-gray-800 text-center">
+                        <div>
+                            <div className="divider my-2"></div>
+                            <p className="font-semibold text-base-content text-center">
                                 {`Total: ${total} accès`}
                             </p>
                         </div>
@@ -204,10 +206,10 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
                         <button
                             key={entry.value}
                             onClick={() => toggleService(entry.value)}
-                            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            className={`btn btn-sm gap-2 ${
                                 visibleServices.has(entry.value) || showAll
-                                    ? 'bg-white/20 text-gray-800 shadow-sm' 
-                                    : 'bg-gray-100/50 text-gray-500 hover:bg-gray-200/50'
+                                    ? 'btn-active btn-ghost' 
+                                    : 'btn-ghost btn-outline opacity-50 hover:opacity-100'
                             }`}
                             title={entry.value}
                         >
@@ -218,8 +220,8 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
                             <span className="truncate max-w-32">
                                 {truncateServiceName(entry.value, 15)}
                             </span>
-                            <span className="ml-2 text-xs text-gray-600">
-                                ({serviceStats.find(s => s.service === entry.value)?.total || 0})
+                            <span className="badge badge-sm">
+                                {serviceStats.find(s => s.service === entry.value)?.total || 0}
                             </span>
                         </button>
                     ))}
@@ -229,14 +231,14 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
                     <div className="flex justify-center mt-4 gap-2">
                         <button
                             onClick={() => setShowAll(!showAll)}
-                            className="px-4 py-2 bg-violet-600/20 text-gray-600 rounded-lg text-sm font-medium hover:bg-violet-700/30 transition-colors"
+                            className="btn btn-primary btn-sm"
                         >
                             {showAll ? 'Masquer certains services' : `Afficher tous les ${serviceNames.length} services`}
                         </button>
                         {!showAll && (
                             <button
                                 onClick={() => setVisibleServices(new Set(serviceNames.slice(0, 10)))}
-                                className="px-4 py-2 bg-gray-500/20 text-gray-800 rounded-lg text-sm font-medium hover:bg-gray-500/30 transition-colors"
+                                className="btn btn-secondary btn-sm"
                             >
                                 Top 10
                             </button>
@@ -251,28 +253,23 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
     return (
         <>
             {statisticsData && statisticsData.length > 0 && (
-                <div className="relative overflow-hidden">
-                    <div className="absolute inset-0 rounded-3xl">
-                        <div className="h-full w-full rounded-3xl bg-white/30 backdrop-blur-xl"></div>
-                    </div>
-                    <div className="relative z-10 p-8">
-                        <div className="flex items-center justify-between mb-6">
+                <div className="card bg-base-100 shadow-xl">
+                    <div className="card-body">
+                        <div className="card-title justify-between mb-6">
                             <div>
-                                <h3 className="text-2xl font-medium">
+                                <h3 className="text-2xl">
                                     Evolution des accès par services au cours du temps
                                 </h3>
-                                <p className="text-sm text-gray-600 mt-1">
+                                <p className="text-sm text-base-content/70 mt-1">
                                     {serviceNames.length} service{serviceNames.length > 1 ? 's' : ''} • 
                                     {showAll ? ' Tous affichés' : ` ${visibleServices.size} affiché${visibleServices.size > 1 ? 's' : ''}`}
                                 </p>
                             </div>
                         </div>
                         
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-white/10 rounded-2xl backdrop-blur-sm"></div>
-                            <div className="relative z-10 p-6 rounded-2xl border border-white/20">
-                                <div style={{ width: '100%', height: '500px' }}>
-                                    <ResponsiveContainer>
+                        <div className="card bg-base-200 p-6">
+                            <div style={{ width: '100%', height: '500px' }}>
+                                <ResponsiveContainer>
                                         <AreaChart
                                             data={filteredChartData}
                                             margin={{
@@ -328,7 +325,6 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
                                             })}
                                         </AreaChart>
                                     </ResponsiveContainer>
-                                </div>
                             </div>
                         </div>
                     </div>

@@ -7,29 +7,33 @@ import { HouseWifi } from 'lucide-react';
 
 export default function GuestLayout({ children }) {
     return (
-        <div className="bg-[url('/background.jpg')] bg-cover bg-no-repeat bg-center">
-            <nav>
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 items-center">
+        <div>
+            <nav className="navbar">
+                <div className="container mx-auto">
+                    <div className="navbar-start">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link to="/">
+                                <Link to="/" className="btn btn-ghost">
                                     <HouseWifi className="h-7 w-7" />
                                 </Link>
                             </div>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    to="/login"
-                                    active={location.pathname === '/login'}
-                                >
-                                    Connexion
-                                </NavLink>
+                            <div className="hidden sm:flex">
+                                <ul className="menu menu-horizontal px-1">
+                                    <li>
+                                        <NavLink
+                                            to="/login"
+                                            active={location.pathname === '/login'}
+                                        >
+                                            Connexion
+                                        </NavLink>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-                        <div className="ms-auto">
-                            <SearchBar />
-                        </div>
+                    </div>
+                    <div className="navbar-end">
+                        <SearchBar />
                     </div>
                 </div>
             </nav>

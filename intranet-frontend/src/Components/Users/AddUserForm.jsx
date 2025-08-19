@@ -65,11 +65,11 @@ export default function AddUserForm({ onUserAdded }) {
             <PrimaryButton onClick={AddUser}> Ajouter un Utilisateur </PrimaryButton>
             
             <Modal show={showingAddUserModal} onClose={() => setShowingAddUserModal(false)}>
-                    <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
-                        <h1 className="text-lg font-medium text-gray-900">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <h1 className="text-lg font-medium">
                             Ajouter un utilisateur
                         </h1>
-                        <div>
+                        <div className="form-control">
                             <InputLabel htmlFor="name" value="Nom*" />
 
                             <TextInput
@@ -77,7 +77,7 @@ export default function AddUserForm({ onUserAdded }) {
                                 name="name"
                                 placeholder="Nom de l'utilisateur"
                                 value={data.name}
-                                className="mt-1 block w-full"
+                                className="w-full"
                                 autoComplete="name"
                                 isFocused={true}
                                 onChange={(e) => setData({ ...data, name: e.target.value})}
@@ -87,7 +87,7 @@ export default function AddUserForm({ onUserAdded }) {
                             <InputError message={errors.name} className="mt-2" />
                         </div>
 
-                        <div className="mt-4">
+                        <div className="form-control">
                             <InputLabel htmlFor="email" value="Email*" />
 
                             <TextInput
@@ -96,7 +96,7 @@ export default function AddUserForm({ onUserAdded }) {
                                 name="email"
                                 placeholder="Email de l'utilisateur"
                                 value={data.email}
-                                className="mt-1 block w-full"
+                                className="w-full"
                                 autoComplete="username"
                                 onChange={(e) => setData({ ...data, email: e.target.value})}
                                 required
@@ -105,7 +105,7 @@ export default function AddUserForm({ onUserAdded }) {
                             <InputError message={errors.email} className="mt-2" />
                         </div>
 
-                        <div className="mt-4">
+                        <div className="form-control">
                             <InputLabel htmlFor="password" value="Mot de passe*" />
 
                             <TextInput
@@ -114,7 +114,7 @@ export default function AddUserForm({ onUserAdded }) {
                                 name="password"
                                 placeholder="Mot de passe de l'utilisateur"
                                 value={data.password}
-                                className="mt-1 block w-full"
+                                className="w-full"
                                 autoComplete="new-password"
                                 onChange={(e) => setData({ ...data, password: e.target.value})}
                                 required
@@ -123,7 +123,7 @@ export default function AddUserForm({ onUserAdded }) {
                             <InputError message={errors.password} className="mt-2" />
                         </div>
 
-                        <div className="mt-4">
+                        <div className="form-control">
                             <InputLabel
                                 htmlFor="password_confirmation"
                                 value="Confirmer le mot de passe*"
@@ -135,7 +135,7 @@ export default function AddUserForm({ onUserAdded }) {
                                 name="password_confirmation"
                                 placeholder="Confirmer le mot de passe"
                                 value={data.password_confirmation}
-                                className="mt-1 block w-full"
+                                className="w-full"
                                 autoComplete="new-password"
                                 onChange={(e) => setData({ ...data, password_confirmation: e.target.value})}
                                 required
@@ -147,21 +147,21 @@ export default function AddUserForm({ onUserAdded }) {
                             />
                         </div>
 
-                        <div className="mt-4 accent-black hover:green-500">
-                            <input
-                                id="is_admin"
-                                type="checkbox"
-                                name="is_admin"
-                                checked={data.is_admin}
-                                className="mt-1 w-4 h-4"
-                                onChange={(e) => setData({ ...data, is_admin: e.target.checked})}
-                            />
-                            <label htmlFor="is_admin" className="text-ml text-gray-700 cursor-pointer hover:text-gray-500 transition ml-2 ">
-                                Administrateur
+                        <div className="form-control">
+                            <label className="label cursor-pointer">
+                                <input
+                                    id="is_admin"
+                                    type="checkbox"
+                                    name="is_admin"
+                                    checked={data.is_admin}
+                                    className="checkbox checkbox-primary"
+                                    onChange={(e) => setData({ ...data, is_admin: e.target.checked})}
+                                />
+                                <span className="label-text ml-2">Administrateur</span>
                             </label>
                             <InputError message={errors.is_admin} className="mt-3" />
                         </div>
-                        <button type="submit" className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
+                        <button type="submit" className="btn btn-primary">
                             Valider
                         </button>
 
