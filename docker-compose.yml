@@ -131,7 +131,7 @@ services:
       target: development
     environment:
       NODE_ENV: development
-      VITE_API_URL: ${REACT_APP_API_URL}
+      VITE_API_URL: ${VITE_API_URL}
       # Variables pour Vite HMR
       CHOKIDAR_USEPOLLING: "true" 
       WATCHPACK_POLLING: "true" 
@@ -212,9 +212,10 @@ services:
       context: ./intranet-frontend
       dockerfile: Dockerfile
       target: production
+      args:
+        VITE_API_URL: ${VITE_API_URL}
     environment:
       NODE_ENV: production
-      VITE_API_URL: ${VITE_API_URL}
     networks:
       - intra-net
     volumes:

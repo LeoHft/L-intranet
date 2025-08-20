@@ -27,11 +27,13 @@ ENTRYPOINT ["/bin/sh", "./entrypoint-dev.sh"]
 # Stage de production
 FROM base AS production
 
-# Copier le code sourced
+# Copier le code source
 COPY . .
 
-COPY .env.example .env
+# Arguments de build pour les variables d'environnement
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
 
-# Build de l'application
+# Build de l'application avec les variables d'environnement
 RUN npm run build
 
