@@ -69,76 +69,78 @@ export default function UpdatePasswordForm() {
     };
 
     return (
-        <section className={'rounded-lg shadow-lg p-6 border border-rose-200/30'}>
-            <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Mettre à jour le mot de passe
-                </h2>
+        <section className="card bg-base-100 shadow-xl border border-base-300">
+            <div className="card-body">
+                <header>
+                    <h2 className="card-title text-lg">
+                        Mettre à jour le mot de passe
+                    </h2>
 
-                <p className="mt-1 text-sm text-gray-600">
-                    Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé.
-                </p>
-            </header>
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
-                <div>
-                    <InputLabel
-                        htmlFor="current_password"
-                        value="Mot de passe actuel"
-                    />
+                    <p className="text-sm opacity-70">
+                        Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé.
+                    </p>
+                </header>
+                <form onSubmit={updatePassword} className="space-y-6">
+                    <div className="form-control">
+                        <InputLabel
+                            htmlFor="current_password"
+                            value="Mot de passe actuel"
+                        />
 
-                    <TextInput
-                        id="current_password"
-                        ref={currentPasswordInput}
-                        value={data.current_password}
-                        onChange={(e) =>
-                            setData({ ...data, current_password: e.target.value })
-                        }
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                    />
+                        <TextInput
+                            id="current_password"
+                            ref={currentPasswordInput}
+                            value={data.current_password}
+                            onChange={(e) =>
+                                setData({ ...data, current_password: e.target.value })
+                            }
+                            type="password"
+                            className="w-full"
+                            autoComplete="current-password"
+                        />
 
-                </div>
+                    </div>
 
-                <div>
-                    <InputLabel htmlFor="password" value="Nouveau mot de passe" />
+                    <div className="form-control">
+                        <InputLabel htmlFor="password" value="Nouveau mot de passe" />
 
-                    <TextInput
-                        id="password"
-                        ref={passwordInput}
-                        value={data.new_password}
-                        onChange={(e) => setData({ ...data, new_password: e.target.value })}
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                    />
+                        <TextInput
+                            id="password"
+                            ref={passwordInput}
+                            value={data.new_password}
+                            onChange={(e) => setData({ ...data, new_password: e.target.value })}
+                            type="password"
+                            className="w-full"
+                            autoComplete="new-password"
+                        />
 
-                </div>
+                    </div>
 
-                <div>
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirmer le mot de passe"
-                    />
+                    <div className="form-control">
+                        <InputLabel
+                            htmlFor="password_confirmation"
+                            value="Confirmer le mot de passe"
+                        />
 
-                    <TextInput
-                        id="password_confirmation"
-                        value={data.new_password_confirmation}
-                        onChange={(e) =>
-                            setData({ ...data, new_password_confirmation: e.target.value })
-                        }
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                    />
+                        <TextInput
+                            id="password_confirmation"
+                            value={data.new_password_confirmation}
+                            onChange={(e) =>
+                                setData({ ...data, new_password_confirmation: e.target.value })
+                            }
+                            type="password"
+                            className="w-full"
+                            autoComplete="new-password"
+                        />
 
-                </div>
+                    </div>
 
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
+                    <div className="flex items-center gap-4">
+                        <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
 
-                </div>
-            </form>
+                    </div>
+                </form>
+            </div>
             <Toaster />
         </section>
     );

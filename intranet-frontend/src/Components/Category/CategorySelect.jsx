@@ -25,15 +25,15 @@ export default function CategorySelect({ selectedCategories, setSelectedCategori
     }, []);
 
     return (
-        <div>
-            <label className="block text-sm font-medium text-gray-700">Catégorie(s)</label>
+        <div className="form-control">
+            <label className="label-text font-medium">Catégorie(s)</label>
             {loading ? (
-                <p className="text-sm text-gray-500">Chargement des catégories...</p>
+                <p className="text-sm text-base-content/70">Chargement des catégories...</p>
             ) : (
                 <Select
                     options={categories}
                     isMulti
-                    className="mt-1 block w-full"
+                    className="w-full"
                     value={selectedCategories || []}
                     onChange={setSelectedCategories}
                     placeholder="Sélectionnez des catégories..."

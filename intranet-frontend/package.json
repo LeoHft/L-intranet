@@ -13,6 +13,7 @@
     "@headlessui/react": "^2.2.4",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.10.0",
+    "daisyui": "^5.0.50",
     "dayjs": "^1.11.13",
     "lucide-react": "^0.525.0",
     "motion": "^12.23.1",

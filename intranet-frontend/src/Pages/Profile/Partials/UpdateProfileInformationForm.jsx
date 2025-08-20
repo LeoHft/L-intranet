@@ -54,53 +54,55 @@ export default function UpdateProfileInformation() {
     };
 
     return (
-        <section className={'rounded-lg shadow-lg p-6 border border-rose-200/30'}>
-            <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Informations personnelles
-                </h2>
+        <section className="card bg-base-100 shadow-xl border border-base-300">
+            <div className="card-body">
+                <header>
+                    <h2 className="card-title text-lg">
+                        Informations personnelles
+                    </h2>
 
-                <p className="mt-1 text-sm text-gray-600">
-                    Mettez à jour les informations de profile et l'adresse e-mail de votre compte.
-                </p>
-            </header>
+                    <p className="text-sm opacity-70">
+                        Mettez à jour les informations de profile et l'adresse e-mail de votre compte.
+                    </p>
+                </header>
 
-            <form onSubmit={submit} className="mt-6 space-y-6">
-                <div>
-                    <InputLabel htmlFor="name" value="Nom" />
+                <form onSubmit={submit} className="space-y-6">
+                    <div className="form-control">
+                        <InputLabel htmlFor="name" value="Nom" />
 
-                    <TextInput
-                        id="name"
-                        className="mt-1 block w-full"
-                        value={data.name}
-                        onChange={(e) => setData({ ...data, name: e.target.value })}
-                        required
-                        isFocused
-                        autoComplete="name"
-                    />
+                        <TextInput
+                            id="name"
+                            className="w-full"
+                            value={data.name}
+                            onChange={(e) => setData({ ...data, name: e.target.value })}
+                            required
+                            isFocused
+                            autoComplete="name"
+                        />
 
-                </div>
+                    </div>
 
-                <div>
-                    <InputLabel htmlFor="email" value="E-mail" />
+                    <div className="form-control">
+                        <InputLabel htmlFor="email" value="E-mail" />
 
-                    <TextInput
-                        id="email"
-                        type="email"
-                        className="mt-1 block w-full"
-                        value={data.email}
-                        onChange={(e) => setData({ ...data, email: e.target.value })}
-                        required
-                        autoComplete="username"
-                    />
+                        <TextInput
+                            id="email"
+                            type="email"
+                            className="w-full"
+                            value={data.email}
+                            onChange={(e) => setData({ ...data, email: e.target.value })}
+                            required
+                            autoComplete="username"
+                        />
 
-                </div>
+                    </div>
 
 
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
-                </div>
-            </form>
+                    <div className="flex items-center gap-4">
+                        <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
+                    </div>
+                </form>
+            </div>
         </section>
     );
 }

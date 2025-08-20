@@ -65,11 +65,11 @@ export default function AddCategoryForm({ onCategoryAdded }) {
             <PrimaryButton onClick={AddCategory}> Ajouter une catégorie </PrimaryButton>
 
             <Modal show={showingAddCategoryModal} onClose={() => setShowingAddCategoryModal(false)}>
-                <form onSubmit={handleSubmit} className="mt-6 p-6 space-y-6">
-                    <h1 className="text-lg font-medium text-gray-900">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <h1 className="text-lg font-medium">
                         Ajouter une catégorie
                     </h1>
-                    <div>
+                    <div className="form-control">
                         <InputLabel htmlFor="name" value="Nom de la catégorie*" />
                         <TextInput
                             id="name"
@@ -77,12 +77,12 @@ export default function AddCategoryForm({ onCategoryAdded }) {
                             value={data.name}
                             onChange={(e) => setData({ ...data, name: e.target.value })}
                             type="text"
-                            className="mt-1 block w-full"
+                            className="w-full"
                             placeholder="Nom de la catégorie"
                             required
                         />
                     </div>
-                    <div>
+                    <div className="form-control">
                         <InputLabel htmlFor="description" value="Description max: 255" />
                         <TextInput
                             id="description"
@@ -90,17 +90,17 @@ export default function AddCategoryForm({ onCategoryAdded }) {
                             value={data.description}
                             onChange={(e) => setData({ ...data, description: e.target.value })}
                             type="text"
-                            className="mt-1 block w-full"
+                            className="w-full"
                             placeholder="Description de la catégorie"
                         />
                     </div>
                     <button 
                         type="submit" 
                         disabled={isLoading}
-                        className={`mt-4 px-4 py-2 rounded text-white ${
+                        className={`btn ${
                             isLoading 
-                                ? 'bg-gray-400 cursor-not-allowed' 
-                                : 'bg-purple-500 hover:bg-purple-600'
+                                ? 'btn-disabled' 
+                                : 'btn-primary'
                         }`}
                     >
                         {isLoading ? 'Ajout en cours...' : 'Valider'}

@@ -78,20 +78,20 @@ export default function ListStatistiques() {
                 <div className="flex flex-col gap-4 items-end w-full">
                     <div className="flex gap-4 items-end w-full justify-end">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Date de début</label>
+                            <label className="label">Date de début</label>
                             <input 
                                 type="date" 
-                                className="flex items-center rounded-lg bg-white/20 backdrop-blur-sm px-3 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent" 
+                                className="input input-bordered input-glass" 
                                 value={startDate} 
                                 onChange={e => setStartDate(e.target.value)}
                                 disabled={isLoading}
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Date de fin</label>
+                            <label className="label">Date de fin</label>
                             <input 
                                 type="date" 
-                                className="flex items-center rounded-lg bg-white/20 backdrop-blur-sm px-3 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent" 
+                                className="input input-bordered input-glass" 
                                 value={endDate} 
                                 onChange={e => setEndDate(e.target.value)}
                                 disabled={isLoading}
@@ -99,7 +99,7 @@ export default function ListStatistiques() {
                         </div>
 
                         <div className="">
-                            <label className="block text-sm font-medium text-gray-700">Type de lien</label>
+                            <label className="label">Type de lien</label>
                             <Select
                                 options={linkTypes}
                                 isMulti
@@ -169,51 +169,51 @@ export default function ListStatistiques() {
     );
 }
 
-// Styles custom pour effet liquid glass
+// Styles custom pour effet glass avec DaisyUI
 const glassStyles = {
     control: (provided, state) => ({
         ...provided,
-        background: 'rgba(255,255,255,0.25)',
+        background: 'rgb(var(--glass-background, 255 255 255) / 0.25)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        border: state.isFocused ? '2px solid #f9a8d4' : '1px solid rgba(255,255,255,0.3)',
-        boxShadow: state.isFocused ? '0 0 0 2px #f9a8d422' : '0 1px 2px 0 rgba(0,0,0,0.05)',
-        color: '#111827',
+        border: state.isFocused ? '2px solid hsl(var(--p))' : '1px solid rgb(var(--border-color, 255 255 255) / 0.3)',
+        boxShadow: state.isFocused ? '0 0 0 2px hsl(var(--p) / 0.2)' : '0 1px 2px 0 rgba(0,0,0,0.05)',
+        color: 'hsl(var(--bc))',
     }),
     menu: (provided) => ({
         ...provided,
-        background: 'rgba(255,255,255,0.75)',
+        background: 'rgb(var(--glass-background, 255 255 255) / 0.75)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        boxShadow: '0 8px 32px 0 rgba(249, 168, 212, 0.25)',
+        boxShadow: '0 8px 32px 0 hsl(var(--p) / 0.25)',
     }),
     option: (provided, state) => ({
         ...provided,
         background: state.isSelected
-            ? 'rgba(249,168,212,0.2)'
+            ? 'hsl(var(--p) / 0.2)'
             : state.isFocused
-            ? 'rgba(252,165,165,0.1)'
+            ? 'hsl(var(--p) / 0.1)'
             : 'transparent',
-        color: '#111827',
+        color: 'hsl(var(--bc))',
     }),
     singleValue: (provided) => ({
         ...provided,
-        color: '#111827',
+        color: 'hsl(var(--bc))',
     }),
     multiValue: (provided) => ({
         ...provided,
-        background: 'rgba(252,165,165,0.12)',
+        background: 'hsl(var(--p) / 0.12)',
     }),
     multiValueLabel: (provided) => ({
         ...provided,
-        color: '#9f1239',
+        color: 'hsl(var(--pc))',
     }),
     multiValueRemove: (provided) => ({
         ...provided,
-        color: '#9f1239',
+        color: 'hsl(var(--pc))',
         ':hover': {
-            backgroundColor: '#f9a8d4',
-            color: 'white',
+            backgroundColor: 'hsl(var(--p))',
+            color: 'hsl(var(--pc))',
         },
     }),
 };

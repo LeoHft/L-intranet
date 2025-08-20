@@ -26,16 +26,16 @@ export default function ServiceSelect({ selectedService, setSelectedService, sty
     }, []);
 
     return (
-        <div>
-            <label className="block text-sm font-medium text-gray-700">Services</label>
+        <div className="form-control">
+            <label className="label-text font-medium">Services</label>
             {loading ? (
-                <p className="text-sm text-gray-500">Chargement des services...</p>
+                <p className="text-sm text-base-content/70">Chargement des services...</p>
             ) : (
                 <Select
                     options={servicesOptions}
                     isMulti
                     isClearable
-                    className="mt-1 block w-full"
+                    className="w-full"
                     value={selectedService || []}
                     onChange={setSelectedService}
                     placeholder="Sélectionnez un statut..."

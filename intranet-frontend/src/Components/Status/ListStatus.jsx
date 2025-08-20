@@ -68,24 +68,24 @@ export default function ListStatus({ refreshTrigger }) {
 
     return (
         <>
-        <table className="table-auto border-collapse border border-gray-400 w-full bg-rose-50">
+        <table className="table table-zebra w-full">
             <thead>
-                <tr className="border border-gray-400">
-                    <th className="border border-gray-400 px-4">Nom</th>
-                    <th className="border border-gray-400 px-4">Description</th>
-                    <th className="border border-gray-400 px-4">Date d'ajout</th>
-                    <th className="border border-gray-400 px-4">Date de modification</th>
-                    <th className="border border-gray-400 px-4">Actions</th>
+                <tr>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Date d'ajout</th>
+                    <th>Date de modification</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {StatusList.length > 0 ? (
                     StatusList.map(status => (
-                        <tr key={status.id} className="border border-gray-400">
-                            <td className="border border-gray-400 px-4">{status.name}</td>
-                            <td className="border border-gray-400 px-4">{status.description}</td>
-                            <td className="border border-gray-400 px-4">{dayjs(status.created_at).format('DD/MM/YYYY HH:mm')}</td>
-                            <td className="border border-gray-400 px-4">{dayjs(status.updated_at).format('DD/MM/YYYY HH:mm')}</td>
+                        <tr key={status.id}>
+                            <td>{status.name}</td>
+                            <td>{status.description}</td>
+                            <td>{dayjs(status.created_at).format('DD/MM/YYYY HH:mm')}</td>
+                            <td>{dayjs(status.updated_at).format('DD/MM/YYYY HH:mm')}</td>
                             <td className="flex gap-2 content-center items-center justify-center py-1">
                                 <SecondaryButton onClick={() => ModifyStatus(status)}>Modifier</SecondaryButton>
                                 <DangerButton onClick={() => DeleteStatusShow(status)}>Supprimer</DangerButton>
@@ -94,7 +94,7 @@ export default function ListStatus({ refreshTrigger }) {
                     ))
                 ) : (
                     <tr>
-                        <td colSpan="5" className="text-center text-gray-500 py-4 ">
+                        <td colSpan="5" className="text-center text-base-content/70 py-4 ">
                             Aucun status trouvée.
                         </td>
                     </tr>
@@ -111,8 +111,8 @@ export default function ListStatus({ refreshTrigger }) {
         )}
 
         <Modal show={showModalDeleteStatus} onClose={() => setShowModalDeleteStatus(false)}>
-            <form onSubmit={DeleteStatus} className="mt-6 p-6 space-y-6">
-                <h1 className="text-lg font-medium text-gray-900">
+            <form onSubmit={DeleteStatus} className="space-y-6">
+                <h1 className="text-lg font-medium">
                     Supprimer un status
                 </h1>
                 <p>Êtes-vous sûr de vouloir supprimer le status "{selectedStatus?.name}" ?</p>

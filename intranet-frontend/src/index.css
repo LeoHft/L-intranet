@@ -1,2 +1,8 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
+/* Fix pour éviter le padding automatique quand la modal est ouverte */
+body.modal-body-locked {
+    overflow: hidden !important;
+    padding-right: 0 !important;
+}

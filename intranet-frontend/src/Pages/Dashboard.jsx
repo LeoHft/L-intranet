@@ -21,7 +21,7 @@ export default function Dashboard({}) {
 
     return (
         <AuthenticatedLayout>
-            <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8 mt-4 sm:mt-8">
+            <div className="container mx-auto px-2 mt-4 sm:mt-8">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
                     <div className="flex items-center justify-between w-full">
                         <div className="text-left">
@@ -32,7 +32,7 @@ export default function Dashboard({}) {
                         <div className="flex md:hidden ml-4">
                             <button
                                 onClick={() => setShowingFilters(!showingFilters)}
-                                className="rounded-lg p-2 text-white/90 transition-all duration-200 hover:bg-white/20 hover:text-white focus:bg-white/20 focus:text-white focus:outline-none active:scale-95"
+                                className="btn btn-ghost btn-circle"
                                 aria-expanded={showingFilters}
                                 aria-label="Filtres"
                             >
@@ -55,18 +55,20 @@ export default function Dashboard({}) {
                     </div>
 
                     <div
-                        className={`md:hidden transition-all duration-300 ease-in-out backdrop-blur-md border-t border-white/20 ${
+                        className={`md:hidden collapse ${
                             showingFilters 
-                                ? 'max-h-screen opacity-100 visible' 
-                                : 'max-h-0 opacity-0 invisible overflow-hidden'
+                                ? 'collapse-open' 
+                                : 'collapse-close'
                         }`}
                     >
-                        <FilterServices className=""
-                            selectedCategories={selectedCategories}
-                            setSelectedCategories={setSelectedCategories}
-                            selectedStatus={selectedStatus}
-                            setSelectedStatus={setSelectedStatus}
-                        />
+                        <div className="collapse-content">
+                            <FilterServices className=""
+                                selectedCategories={selectedCategories}
+                                setSelectedCategories={setSelectedCategories}
+                                selectedStatus={selectedStatus}
+                                setSelectedStatus={setSelectedStatus}
+                            />
+                        </div>
                     </div>
                 </div>
                 

@@ -21,15 +21,15 @@ export default function UsersSelect({ selectedUsers, setSelectedUsers, required 
     }, []);
 
     return (
-        <div>
-            <label className="block text-sm font-medium text-gray-700">
-                Utilisateur(s){required && <span className="text-red-500">*</span>}
+        <div className="form-control">
+            <label className="label-text">
+                Utilisateur(s){required && <span className="text-error">*</span>}
             </label>
             <Select
                 options={users}
                 isMulti
                 isClearable
-                className="mt-1 block w-full"
+                className="w-full"
                 value={selectedUsers || []}
                 onChange={setSelectedUsers}
                 placeholder={required ? "Sélectionnez des utilisateurs (obligatoire)..." : "Sélectionnez des utilisateurs..."}
@@ -39,7 +39,7 @@ export default function UsersSelect({ selectedUsers, setSelectedUsers, required 
                 }}
             />
             {required && (!selectedUsers || selectedUsers.length === 0) && (
-                <p className="mt-1 text-sm text-red-500">Au moins un utilisateur doit être sélectionné</p>
+                <p className="text-sm text-error">Au moins un utilisateur doit être sélectionné</p>
             )}
         </div>
     );

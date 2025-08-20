@@ -66,60 +66,60 @@ export default function ListServices({ refreshTrigger }) {
 
     return (
         <>
-            <table className="table-auto border-collapse border border-gray-400 h-full w-full bg-rose-50">
+            <table className="table table-zebra w-full">
                 <thead>
-                    <tr className="border border-gray-400">
-                        <th className="border border-gray-400 px-4">Nom</th>
-                        <th className="border border-gray-400 px-4">Description</th>
-                        <th className="border border-gray-400 px-4">URL Intern</th>
-                        <th className="border border-gray-400 px-4">URL Externe</th>
-                        <th className="border border-gray-400 px-4">Image</th>
-                        <th className="border border-gray-400 px-4"> Catégorie(s) </th>
-                        <th className="border border-gray-400 px-4">Statut</th>
-                        <th className="border border-gray-400 px-4">Utilisateur(s)</th>
-                        {/* <th className="border border-gray-400 px-4">Date d'ajout</th>
-                        <th className="border border-gray-400 px-4">Date de modification</th> */}
-                        <th className="border border-gray-400 px-4">Actions</th>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>URL Intern</th>
+                        <th>URL Externe</th>
+                        <th>Image</th>
+                        <th> Catégorie(s) </th>
+                        <th>Statut</th>
+                        <th>Utilisateur(s)</th>
+                        {/* <th>Date d'ajout</th>
+                        <th>Date de modification</th> */}
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {servicesList.length > 0 ? (
                         servicesList.map(service => (
-                            <tr key={service.id} className="border border-gray-400 h-full">
-                                <td className="border border-gray-400 px-4">{service.name}</td>
-                                <td className="border border-gray-400 px-4 truncate max-w-[160px]">{service.description}</td>
-                                <td className="border border-gray-400 px-4">{service.internal_url}</td>
-                                <td className="border border-gray-400 px-4">{service.external_url}</td>
-                                <td className="border border-gray-400 px-4">
+                            <tr key={service.id}>
+                                <td>{service.name}</td>
+                                <td className="truncate max-w-[160px]">{service.description}</td>
+                                <td>{service.internal_url}</td>
+                                <td>{service.external_url}</td>
+                                <td>
                                     {service.image_url && (
                                         <img src={service.image_url} alt="Service" className="h-10 w-10 object-cover" />
                                     )}
                                 </td>
-                                <td className="border border-gray-400 px-4">
+                                <td>
                                     {service.categories.filter(category => category !== null).map(category => (
-                                        <span key={category.id} className="inline-block bg-gray-200 text-gray-700 px-2 py-1 mb-1 mt-1 rounded-full text-sm mr-2 hover:bg-gray-300">
+                                        <span key={category.id} className="badge badge-secondary mb-1 mt-1 mr-2">
                                             {category.name}
                                         </span>
                                     ))}
                                 </td>
-                                <td className="border border-gray-400 px-4">
+                                <td>
                                     {service.status?.name ? (
-                                        <span className="inline-block bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-sm mr-2 hover:bg-gray-300">
+                                        <span className="badge badge-primary">
                                             {service.status.name}
                                         </span>
                                     ) : (
-                                        <span className="text-gray-500"> </span>
+                                        <span className="text-base-content/50"> </span>
                                     )}
                                 </td>
-                                <td className="border border-gray-400 px-4">
+                                <td>
                                     {service.users.filter(user => user !== null).map(user => (
-                                        <span key={user.id} className="inline-block bg-gray-200 text-gray-700 px-2 py-1 mb-1 mt-1 rounded-full text-sm mr-2 hover:bg-gray-300">
+                                        <span key={user.id} className="badge badge-accent mb-1 mt-1 mr-2">
                                             {user.name}
                                         </span>
                                     ))}
                                 </td>
-                                {/* <td className="border border-gray-400 px-4">{dayjs(service.created_at).format('DD/MM/YYYY HH:mm')}</td>
-                                <td className="border border-gray-400 px-4">{dayjs(service.updated_at).format('DD/MM/YYYY HH:mm')}</td> */}
+                                {/* <td>{dayjs(service.created_at).format('DD/MM/YYYY HH:mm')}</td>
+                                <td>{dayjs(service.updated_at).format('DD/MM/YYYY HH:mm')}</td> */}
                                 <td className="flex gap-2 content-center items-center justify-center h-full">
                                     <SecondaryButton onClick={() => modifyService(service)}>Modifier</SecondaryButton>
                                     <DangerButton onClick={() => deleteServiceShow(service)}>Supprimer</DangerButton>
@@ -128,7 +128,7 @@ export default function ListServices({ refreshTrigger }) {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="9" className="text-center text-gray-500 py-4">
+                            <td colSpan="9" className="text-center text-base-content/70 py-4">
                                 Aucun service trouvé.
                             </td>
                         </tr>
@@ -145,8 +145,8 @@ export default function ListServices({ refreshTrigger }) {
             )}
 
             <Modal show={showModalDeleteService} onClose={() => setShowModalDeleteService(false)}>
-                <form onSubmit={deleteServiceForm} className="mt-6 p-6 space-y-6">
-                    <h1 className="text-lg font-medium text-gray-900">
+                <form onSubmit={deleteServiceForm} className="space-y-6">
+                    <h1 className="text-lg font-medium">
                         Supprimer un service
                     </h1>
                     <p>Êtes-vous sûr de vouloir supprimer le service "{selectedService?.name}" ?</p>

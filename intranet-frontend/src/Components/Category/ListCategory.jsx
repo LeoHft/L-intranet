@@ -72,24 +72,24 @@ export default function ListCategory({ refreshTrigger }) {
 
     return (
         <>
-        <table className="table-auto border-collapse border border-gray-400 w-full bg-rose-50">
+        <table className="table table-zebra w-full">
             <thead>
-                <tr className="border border-gray-400">
-                    <th className="border border-gray-400 px-4">Nom</th>
-                    <th className="border border-gray-400 px-4">Description</th>
-                    <th className="border border-gray-400 px-4">Date d'ajout</th>
-                    <th className="border border-gray-400 px-4">Date de modification</th>
-                    <th className="border border-gray-400 px-4">Actions</th>
+                <tr>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Date d'ajout</th>
+                    <th>Date de modification</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {categoriesList.length > 0 ? (
                     categoriesList.map(category => (
-                        <tr key={category.id} className="border border-gray-400">
-                            <td className="border border-gray-400 px-4">{category.name}</td>
-                            <td className="border border-gray-400 px-4">{category.description}</td>
-                            <td className="border border-gray-400 px-4">{dayjs(category.created_at).format('DD/MM/YYYY HH:mm')}</td>
-                            <td className="border border-gray-400 px-4">{dayjs(category.updated_at).format('DD/MM/YYYY HH:mm')}</td>
+                        <tr key={category.id}>
+                            <td>{category.name}</td>
+                            <td>{category.description}</td>
+                            <td>{dayjs(category.created_at).format('DD/MM/YYYY HH:mm')}</td>
+                            <td>{dayjs(category.updated_at).format('DD/MM/YYYY HH:mm')}</td>
                             <td className="flex gap-2 content-center items-center justify-center py-1">
                                 <SecondaryButton onClick={() => ModifyCategory(category)}>Modifier</SecondaryButton>
                                 <DangerButton onClick={() => DeleteCategoryShow(category)}>Supprimer</DangerButton>
@@ -98,7 +98,7 @@ export default function ListCategory({ refreshTrigger }) {
                     ))
                 ) : (
                     <tr>
-                        <td colSpan="5" className="text-center text-gray-500 py-4">
+                        <td colSpan="5" className="text-center text-base-content/70 py-4">
                             Aucune catégorie trouvée.
                         </td>
                     </tr>
@@ -115,8 +115,8 @@ export default function ListCategory({ refreshTrigger }) {
         )}
 
         <Modal show={showModalDeleteCategory} onClose={() => setShowModalDeleteCategory(false)}>
-            <form onSubmit={DeleteCategory} className="mt-6 p-6 space-y-6">
-                <h1 className="text-lg font-medium text-gray-900">
+            <form onSubmit={DeleteCategory} className="space-y-6">
+                <h1 className="text-lg font-medium">
                     Supprimer une catégorie
                 </h1>
                 <p>Êtes-vous sûr de vouloir supprimer la catégorie "{selectedCategory?.name}" ?</p>

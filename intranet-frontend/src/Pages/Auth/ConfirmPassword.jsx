@@ -54,13 +54,13 @@ export default function ConfirmPassword() {
 
     return (
         <GuestLayout>
-            <div className="mb-4 text-sm text-gray-600">
+            <div className="mb-4 text-sm opacity-70">
                 This is a secure area of the application. Please confirm your
                 password before continuing.
             </div>
 
-            <form onSubmit={submit}>
-                <div className="mt-4">
+            <form onSubmit={submit} className="space-y-6">
+                <div className="form-control">
                     <InputLabel htmlFor="password" value="Password" />
 
                     <TextInput
@@ -68,7 +68,7 @@ export default function ConfirmPassword() {
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
+                        className="w-full"
                         isFocused={true}
                         onChange={(e) => setData({ ...data, password: e.target.value })}
                     />
@@ -76,8 +76,8 @@ export default function ConfirmPassword() {
                     <InputError message={errors.password?.[0]} className="mt-2" />
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
+                <div className="flex items-center justify-end">
+                    <PrimaryButton className="ml-4" disabled={processing}>
                         Confirm
                     </PrimaryButton>
                 </div>

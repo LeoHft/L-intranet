@@ -95,11 +95,11 @@ export default function AddServiceForm({ onServiceAdded }) {
 
             <Modal show={showingAddServiceModal} onClose={() => setShowingAddServiceModal(false)}>
                 <div className="max-h-[90vh] overflow-y-auto">
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    <h1 className="text-lg font-medium text-gray-900">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <h1 className="text-lg font-medium">
                         Ajouter un service
                     </h1>
-                    <div>
+                    <div className="form-control">
                         <InputLabel htmlFor="name" value="Nom du service*" />
                         <TextInput
                             id="name"
@@ -107,23 +107,23 @@ export default function AddServiceForm({ onServiceAdded }) {
                             value={data.name}
                             onChange={(e) => setData({ ...data, name: e.target.value})}
                             type="text"
-                            className="mt-1 block w-full"
+                            className="w-full"
                             placeholder="Nom du service"
                             required
                         />
                     </div>
-                    <div>   
+                    <div className="form-control">   
                         <InputLabel htmlFor="description" value="Description max: 255" />
                         <textarea
                             id="description"
                             ref={description}
                             value={data.description}
                             onChange={(e) => setData({ ...data, description: e.target.value})}
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            className="textarea textarea-bordered w-full"
                             placeholder="Description du service"
                         />
                     </div>
-                    <div>
+                    <div className="form-control">
                         <InputLabel htmlFor="internal_url" value="Url interne" />
                         <TextInput
                             id="internal_url"
@@ -131,11 +131,11 @@ export default function AddServiceForm({ onServiceAdded }) {
                             value={data.internal_url}
                             onChange={(e) => setData({ ...data, internal_url: e.target.value})}
                             type="text"
-                            className="mt-1 block w-full"
+                            className="w-full"
                             placeholder="Url interne"
                         />
                     </div>
-                    <div>
+                    <div className="form-control">
                         <InputLabel htmlFor="external_url" value="Url externe" />
                         <TextInput
                             id="external_url"
@@ -143,7 +143,7 @@ export default function AddServiceForm({ onServiceAdded }) {
                             value={data.external_url}
                             onChange={(e) => setData({ ...data, external_url: e.target.value})}
                             type="text"
-                            className="mt-1 block w-full"
+                            className="w-full"
                             placeholder="Url externe"
                         />
                     </div>
@@ -160,16 +160,16 @@ export default function AddServiceForm({ onServiceAdded }) {
                         setSelectedUsers={setSelectedUsers}
                         required
                     />
-                    <div>
+                    <div className="form-control">
                         <InputLabel htmlFor="image" value="Image*" />
                         <input
                             id="image"
                             type="file"
-                            className="mt-1 block w-full hover:cursor-pointer"
+                            className="file-input file-input-bordered w-full"
                             onChange={(e) => setData({ ...data, image: e.target.files[0]})}
                         />
                     </div>
-                    <button type="submit" className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
+                    <button type="submit" className="btn btn-primary">
                         Valider
                     </button>
                     

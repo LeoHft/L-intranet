@@ -58,69 +58,70 @@ export default function Login() {
 
     return (
         <GuestLayout>
-            <div className="flex items-center justify-center min-h-screen"> 
-                <form onSubmit={submit} className="rounded-md shadow-xl p-6 max-w-96 mx-auto w-full bg-white/10 backdrop-blur-sm">
-                   
-                    <div>
-                        <InputLabel htmlFor="email" value="Email" />
+            <div className="hero min-h-screen"> 
+                <form onSubmit={submit} className="card bg-base-100/10 backdrop-blur-sm shadow-xl max-w-96 w-full">
+                    <div className="card-body space-y-6">
+                        <div className="form-control">
+                            <InputLabel htmlFor="email" value="Email" />
 
-                        <TextInput
-                            id="email"
-                            type="email"
-                            name="email"
-                            value={data.email}
-                            className="mt-1 block w-full"
-                            autoComplete="username"
-                            isFocused={true}
-                            onChange={(e) => setData({ ...data, email: e.target.value })}
-                        />
-
-                        <InputError message={errors.email} className="mt-2" />
-                    </div>
-
-                    <div className="mt-4">
-                        <InputLabel htmlFor="password" value="Mot de passe" />
-
-                        <TextInput
-                            id="password"
-                            type="password"
-                            name="password"
-                            value={data.password}
-                            className="mt-1 block w-full"
-                            autoComplete="current-password"
-                            onChange={(e) => setData({ ...data, password: e.target.value })}
-                        />
-
-                        <InputError message={errors.password} className="mt-2" />
-                    </div>
-
-                    {/* Si besoin, modifier le backend pour y inclure le remember */}
-                    {/* <div className="mt-4 block">
-                        <label className="flex items-center">
-                            <Checkbox
-                                name="remember"
-                                checked={data.remember}
-                                onChange={(e) =>
-                                    setData({ ...data, remember: e.target.checked })
-                                }
+                            <TextInput
+                                id="email"
+                                type="email"
+                                name="email"
+                                value={data.email}
+                                className="w-full"
+                                autoComplete="username"
+                                isFocused={true}
+                                onChange={(e) => setData({ ...data, email: e.target.value })}
                             />
-                            <span className="ms-2 text-sm text-gray-600">
-                                Se souvenir de moi
-                            </span>
-                        </label>
-                    </div> */}
 
-                    <div className="mt-4 flex items-center justify-end">
-                        <Link
-                            to="/forgot-password"
-                            className="rounded-md text-sm text-white/80 underline hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
-                            Mot de passe oublié ?
-                        </Link>
+                            <InputError message={errors.email} className="mt-2" />
+                        </div>
 
-                        <PrimaryButton className="ms-4 text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" disabled={isLoading}>
-                            {isLoading ? 'Connexion...' : 'Connexion'}
-                        </PrimaryButton>
+                        <div className="form-control">
+                            <InputLabel htmlFor="password" value="Mot de passe" />
+
+                            <TextInput
+                                id="password"
+                                type="password"
+                                name="password"
+                                value={data.password}
+                                className="w-full"
+                                autoComplete="current-password"
+                                onChange={(e) => setData({ ...data, password: e.target.value })}
+                            />
+
+                            <InputError message={errors.password} className="mt-2" />
+                        </div>
+
+                        {/* Si besoin, modifier le backend pour y inclure le remember */}
+                        {/* <div className="form-control">
+                            <label className="label cursor-pointer">
+                                <Checkbox
+                                    name="remember"
+                                    checked={data.remember}
+                                    onChange={(e) =>
+                                        setData({ ...data, remember: e.target.checked })
+                                    }
+                                />
+                                <span className="label-text">
+                                    Se souvenir de moi
+                                </span>
+                            </label>
+                        </div> */}
+
+                        <div className="flex items-center justify-end">
+                            <Link
+                                to="/forgot-password"
+                                className="link link-hover text-sm opacity-80"
+                            >
+                                Mot de passe oublié ?
+                            </Link>
+
+                            <PrimaryButton className="ml-4 btn-gradient" disabled={isLoading}>
+                                {isLoading ? 'Connexion...' : 'Connexion'}
+                            </PrimaryButton>
+                        </div>
                     </div>
                 </form>
             </div>
