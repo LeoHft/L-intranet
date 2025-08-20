@@ -5,17 +5,21 @@ Il peut aussi ajouter des catégories, des services, des statuts et des utilisat
 L’Intranet permet d’attribuer à chaque service un lien local et un lien externe, une description, ainsi que des catégories et des statuts.
 De plus, l’admin peut consulter les statistiques d’accès à chaque service, par utilisateur, par lien et par date.
 Les utilisateurs peuvent se connecter via le compte créé par l’admin et voir les services auxquels ils ont accès, le tout sur une interface épurée intégrant plusieurs animations.
+Il existe 2 branches que vous pouvez utiliser : 
+1) Main qui contient la version frontend la plus avancée avec 10 thèmes disponnibles.
+2) Without_Themes qui contient la version originale du frontend sans possibilité de personnaliser le thème.
 
 ## [Installation](https://github.com/LeoHft/L-intranet/wiki/Installation-en-local-du-projet) 
 
 
 # Quelques photos :
-<img width="1243" height="766" alt="dashboard" src="https://github.com/user-attachments/assets/981cf94e-d52c-4925-8209-5c02bff8d517" />
-<img width="1257" height="817" alt="detail" src="https://github.com/user-attachments/assets/6134b9a6-048a-4258-94e9-c65c647681aa" />
-<img width="1252" height="871" alt="stat_1" src="https://github.com/user-attachments/assets/ff998a46-87f7-4bd9-90d4-375304677ba5" />
-<img width="1120" height="1240" alt="stat_2" src="https://github.com/user-attachments/assets/b0976538-c5d0-4667-bc73-29bf53bc8898" />
-<img width="1364" height="569" alt="services" src="https://github.com/user-attachments/assets/e5f771e5-7d86-44ec-820e-6b6b535d1ddf" />
-<img width="1255" height="399" alt="category" src="https://github.com/user-attachments/assets/c705c0f7-dd3b-4f56-9890-1ccf992bbd18" />
-<img width="1258" height="402" alt="status_nv" src="https://github.com/user-attachments/assets/b4c6fe87-3b75-4e4e-806d-bff24f08de11" />
-<img width="1252" height="404" alt="Users" src="https://github.com/user-attachments/assets/69c1350c-1231-47b3-a7f3-74d660360aa0" />
-<img width="1233" height="870" alt="profile" src="https://github.com/user-attachments/assets/f94585c3-0c87-47e6-be9f-e5685beeb0b9" />
+<img width="1280" height="655" alt="Nouveau projet" src="https://github.com/user-attachments/assets/6b6159e1-ff97-4de0-b2ca-6d6e9c0a3ce7" />
+<img width="1529" height="793" alt="theme_dashboard" src="https://github.com/user-attachments/assets/c49ba1db-1b0f-4910-babf-6c9a485c35be" />
+<img width="1543" height="835" alt="theme_dashboard_details" src="https://github.com/user-attachments/assets/9ada9647-8993-40b8-ab2e-a7cad640941d" />
+<img width="1530" height="860" alt="theme_graph_1" src="https://github.com/user-attachments/assets/2f6a1367-fc20-4fc2-a5b2-36297f77aba1" />
+<img width="1372" height="1229" alt="theme_graph_2" src="https://github.com/user-attachments/assets/cf55e1a9-fc97-43a9-86d6-7bba17a2b80a" />
+<img width="1370" height="755" alt="theme_services" src="https://github.com/user-attachments/assets/f7857801-9797-471c-af36-8b2fdb469da4" />
+<img width="1378" height="361" alt="theme_categories" src="https://github.com/user-attachments/assets/24650181-a361-42b9-8a90-538e7e36c1cf" />
+<img width="1380" height="363" alt="theme_status" src="https://github.com/user-attachments/assets/9d77596d-6fc1-4fb0-b706-d219254c7751" />
+<img width="1380" height="474" alt="theme_users" src="https://github.com/user-attachments/assets/c03ce05c-bb7f-4764-8fc8-2b0a17cd261d" />
+<img width="1387" height="868" alt="theme_profil" src="https://github.com/user-attachments/assets/25645fa9-eba7-4595-a334-b2d2fcc5218b" />
