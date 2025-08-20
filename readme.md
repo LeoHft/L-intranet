@@ -5,6 +5,7 @@ Il peut aussi ajouter des catégories, des services, des statuts et des utilisat
 L’Intranet permet d’attribuer à chaque service un lien local et un lien externe, une description, ainsi que des catégories et des statuts.
 De plus, l’admin peut consulter les statistiques d’accès à chaque service, par utilisateur, par lien et par date.
 Les utilisateurs peuvent se connecter via le compte créé par l’admin et voir les services auxquels ils ont accès, le tout sur une interface épurée intégrant plusieurs animations.
+
 Il existe 2 branches que vous pouvez utiliser : 
 1) Main qui contient la version frontend la plus avancée avec 10 thèmes disponnibles.
 2) Without_Themes qui contient la version originale du frontend sans possibilité de personnaliser le thème.
