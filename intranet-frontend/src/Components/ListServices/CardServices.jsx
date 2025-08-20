@@ -139,13 +139,13 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                         transition={{ duration: 0.3 }}
                                     />
                                     {service.status !== null && (
-                                        <span className="badge badge-primary absolute top-2 right-2 backdrop-blur-md bg-base-100/30 border-base-300/20">
+                                        <span className="badge badge-primary absolute top-2 right-2 backdrop-blur-md border-base-300/20">
                                             {service.status.name}
                                         </span>
                                     )}
                                     <div className="absolute top-2 left-2 space-y-1">
                                         {Array.isArray(service.categories) && service.categories.map((category, catIndex) => (
-                                            <span className="badge badge-secondary backdrop-blur-md bg-base-100/30 border-base-300/20">
+                                            <span className="badge badge-secondary backdrop-blur-md border-base-300/20">
                                                 {category.name}
                                             </span>
                                         ))}
@@ -163,12 +163,12 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                         >
                                             { enabled ? (
                                             service.internal_url ? (
-                                            <a href={service.internal_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.internal_url); }} className="btn btn-sm btn-outline backdrop-blur-md bg-base-100/20 border-base-300/30"> 
+                                            <a href={service.internal_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.internal_url); }} className="btn btn-sm btn-outline backdrop-blur-md border-base-300/30"> 
                                                 {service.internal_url}
                                             </a>// Evite la propagation du click pour ne pas ouvrir le modal
                                             ) : (<p className="text-base-content/50"> Pas de lien dispo </p>)
                                             ) : (service.external_url ? (
-                                                <a href={service.external_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.external_url); }} className="btn btn-sm btn-outline backdrop-blur-md bg-base-100/20 border-base-300/30"> 
+                                                <a href={service.external_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.external_url); }} className="btn btn-sm btn-outline backdrop-blur-md border-base-300/30"> 
                                                 {service.external_url}
                                             </a>// Evite la propagation du click pour ne pas ouvrir le modal
                                             ) :(<p className="text-base-content/50"> Pas de lien dispo </p>))}
@@ -198,22 +198,19 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                     <motion.div 
                         key={selectedService.id}
                         initial={{ 
-                            scale: 0.85, 
+                            scale: 0.95, 
                             opacity: 0,
-                            rotateX: -15,
-                            y: 50
+                            y: 20
                         }}
                         animate={{ 
                             scale: 1, 
                             opacity: 1,
-                            rotateX: 0,
                             y: 0
                         }}
                         exit={{ 
-                            scale: 0.9, 
+                            scale: 0.95, 
                             opacity: 0,
-                            rotateX: 10,
-                            y: -20
+                            y: 10
                         }}
                         transition={{
                             type: "spring",
@@ -232,8 +229,8 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                 inset 0 1px 0 rgba(255,255,255,0.15),
                                 inset 0 -1px 0 rgba(255,255,255,0.05)
                             `,
-                            transformStyle: 'preserve-3d',
-                            perspective: '1000px'
+                            scrollbarWidth: 'none', /* Firefox */
+                            msOverflowStyle: 'none', /* Internet Explorer 10+ */
                         }}
                     >
                     
@@ -327,7 +324,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                         href={selectedService.internal_url} 
                                         onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, selectedService.internal_url); }}
                                         target='blank' 
-                                        className="text-center text-gray-700 px-3 py-1 rounded-full text-sm transition-all"
+                                        className="text-center px-3 py-1 rounded-full text-sm transition-all"
                                         style={{
                                             background: 'rgba(255,255,255,0.25)',
                                             backdropFilter: 'blur(20px) saturate(180%)',
@@ -355,7 +352,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                             href={selectedService.external_url} 
                                             onClick={(e) => { e.stopPropagation(); UpdateNumberClick(selectedService, selectedService.external_url); }}
                                             target='blank' 
-                                            className="text-center text-gray-700 px-3 py-1 rounded-full text-sm transition-all"
+                                            className="text-center px-3 py-1 rounded-full text-sm transition-all"
                                             style={{
                                                 background: 'rgba(255,255,255,0.25)',
                                                 backdropFilter: 'blur(20px) saturate(180%)',

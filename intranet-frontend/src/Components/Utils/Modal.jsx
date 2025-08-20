@@ -17,25 +17,20 @@ export default function Modal({
     // Gérer l'overflow du body et compenser la disparition de la scrollbar
     useEffect(() => {
         if (show) {
-            // Calculer la largeur de la scrollbar avant de la cacher
-            const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-            
             // Sauvegarder les styles originaux
             const originalStyle = window.getComputedStyle(document.body);
             const originalOverflow = originalStyle.overflow;
-            const originalPaddingRight = originalStyle.paddingRight;
-            
-            // Appliquer les nouveaux styles
+
+            // Cacher le scroll
             document.body.style.overflow = 'hidden';
-            document.body.style.paddingRight = `${parseInt(originalPaddingRight) + scrollBarWidth}px`;
-            
+
             return () => {
                 // Restaurer les styles originaux
                 document.body.style.overflow = originalOverflow;
-                document.body.style.paddingRight = originalPaddingRight;
             };
         }
     }, [show]);
+
 
     const close = () => {
         if (closeable) {
@@ -81,8 +76,17 @@ export default function Modal({
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                     <DialogPanel
-                        className={modalClass}
+                        className={`${modalClass} overflow-hidden`}
+                        style={{
+                            scrollbarWidth: 'none', /* Firefox */
+                            msOverflowStyle: 'none', /* Internet Explorer 10+ */
+                        }}
                     >
+                        <style jsx>{`
+                            .modal-box::-webkit-scrollbar {
+                                display: none; /* Safari and Chrome */
+                            }
+                        `}</style>
                         {children}
                     </DialogPanel>
                 </TransitionChild>

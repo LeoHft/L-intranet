@@ -81,47 +81,56 @@ return (
 const glassStyles = {
     control: (provided, state) => ({
         ...provided,
-        background: 'rgba(255,255,255,0.25)',
+        background: 'oklch(var(--b1))',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        border: state.isFocused ? '2px solid #f9a8d4' : '1px solid rgba(255,255,255,0.3)',
-        boxShadow: state.isFocused ? '0 0 0 2px #f9a8d422' : '0 1px 2px 0 rgba(0,0,0,0.05)',
-        color: '#111827',
+        border: state.isFocused ? '2px solid oklch(var(--p))' : '1px solid oklch(var(--b3))',
+        boxShadow: state.isFocused ? '0 0 0 2px oklch(var(--p) / 0.2)' : '0 1px 2px 0 oklch(var(--b3) / 0.3)',
+        color: 'oklch(var(--bc))',
+        minHeight: '44px',
     }),
     menu: (provided) => ({
         ...provided,
-        background: 'rgba(255,255,255,0.75)',
+        background: 'oklch(var(--b1))',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        boxShadow: '0 8px 32px 0 rgba(249, 168, 212, 0.25)',
+        boxShadow: '0 8px 32px 0 oklch(var(--b3) / 0.4)',
+        border: '1px solid oklch(var(--b3))',
     }),
     option: (provided, state) => ({
         ...provided,
         background: state.isSelected
-            ? 'rgba(249,168,212,0.2)'
+            ? 'oklch(var(--p))'
             : state.isFocused
-            ? 'rgba(252,165,165,0.1)'
+            ? 'oklch(var(--b2))'
             : 'transparent',
-        color: '#111827',
+        color: state.isSelected ? 'oklch(var(--pc))' : 'oklch(var(--bc))',
+        padding: '8px 12px',
     }),
     singleValue: (provided) => ({
         ...provided,
-        color: '#111827',
+        color: 'oklch(var(--bc))',
     }),
     multiValue: (provided) => ({
         ...provided,
-        background: 'rgba(252,165,165,0.12)',
+        background: 'oklch(var(--b2))',
+        border: '1px solid oklch(var(--b3))',
     }),
     multiValueLabel: (provided) => ({
         ...provided,
-        color: '#9f1239',
+        color: 'oklch(var(--bc))',
+        padding: '2px 6px',
     }),
     multiValueRemove: (provided) => ({
         ...provided,
-        color: '#9f1239',
+        color: 'oklch(var(--bc))',
         ':hover': {
-            backgroundColor: '#f9a8d4',
-            color: 'white',
+            backgroundColor: 'oklch(var(--er))',
+            color: 'oklch(var(--erc))',
         },
+    }),
+    placeholder: (provided) => ({
+        ...provided,
+        color: 'oklch(var(--bc) / 0.6)',
     }),
 };
