@@ -72,8 +72,6 @@ export default function ListStatistiques() {
 
     return (
         <div className="space-y-8">
-            <Toaster/>
-            
             <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-4 items-end w-full">
                     <div className="flex gap-4 items-end w-full justify-end">

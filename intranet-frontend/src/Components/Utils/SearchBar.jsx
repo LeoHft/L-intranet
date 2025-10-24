@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 
 export default function SearchBar() {
     const [searchQuery, setSearchQuery] = useState('');
+    const [isAutoFocus, setIsAutoFocus] = useState(window.location.pathname === '/');
+
 
     // Gestion de la recherche
     const handleSearch = (query = searchQuery) => {
@@ -20,7 +22,7 @@ export default function SearchBar() {
         handleSearch();
     };
 
-    // Gestion du raccourci clavier (Ctrl+K ou Cmd+K)
+    // Gestion du raccourci clavier (Ctrl+b)
     useEffect(() => {
         const handleKeyDown = (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
@@ -28,7 +30,6 @@ export default function SearchBar() {
                 document.getElementById('search-input')?.focus();
             }
         };
-
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
@@ -41,6 +42,7 @@ export default function SearchBar() {
                         id="search-input"
                         type="text"
                         value={searchQuery}
+                        autoFocus={isAutoFocus}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Rechercher... (Ctrl+B)"
                         className="input input-bordered w-40 group-hover:w-64 focus:w-64 bg-base-200/50 backdrop-blur-md border-base-300/50 text-base-content placeholder-base-content/60 focus:border-primary transition-all duration-300 text-sm hover:bg-base-200/70"

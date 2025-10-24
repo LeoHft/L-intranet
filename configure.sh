@@ -30,18 +30,14 @@ envFile=".env"
 echo -n "Quel est l'URL de l'application (ex: https://intranet.example.com ou https://192.168.1.1:8443) ? : "
 read domain
 
-DB_PASSWORD=$(openssl rand -base64 16)
-
 sed -i \
     -e "s|^VITE_API_URL=.*|VITE_API_URL=$domain/api|" \
-    -e "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" \
     "$envFile"
 
 echo ""
 echo "Configuration terminae :"
 echo "- URL de l'application: $domain"
 echo "- URL de l'API: $domain/api"
-echo "- Mot de passe de la base de donnaes ganara automatiquement"
 echo ""
 
 if [[ "$devMode" =~ ^[oOyY]$ ]]; then

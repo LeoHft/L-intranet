@@ -40,21 +40,11 @@ $envFile = ".env"
 # Demander l'URL de l'application
 $domain = Read-Host "Quel est l'URL de l'application (ex: https://intranet.example.com ou https://192.168.1.1:8443) ?"
 
-# Generer un mot de passe securise pour la base de donnees
-
-# Alternative PowerShell a openssl rand -base64 16
-$bytes = New-Object byte[] 16
-$rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::new()
-$rng.GetBytes($bytes)
-$DB_PASSWORD = [Convert]::ToBase64String($bytes)
-$rng.Dispose()
-
 # Lire le contenu du fichier .env
 $envContent = Get-Content $envFile
 
 # Remplacer les valeurs dans le fichier .env
 $envContent = $envContent -replace '^VITE_API_URL=.*', "VITE_API_URL=$domain/api"
-$envContent = $envContent -replace '^DB_PASSWORD=.*', "DB_PASSWORD=$DB_PASSWORD"
 
 # ecrire le contenu modifie
 $envContent | Set-Content $envFile -Encoding UTF8
@@ -63,7 +53,6 @@ Write-Host ""
 Write-Host "Configuration terminee :" -ForegroundColor Green
 Write-Host "- URL de l'application: $domain" -ForegroundColor Cyan
 Write-Host "- URL de l'API: $domain/api" -ForegroundColor Cyan
-Write-Host "- Mot de passe de la base de donnees genere automatiquement" -ForegroundColor Cyan
 Write-Host ""
 
 # Verifier si Docker est disponible

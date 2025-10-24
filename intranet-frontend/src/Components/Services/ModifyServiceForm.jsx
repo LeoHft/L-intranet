@@ -107,6 +107,7 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
 
     return (
         <Modal show={true} onClose={() => { onClose(); }}>
+            <div className="max-h-[90vh] overflow-y-auto">
             <form onSubmit={handleSubmit} className="space-y-6">
                 <h1 className="text-lg font-medium">
                     Modifier un service
@@ -191,6 +192,7 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
                     Valider
                 </button>
             </form>
+            </div>
             <Toaster />
         </Modal>
     );

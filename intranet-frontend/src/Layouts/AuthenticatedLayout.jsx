@@ -1,6 +1,5 @@
 import { ToggleContext } from '@/Components/Utils/ToggleContext';
 import ToggleSwitch from '@/Components/Utils/ToggleSwitch';
-import Dropdown from '@/Components/Utils/Dropdown';
 import NavLink from '@/Components/Utils/NavLink';
 import ResponsiveNavLink from '@/Components/Utils/ResponsiveNavLink';
 
@@ -66,7 +65,7 @@ export default function AuthenticatedLayout({ header, children }) {
             
             <div className="min-h-screen relative">
                 {/* Navigation principale */}
-                <nav className="navbar sticky top-0 z-50 bg-base-200/20 backdrop-blur-sm">
+                <nav className="navbar sticky top-0 bg-base-200/20 backdrop-blur-sm z-50">
                     <div className="container mx-auto">
                         <div className="navbar-start">
                             {/* Logo et navigation desktop */}
@@ -117,45 +116,25 @@ export default function AuthenticatedLayout({ header, children }) {
                                 ) : null}
                                 
                                 <div className="dropdown dropdown-end">
-                                    <Dropdown>
-                                        <Dropdown.Trigger>
-                                            <button
-                                                type="button"
-                                                className="btn btn-ghost bg-base-200/20 backdrop-blur-sm"
-                                            >
-                                                <span className="max-w-[100px] lg:max-w-none truncate">
-                                                    {user?.name}
-                                                </span>
-                                                <svg
-                                                    className="ml-2 h-4 w-4 transition-transform duration-200"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </Dropdown.Trigger>
-
-                                        <Dropdown.Content className="dropdown-content menu bg-base-100 rounded-box shadow">
-                                            <Dropdown.Link
+                                    <div tabIndex={0} role="button" className="btn m-1">{user?.name}</div>
+                                    <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box w-52 p-2 shadow-lg">
+                                        <li>
+                                            <NavLink
                                                 to="/profile/edit"
                                                 className="btn btn-ghost w-full justify-start text-left"
                                             >
-                                                Profil
-                                            </Dropdown.Link>
+                                                Modifier le profil
+                                            </NavLink>
+                                        </li>
+                                        <li>
                                             <button
                                                 onClick={handleLogout}
-                                                className="btn btn-ghost w-full justify-start text-left"
+                                                className="btn btn-ghost w-full justify-start text-left text-error"
                                             >
                                                 Déconnexion
                                             </button>
-                                        </Dropdown.Content>
-                                    </Dropdown>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
 
@@ -263,7 +242,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
                 {/* Header conditionnel */}
                 {header && (
-                    <header className="bg-base-100/90 backdrop-blur-sm shadow-sm relative z-40">
+                    <header className="bg-base-100/90 backdrop-blur-sm shadow-sm relative">
                         <div className="container mx-auto px-4 py-6">
                             {header}
                         </div>
@@ -271,7 +250,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 )}
 
                 {/* Contenu principal */}
-                <main className="container mx-auto relative z-30 px-3 py-6">
+                <main className="container mx-auto relative px-3 py-6">
                     {children}
                 </main>
 

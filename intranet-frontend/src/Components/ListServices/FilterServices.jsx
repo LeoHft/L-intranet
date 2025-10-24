@@ -64,7 +64,7 @@ return (
                     className="w-full"
                     styles={{
                         ...glassStyles,
-                        menuPortal: (base) => ({ ...base, zIndex: 9999 })
+                        menuPortal: (base) => ({ ...base })
                     }}
                     menuPortalTarget={document.body}
                     value={selectedCategories || []}
