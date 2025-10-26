@@ -2,6 +2,7 @@ import NavLink from '@/Components/Utils/NavLink';
 import Shortcut from '@/Components/Utils/Shortcut';
 import { Link } from 'react-router-dom';
 import { HouseWifi, MessageSquare, Github, Youtube  } from 'lucide-react';
+import ListShortcuts from '@/Components/Utils/ListShortcuts';
 
 
 export default function GuestLayout({ children }) {
@@ -33,21 +34,7 @@ export default function GuestLayout({ children }) {
                     </div>
                     <div className="navbar-end">
                         <div className="flex items-center gap-2">
-                            <Shortcut
-                                url="chat.openai.com"
-                                icon={MessageSquare}
-                                label="ChatGPT"
-                            />
-                            <Shortcut
-                                url="github.com"
-                                icon={Github}
-                                label="GitHub"
-                            />
-                            <Shortcut
-                                url="youtube.com"
-                                icon={Youtube}
-                                label="YouTube"
-                            />
+                            <ListShortcuts />
                         </div>
                     </div>
                 </div>

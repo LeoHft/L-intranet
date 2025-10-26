@@ -34,6 +34,11 @@ Route::middleware('jwt')->group(function () {
 
     //Status
     Route::get('getAllStatus', 'App\Http\Controllers\StatusController@getAllStatus'); // Récupère les status
+
+    //Shortcuts
+    Route::get('getUserShortcuts', 'App\Http\Controllers\ShortcutController@getUserShortcuts'); // Récupère les shortcuts de l'utilisateur connecté
+    Route::post('addShortcut', 'App\Http\Controllers\ShortcutController@addShortcut'); // Ajoute un shortcut pour l'utilisateur connecté
+    Route::delete('deleteShortcut/{id}', 'App\Http\Controllers\ShortcutController@deleteShortcut'); // Supprime un shortcut pour l'utilisateur connecté
 });
 
 

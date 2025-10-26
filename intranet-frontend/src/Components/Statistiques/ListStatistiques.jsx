@@ -1,17 +1,15 @@
-import SecondaryButton from '@/Components/Utils/SecondaryButton';
-
-import ServiceSelect from '@/Components/Services/ServiceSelect';
-import UsersSelect from '@/Components/Users/UsersSelect';
 import ByUsersBarStatistiques from '@/Components/Statistiques/ByUsersBarStatistiques';
 import ResumeTabStatistiques from '@/Components/Statistiques/ResumeTabStatistiques';
 import ByServicesBarStatistiques from '@/Components/Statistiques/ByServicesBarStatistiques';
 import ByServicesStackAreaStatistiques from '@/Components/Statistiques/ByServicesStackAreaStatistiques';
+import { getUsers } from '@/api/modules/users';
+import { getAllServices } from '@/api/modules/services';
 
 import { getBarStatByUserByServiceByDate } from '@/api/modules/statistiques';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import Select from 'react-select';
+import CustomSelect from '@/Components/Utils/Select';
 
 
 
@@ -30,6 +28,41 @@ export default function ListStatistiques() {
     oneMonthAgo.setMonth(today.getMonth() - 1);
     const [startDate, setStartDate] = useState(oneMonthAgo.toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(today.toISOString().split('T')[0]);
+    const [servicesOptions, setServicesOptions] = useState([]);
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        handleUsers();
+        handleServices();
+    }, []);
+
+
+    const handleUsers = () => {
+        getUsers()
+        .then((response) => {
+            setUsers(response.data.map((users) => ({
+                value: users.id,
+                label: users.name,
+            })));
+        })
+        .catch((error) => {
+            console.error("Erreur lors de la récupération des utilisateurs:", error);
+        });
+    }
+
+    const handleServices = () => {
+        try {
+            getAllServices()
+                .then((response) => {
+                    setServicesOptions(response.data.map((services) => ({
+                        value: services.id,
+                        label: services.name,
+                    })));
+                })
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
 
 
     const handleExecuteQuery = async () => {
@@ -95,50 +128,33 @@ export default function ListStatistiques() {
                                 disabled={isLoading}
                             />
                         </div>
-
                         <div className="">
-                            <label className="label">Type de lien</label>
-                            <Select
+                            <CustomSelect 
                                 options={linkTypes}
-                                isMulti
-                                className="mt-1"
-                                styles={{
-                                    ...glassStyles,
-                                    menuPortal: (base) => ({ ...base, zIndex: 9999 })
-                                }}
-                                menuPortalTarget={document.body}
-                                value={selectedLinkType || null}
-                                onChange={setSelectedLinkType}
-                                placeholder="Sélectionnez des types de liens..."
-                                isDisabled={isLoading}
+                                name="Types de liens"
+                                placeholder="Sélectionnez un type de lien..."
+                                selectedOption={selectedLinkType}
+                                setSelectedOption={setSelectedLinkType}
                             />
                         </div>
                         <div className="">
-                            <ServiceSelect 
-                                selectedService={selectedService}
-                                setSelectedService={setSelectedService}
-                                styles={{
-                                    ...glassStyles,
-                                    menuPortal: (base) => ({ ...base, zIndex: 9999 })
-                                }}
-                                label="Service"
-                                isDisabled={isLoading}
+                            <CustomSelect 
+                                options={servicesOptions}
+                                name="Services"
+                                placeholder="Sélectionnez un service..."
+                                selectedOption={selectedService}
+                                setSelectedOption={setSelectedService}
                             />
                         </div>
                         <div className="">
-                            <UsersSelect 
-                                selectedUsers={selectedUsers}
-                                setSelectedUsers={setSelectedUsers}
-                                required={false}
-                                styles={{
-                                    ...glassStyles,
-                                    menuPortal: (base) => ({ ...base, zIndex: 9999 })
-                                }}
-                                label="Utilisateurs"
-                                isDisabled={isLoading}
+                            <CustomSelect 
+                                options={users}
+                                name="Utilisateurs"
+                                placeholder="Sélectionnez une ou plusieurs utilisateurs..."
+                                selectedOption={selectedUsers}
+                                setSelectedOption={setSelectedUsers}
                             />
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -166,52 +182,3 @@ export default function ListStatistiques() {
         </div>
     );
 }
-
-// Styles custom pour effet glass avec DaisyUI
-const glassStyles = {
-    control: (provided, state) => ({
-        ...provided,
-        background: 'rgb(var(--glass-background, 255 255 255) / 0.25)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        border: state.isFocused ? '2px solid hsl(var(--p))' : '1px solid rgb(var(--border-color, 255 255 255) / 0.3)',
-        boxShadow: state.isFocused ? '0 0 0 2px hsl(var(--p) / 0.2)' : '0 1px 2px 0 rgba(0,0,0,0.05)',
-        color: 'hsl(var(--bc))',
-    }),
-    menu: (provided) => ({
-        ...provided,
-        background: 'rgb(var(--glass-background, 255 255 255) / 0.75)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        boxShadow: '0 8px 32px 0 hsl(var(--p) / 0.25)',
-    }),
-    option: (provided, state) => ({
-        ...provided,
-        background: state.isSelected
-            ? 'hsl(var(--p) / 0.2)'
-            : state.isFocused
-            ? 'hsl(var(--p) / 0.1)'
-            : 'transparent',
-        color: 'hsl(var(--bc))',
-    }),
-    singleValue: (provided) => ({
-        ...provided,
-        color: 'hsl(var(--bc))',
-    }),
-    multiValue: (provided) => ({
-        ...provided,
-        background: 'hsl(var(--p) / 0.12)',
-    }),
-    multiValueLabel: (provided) => ({
-        ...provided,
-        color: 'hsl(var(--pc))',
-    }),
-    multiValueRemove: (provided) => ({
-        ...provided,
-        color: 'hsl(var(--pc))',
-        ':hover': {
-            backgroundColor: 'hsl(var(--p))',
-            color: 'hsl(var(--pc))',
-        },
-    }),
-};

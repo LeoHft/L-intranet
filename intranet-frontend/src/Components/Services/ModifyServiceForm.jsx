@@ -1,10 +1,10 @@
 import Modal from '@/Components/Utils/Modal';
 import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
-
-import CategorySelect from '@/Components/Category/CategorySelect';
-import StatusSelect from '@/Components/Status/StatusSelect';
-import UsersSelect from '@/Components/Users/UsersSelect';
+import CustomSelect from '@/Components/Utils/Select';
+import { getAllStatus } from '@/api/modules/status';
+import { getAllCategory } from '@/api/modules/category';
+import { getUsers } from '@/api/modules/users';
 
 import { editService } from '@/api/modules/services';
 
@@ -31,6 +31,9 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
         users: [],
         status: null,
     });
+    const [categories, setCategories] = useState([]);
+    const [status, setStatus] = useState([]);
+    const [users, setUsers] = useState([]);
 
     const reset = () => {
         setData({
@@ -48,7 +51,50 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
         setSelectedStatus(null);
         setImageFile(null);
     };
- 
+     useEffect(() => {
+        handleStatus();
+        handleCategories();
+        handleUsers();
+    }, []);
+
+    const handleStatus = () => {
+        try {
+            getAllStatus()
+                .then((response) => {
+                    setStatus(response.data.map((status) => ({
+                        value: status.id,
+                        label: status.name,
+                    })));
+                })
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+    const handleCategories = () => {
+        try {
+            getAllCategory()
+            .then((response) => {
+                setCategories(response.data.map((category) => ({
+                    value: category.id,
+                    label: category.name,
+                })));
+            })
+        } catch (error) {
+            toast.error(error.message);
+        } 
+    }
+    const handleUsers = () => {
+        getUsers()
+        .then((response) => {
+            setUsers(response.data.map((users) => ({
+                value: users.id,
+                label: users.name,
+            })));
+        })
+        .catch((error) => {
+            console.error("Erreur lors de la récupération des utilisateurs:", error);
+        });
+    }
 
     useEffect(() => {
         if (service) {
@@ -176,17 +222,27 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
                         onChange={(e) => setImageFile(e.target.files[0])}
                     />
                 </div>
-                <CategorySelect
-                    selectedCategories={selectedCategories}
-                    setSelectedCategories={setSelectedCategories}
+                <CustomSelect 
+                    options={categories}
+                    name="Catégories"
+                    placeholder="Sélectionnez une ou plusieurs catégories..."
+                    selectedOption={selectedCategories}
+                    setSelectedOption={setSelectedCategories}
                 />
-                <StatusSelect
-                    selectedStatus={selectedStatus}
-                    setSelectedStatus={setSelectedStatus}
+                <CustomSelect 
+                    options={status}
+                    name="Statut"
+                    placeholder="Sélectionnez un statut..."
+                    selectedOption={selectedStatus}
+                    setSelectedOption={setSelectedStatus}
                 />
-                <UsersSelect
-                    selectedUsers={selectedUsers}
-                    setSelectedUsers={setSelectedUsers}
+                <CustomSelect 
+                    options={users}
+                    required
+                    name="Utilisateurs"
+                    placeholder="Sélectionnez une ou plusieurs utilisateurs..."
+                    selectedOption={selectedUsers}
+                    setSelectedOption={setSelectedUsers}
                 />
                 <button type="submit" className="btn btn-primary">
                     Valider

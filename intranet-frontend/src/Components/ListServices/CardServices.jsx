@@ -132,11 +132,9 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                     transition={{ duration: 0.3 }}
                                 >
                                     <motion.img 
-                                        className="w-full h-48 object-cover transition-transform duration-100 ease-in-out" 
+                                        className="w-full h-48 object-cover" 
                                         src={service.image_url || "storage/images/no-image-available.jpg"} 
                                         alt={service.name}
-                                        whileHover={{ scale: 1.1 }}
-                                        transition={{ duration: 0.3 }}
                                     />
                                     {service.status !== null && (
                                         <span className="badge badge-primary absolute top-2 right-2 backdrop-blur-md border-base-300/20">
@@ -242,13 +240,9 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                             transition={{ delay: 0.1, duration: 0.2 }}
                         >
                             <motion.img 
-                                className="w-full h-58 object-cover transition-transform duration-300 ease-in-out" 
+                                className="w-full h-58 object-cover" 
                                 src={selectedService.image_url || "storage/images/no-image-available.jpg"} 
                                 alt={selectedService.name}
-                                whileHover={{ 
-                                    scale: 1.05,
-                                    transition: { duration: 0.6, ease: "easeOut" }
-                                }}
                             />
                             {selectedService.status !== null && (
                                 <motion.span 

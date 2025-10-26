@@ -2,15 +2,13 @@ import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import Modal from '@/Components/Utils/Modal';
 import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
-
-import CategorySelect from '@/Components/Category/CategorySelect';
-import StatusSelect from '@/Components/Status/StatusSelect';
-import UsersSelect from '@/Components/Users/UsersSelect';
 import { storeService } from '@/api/modules/services';
-
+import { getUsers } from '@/api/modules/users';
 import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState, useRef } from 'react';
-
+import CustomSelect from '@/Components/Utils/Select';
+import { getAllStatus } from '@/api/modules/status';
+import { getAllCategory } from '@/api/modules/category';
 
 export default function AddServiceForm({ onServiceAdded }) {
     const [showingAddServiceModal, setShowingAddServiceModal] = useState(false);
@@ -32,7 +30,9 @@ export default function AddServiceForm({ onServiceAdded }) {
         status: null,
         users: [], 
     });
-
+    const [categories, setCategories] = useState([]);
+    const [status, setStatus] = useState([]);
+    const [users, setUsers] = useState([]);
     const reset = () => {
         setData({
             name: '',
@@ -48,6 +48,51 @@ export default function AddServiceForm({ onServiceAdded }) {
         setSelectedUsers([]);
         setSelectedStatus(null);
     };
+
+    useEffect(() => {
+        handleStatus();
+        handleCategories();
+        handleUsers();
+    }, []);
+
+    const handleStatus = () => {
+        try {
+            getAllStatus()
+                .then((response) => {
+                    setStatus(response.data.map((status) => ({
+                        value: status.id,
+                        label: status.name,
+                    })));
+                })
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+    const handleCategories = () => {
+        try {
+            getAllCategory()
+            .then((response) => {
+                setCategories(response.data.map((category) => ({
+                    value: category.id,
+                    label: category.name,
+                })));
+            })
+        } catch (error) {
+            toast.error(error.message);
+        } 
+    }
+    const handleUsers = () => {
+        getUsers()
+        .then((response) => {
+            setUsers(response.data.map((users) => ({
+                value: users.id,
+                label: users.name,
+            })));
+        })
+        .catch((error) => {
+            console.error("Erreur lors de la récupération des utilisateurs:", error);
+        });
+    }
 
     const AddService = () => {
         setShowingAddServiceModal(true);
@@ -147,18 +192,27 @@ export default function AddServiceForm({ onServiceAdded }) {
                             placeholder="Url externe"
                         />
                     </div>
-                    <CategorySelect
-                        selectedCategories={selectedCategories} 
-                        setSelectedCategories={setSelectedCategories} 
+                    <CustomSelect 
+                        options={categories}
+                        name="Catégories"
+                        placeholder="Sélectionnez une ou plusieurs catégories..."
+                        selectedOption={selectedCategories}
+                        setSelectedOption={setSelectedCategories}
                     />
-                    <StatusSelect
-                        selectedStatus={selectedStatus} 
-                        setSelectedStatus={setSelectedStatus}
+                    <CustomSelect 
+                        options={status}
+                        name="Statut"
+                        placeholder="Sélectionnez un statut..."
+                        selectedOption={selectedStatus}
+                        setSelectedOption={setSelectedStatus}
                     />
-                    <UsersSelect
-                        selectedUsers={selectedUsers} 
-                        setSelectedUsers={setSelectedUsers}
+                    <CustomSelect 
+                        options={users}
                         required
+                        name="Utilisateurs"
+                        placeholder="Sélectionnez une ou plusieurs utilisateurs..."
+                        selectedOption={selectedUsers}
+                        setSelectedOption={setSelectedUsers}
                     />
                     <div className="form-control">
                         <InputLabel htmlFor="image" value="Image*" />
