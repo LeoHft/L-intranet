@@ -27,8 +27,6 @@ export default function Welcome() {
                             <p className="text-2xl font-light font-serif opacity-70">
                                 Centralisez vos services auto-hébergés, gérez les accès avec finesse.
                             </p>
-                            <p className="text-xl opacity-50 font-mono">Par HOFSTETTER Léo</p>
-
                             <button
                                 id="buttonLogin"
                                 type="button"

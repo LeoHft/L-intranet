@@ -33,9 +33,7 @@ export default function GuestLayout({ children }) {
                         </div>
                     </div>
                     <div className="navbar-end">
-                        <div className="flex items-center gap-2">
-                            <ListShortcuts />
-                        </div>
+                        <ListShortcuts />
                     </div>
                 </div>
             </nav>

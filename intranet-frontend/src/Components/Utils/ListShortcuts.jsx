@@ -67,6 +67,7 @@ export default function ListShortcuts() {
 
     return (
         <>
+        <div className="flex items-center gap-2">
             {shortcuts.map(shortcut => (
                 <Shortcut 
                     key={shortcut.id} 
@@ -81,6 +82,7 @@ export default function ListShortcuts() {
                     +
                 </button>
             )}
+        </div>
 
             {showAddShortcut && (
                 <Modal show={showAddShortcut} onClose={() => setShowAddShortcut(false)}>

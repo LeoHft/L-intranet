@@ -2,6 +2,7 @@ import { ToggleContext } from '@/Components/Utils/ToggleContext';
 import ToggleSwitch from '@/Components/Utils/ToggleSwitch';
 import NavLink from '@/Components/Utils/NavLink';
 import ResponsiveNavLink from '@/Components/Utils/ResponsiveNavLink';
+import ListShortcuts from '@/Components/Utils/ListShortcuts';
 
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
 import { logout } from '@/api/modules/users';
@@ -108,7 +109,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 <div className="max-w-xs lg:max-w-sm">
                                     <SearchBar />
                                 </div>
-                                
+                                    <ListShortcuts />
                                 {user?.is_admin ? (
                                     <div className="hidden sm:flex sm:items-center">
                                         <ToggleSwitch />
