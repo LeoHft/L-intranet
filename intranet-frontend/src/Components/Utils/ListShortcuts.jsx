@@ -68,7 +68,7 @@ export default function ListShortcuts() {
     return (
         <>
         <div className="flex items-center gap-2">
-            {shortcuts.length > 0 && (
+            {shortcuts && shortcuts.length > 0 && (
                 shortcuts.map(shortcut => (
                     <Shortcut 
                         key={shortcut.id} 
@@ -80,7 +80,7 @@ export default function ListShortcuts() {
                 ))
             )}
 
-            {shortcuts.length < 10 && (
+            {shortcuts && shortcuts.length < 10 && (
                 <button className="btn btn-circle" onClick={showAddShortcutForm}>
                     +
                 </button>
