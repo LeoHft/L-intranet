@@ -9,6 +9,7 @@ import { useEffect, useState, useRef } from 'react';
 import CustomSelect from '@/Components/Utils/Select';
 import { getAllStatus } from '@/api/modules/status';
 import { getAllCategory } from '@/api/modules/category';
+import { Camera } from 'lucide-react';
 
 export default function AddServiceForm({ onServiceAdded }) {
     const [showingAddServiceModal, setShowingAddServiceModal] = useState(false);
@@ -33,6 +34,9 @@ export default function AddServiceForm({ onServiceAdded }) {
     const [categories, setCategories] = useState([]);
     const [status, setStatus] = useState([]);
     const [users, setUsers] = useState([]);
+    const [imagePreview, setImagePreview] = useState(null);
+    const fileInputRef = useRef();
+    
     const reset = () => {
         setData({
             name: '',
@@ -47,6 +51,7 @@ export default function AddServiceForm({ onServiceAdded }) {
         setSelectedCategories([]);
         setSelectedUsers([]);
         setSelectedStatus(null);
+        setImagePreview(null);
     };
 
     useEffect(() => {
@@ -98,6 +103,23 @@ export default function AddServiceForm({ onServiceAdded }) {
         setShowingAddServiceModal(true);
     }
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setData({ ...data, image: file });
+            // Créer une URL pour la prévisualisation
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleAvatarClick = () => {
+        fileInputRef.current.click();
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         
@@ -144,7 +166,26 @@ export default function AddServiceForm({ onServiceAdded }) {
                     <h1 className="text-lg font-medium">
                         Ajouter un service
                     </h1>
-                    <div className="form-control">
+                    <div className="flex flex-row items-center gap-4">
+                    <div className="cursor-pointer" onClick={handleAvatarClick}>
+                        <div className="bg-neutral text-neutral-content rounded-full w-24 h-24 hover:opacity-80 transition-opacity flex items-center justify-center">
+                            {imagePreview ? (
+                                <img src={imagePreview} alt="Preview" className="rounded-full w-full h-full object-cover" />
+                            ) : (
+                                <Camera size={48} />
+                            )}
+                        </div>
+                    </div>
+                    <input
+                        ref={fileInputRef}
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
+                    />
+
+                    <div className="form-control flex-1">
                         <InputLabel htmlFor="name" value="Nom du service*" />
                         <TextInput
                             id="name"
@@ -156,6 +197,7 @@ export default function AddServiceForm({ onServiceAdded }) {
                             placeholder="Nom du service"
                             required
                         />
+                    </div>
                     </div>
                     <div className="form-control">   
                         <InputLabel htmlFor="description" value="Description max: 255" />
@@ -214,15 +256,6 @@ export default function AddServiceForm({ onServiceAdded }) {
                         selectedOption={selectedUsers}
                         setSelectedOption={setSelectedUsers}
                     />
-                    <div className="form-control">
-                        <InputLabel htmlFor="image" value="Image*" />
-                        <input
-                            id="image"
-                            type="file"
-                            className="file-input file-input-bordered w-full"
-                            onChange={(e) => setData({ ...data, image: e.target.files[0]})}
-                        />
-                    </div>
                     <button type="submit" className="btn btn-primary">
                         Valider
                     </button>

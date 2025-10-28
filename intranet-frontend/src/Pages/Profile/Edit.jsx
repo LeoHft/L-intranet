@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 
 export default function Edit({ mustVerifyEmail, status }) {
     useEffect(() => {
-        document.title = "AdminDashboard - Intranet";
+        document.title = "Profil - Intranet";
     }, []);
     return (
         <Layout>

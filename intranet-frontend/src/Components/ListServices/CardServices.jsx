@@ -140,12 +140,10 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                     >
                         <div onClick={() => DetailService(service)} className="card card-compact bg-base-100/20 backdrop-blur-xl border border-base-300/30 shadow-xl hover:shadow-2xl hover:bg-base-100/30 transition-all duration-300 cursor-pointer">
                             <>
-                                <motion.div 
+                                <div 
                                     className="relative overflow-hidden"
-                                    whileHover={{ scale: 1.02 }}
-                                    transition={{ duration: 0.3 }}
                                 >
-                                    <motion.img 
+                                    <img 
                                         className="w-full h-48 object-cover" 
                                         src={service.image_url || "storage/images/no-image-available.jpg"} 
                                         alt={service.name}
@@ -164,7 +162,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                             </span>
                                         ))}
                                     </div>
-                                </motion.div>
+                                </div>
                                 <div 
                                     className="card-body"
                                 >
