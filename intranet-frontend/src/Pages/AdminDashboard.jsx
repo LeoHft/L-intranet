@@ -8,7 +8,7 @@ import ListStatus from '@/Components/Status/ListStatus';
 import ListUsers from '@/Components/Users/ListUsers';
 import AddUserForm from '@/Components/Users/AddUserForm';
 import ListServices from '@/Components/Services/ListServices';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import Layout from '@/Components/Utils/Layout';
 import ListStatistiques from '@/Components/Statistiques/ListStatistiques';
 
 import { useEffect, useState } from 'react';
@@ -24,9 +24,8 @@ export default function AdminDashboard() {
     const triggerRefresh = () => setRefreshTrigger(prev => !prev);
     
     return (
-        <AuthenticatedLayout>
+        <Layout>
 
-            <div className="container mx-auto px-4 mt-8">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
                     <TabsList>
                         <TabsTrigger value="overview">Statistiques</TabsTrigger>
@@ -63,10 +62,8 @@ export default function AdminDashboard() {
                     <TabsContent value="users" className="space-y-8">
                         <AddUserForm onUserAdded={triggerRefresh}/>
                         <ListUsers refreshTrigger={refreshTrigger}/>
-
                     </TabsContent>
                 </Tabs>
-            </div>
-        </AuthenticatedLayout>
+        </Layout>
     );
 }

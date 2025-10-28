@@ -73,7 +73,6 @@ export default function ListServices({ refreshTrigger }) {
                         <th>Description</th>
                         <th>URL Intern</th>
                         <th>URL Externe</th>
-                        <th>Image</th>
                         <th> Catégorie(s) </th>
                         <th>Statut</th>
                         <th>Utilisateur(s)</th>
@@ -86,14 +85,19 @@ export default function ListServices({ refreshTrigger }) {
                     {servicesList.length > 0 ? (
                         servicesList.map(service => (
                             <tr key={service.id}>
-                                <td>{service.name}</td>
+                                <td><div className="flex flex-col items-center text-center">{service.image_url && (
+                                        <img src={service.image_url} alt="Service" className="avatar h-10 w-10 rounded-full" />
+                                    )} {service.name} </div></td>
                                 <td className="truncate max-w-[160px]">{service.description}</td>
-                                <td>{service.internal_url}</td>
-                                <td>{service.external_url}</td>
                                 <td>
-                                    {service.image_url && (
-                                        <img src={service.image_url} alt="Service" className="h-10 w-10 object-cover" />
-                                    )}
+                                    <a href={service.internal_url} target='blank' className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"> 
+                                        {service.internal_url || "Aucun lien"}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href={service.external_url} target='blank' className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"> 
+                                        {service.external_url || "Aucun lien"}
+                                    </a>
                                 </td>
                                 <td>
                                     {service.categories.filter(category => category !== null).map(category => (

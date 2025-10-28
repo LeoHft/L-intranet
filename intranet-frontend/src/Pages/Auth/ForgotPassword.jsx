@@ -1,4 +1,4 @@
-import GuestLayout from '@/Layouts/GuestLayout';
+import Layout from '@/Components/Utils/Layout';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ export default function ForgotPassword({}) {
 
 
     return (
-        <GuestLayout>
+        <Layout>
             <div className="hero min-h-screen">
                 <div className="hero-content text-center">
                     <div className="card bg-base-100/20 backdrop-blur-sm shadow-xl max-w-lg">
@@ -27,6 +27,6 @@ export default function ForgotPassword({}) {
                     </div>
                 </div>
             </div>
-        </GuestLayout>
+        </Layout>
     );
 }

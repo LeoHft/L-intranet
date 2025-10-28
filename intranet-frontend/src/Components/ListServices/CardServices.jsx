@@ -1,5 +1,4 @@
 import Modal from '@/Components/Utils/Modal';
-import { ToggleContext } from '@/Components/Utils/ToggleContext';
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
 
 import { getUserServices, updateNumberServiceClick } from '@/api/modules/services';
@@ -13,7 +12,10 @@ import toast, { Toaster } from 'react-hot-toast';
 export default function CardServices({ selectedCategories, selectedStatus }) {
     const authContext = useAuthAttributes();
     const user = authContext?.userAttributes;
-    const { enabled } = useContext(ToggleContext);
+    const [enabled, setEnabled] = useState(() => {
+        const stored = localStorage.getItem('switch_enabled');
+        return stored === 'true'; // Convertir la chaîne en booléen
+    });
     const [servicesList, setServicesList] = useState([]);
     const [filteredServices, setFilteredServices] = useState([]);
     const [showingServiceModal, setShowingServiceModal] = useState(false);
@@ -33,6 +35,18 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                 }
             }
         );
+    }, []);
+
+    // Écouter les changements du switch
+    useEffect(() => {
+        const handleSwitchChange = (event) => {
+            setEnabled(event.detail.enabled);
+        };
+
+        window.addEventListener('switchChanged', handleSwitchChange);
+        return () => {
+            window.removeEventListener('switchChanged', handleSwitchChange);
+        };
     }, []);
 
     // Effet pour filtrer les services selon les critères sélectionnés
@@ -136,14 +150,16 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                         src={service.image_url || "storage/images/no-image-available.jpg"} 
                                         alt={service.name}
                                     />
+                                    <div className="absolute top-2 right-2 space-x-1">
                                     {service.status !== null && (
-                                        <span className="badge badge-primary absolute top-2 right-2 backdrop-blur-md border-base-300/20">
+                                        <span className="text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
                                             {service.status.name}
                                         </span>
                                     )}
-                                    <div className="absolute top-2 left-2 space-y-1">
+                                    </div>
+                                    <div className="absolute top-2 left-2 space-x-1">
                                         {Array.isArray(service.categories) && service.categories.map((category, catIndex) => (
-                                            <span className="badge badge-secondary backdrop-blur-md border-base-300/20">
+                                            <span className="text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
                                                 {category.name}
                                             </span>
                                         ))}
@@ -161,15 +177,15 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                         >
                                             { enabled ? (
                                             service.internal_url ? (
-                                            <a href={service.internal_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.internal_url); }} className="btn btn-sm btn-outline backdrop-blur-md border-base-300/30"> 
+                                            <a href={service.internal_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.internal_url); }} className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"> 
                                                 {service.internal_url}
                                             </a>// Evite la propagation du click pour ne pas ouvrir le modal
-                                            ) : (<p className="text-base-content/50"> Pas de lien dispo </p>)
+                                            ) : (<div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30"> Aucun lien </div>)
                                             ) : (service.external_url ? (
-                                                <a href={service.external_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.external_url); }} className="btn btn-sm btn-outline backdrop-blur-md border-base-300/30"> 
-                                                {service.external_url}
-                                            </a>// Evite la propagation du click pour ne pas ouvrir le modal
-                                            ) :(<p className="text-base-content/50"> Pas de lien dispo </p>))}
+                                                <a href={service.external_url} target='blank' onClick={(e) => { e.stopPropagation(); UpdateNumberClick(service, service.external_url); }} className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"> 
+                                                    {service.external_url}
+                                                </a>// Evite la propagation du click pour ne pas ouvrir le modal
+                                            ) :(<div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30"> Aucun lien </div>))}
                                         </div>
                                     </div>
                                 </div>      
@@ -249,14 +265,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                     initial={{ opacity: 0, scale: 0.8, x: 20 }}
                                     animate={{ opacity: 1, scale: 1, x: 0 }}
                                     transition={{ delay: 0.1, duration: 0.2 }}
-                                    className="absolute top-2 right-2 text-white px-3 py-1 rounded-full text-sm"
-                                    style={{
-                                        background: 'rgba(0,0,0,0.4)',
-                                        backdropFilter: 'blur(20px) saturate(180%)',
-                                        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                                        border: '1px solid rgba(255,255,255,0.2)',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)'
-                                    }}
+                                    className="absolute top-2 right-2 text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
                                     whileHover={{ 
                                         scale: 1.05,
                                         boxShadow: '0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15)'
@@ -265,21 +274,14 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                                     {selectedService.status.name}
                                 </motion.span>
                             )}
-                            <div className="absolute top-2 left-2 space-y-1">
+                            <div className="absolute top-2 left-2 space-x-1">
                                 {Array.isArray(selectedService.categories) && selectedService.categories.map((category, index) => (
                                     <motion.span 
                                         key={category.id} 
                                         initial={{ opacity: 0, scale: 0.8, x: -20 }}
                                         animate={{ opacity: 1, scale: 1, x: 0 }}
                                         transition={{ delay: 0.1 + (index * 0.1), duration: 0.2 }}
-                                        className="inline-block text-white px-3 py-1 text-sm rounded-full mr-1"
-                                        style={{
-                                            background: 'rgba(0,0,0,0.4)',
-                                            backdropFilter: 'blur(20px) saturate(180%)',
-                                            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                                            border: '1px solid rgba(255,255,255,0.2)',
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)'
-                                        }}
+                                        className="inline-block text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
                                         whileHover={{ 
                                             scale: 1.05,
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15)'
@@ -291,7 +293,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                             </div>
                         </motion.div>
                         <motion.div 
-                            className="p-4 relative"
+                            className="pt-2 pb-1 px-4 relative"
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1, duration: 0.3 }}

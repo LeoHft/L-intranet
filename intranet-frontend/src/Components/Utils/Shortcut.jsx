@@ -22,13 +22,13 @@ export default function Shortcut({ id, url, icon, className = '', onDelete }) {
                     className="indicator-item badge badge badge-xs badge-ghost cursor-pointer hover:badge badge-error"
                     onClick={() => setShowDeleteModal(true)}
                 >
-                    <Trash2 className="h-2 w-2" />
+                    <Trash2 className="h-2 w-2"/>
                 </span>
                 <div className="tooltip tooltip-left" data-tip={`${url}`}>
                     <button
                         data-tooltip-content={url}
                         onClick={() => window.open(`${url}`, '_blank', 'noopener,noreferrer')}
-                        className={`btn btn-ghost btn-circle hover:btn-primary transition-all duration-200 ${className}`}
+                        className={`btn btn-soft btn-circle hover:btn-primary transition-all duration-200 ${className}`}
                         aria-label={`Ouvrir ${url}`}
                     >
                         {IconComponent && <IconComponent className="h-6 w-6" />}

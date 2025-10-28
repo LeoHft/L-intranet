@@ -1,5 +1,5 @@
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import Layout from '@/Components/Utils/Layout';
 import CardServices from '@/Components/ListServices/CardServices';
 import FilterServices from '@/Components/ListServices/FilterServices';
 import { Funnel, X } from 'lucide-react';
@@ -20,7 +20,7 @@ export default function Dashboard({}) {
     const [selectedStatus, setSelectedStatus] = useState([]);
 
     return (
-        <AuthenticatedLayout>
+        <Layout>
             <div className="container mx-auto px-2 mt-4 sm:mt-8">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
                     <div className="flex items-center justify-between w-full">
@@ -79,6 +79,6 @@ export default function Dashboard({}) {
                     />
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </Layout>
     );
 }

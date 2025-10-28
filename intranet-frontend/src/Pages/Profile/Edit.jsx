@@ -1,4 +1,4 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import Layout from '@/Components/Utils/Layout';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import ThemeSettings from '@/Components/Utils/ThemeSettings';
@@ -11,7 +11,7 @@ export default function Edit({ mustVerifyEmail, status }) {
         document.title = "AdminDashboard - Intranet";
     }, []);
     return (
-        <AuthenticatedLayout>
+        <Layout>
             <h2 className="text-xl font-semibold leading-tight mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
                     Profile
                 </h2>
@@ -34,6 +34,6 @@ export default function Edit({ mustVerifyEmail, status }) {
 
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </Layout>
     );
 }

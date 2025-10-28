@@ -1,4 +1,4 @@
-import GuestLayout from '@/Layouts/GuestLayout';
+import Layout from '@/Components/Utils/Layout';
 import SearchBar from '@/Components/Utils/SearchBar';
 
 import React, { useRef, useEffect } from 'react';
@@ -14,7 +14,7 @@ export default function Welcome() {
     }, []);
 
     return (
-        <GuestLayout>
+        <Layout>
             <div
                 ref={container}
                 className="container mx-auto px-4 text-center"
@@ -40,6 +40,6 @@ export default function Welcome() {
                     </div>
                 </div>
             </div>
-        </GuestLayout>
+        </Layout>
     );
 }
