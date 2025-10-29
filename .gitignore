@@ -3,3 +3,4 @@
 .env
 certificate.crt
 private.key
+intranet-frontend-dist

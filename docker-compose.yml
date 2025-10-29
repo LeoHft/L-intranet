@@ -75,7 +75,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
       - ./ssl:/etc/nginx/ssl
-      - frontend-dist:/var/www/html:ro
+      - ./intranet-frontend-dist:/var/www/html:ro
       - backend-dist:/var/www/intranet-backend:ro
 
   intranet-backend-dev:
@@ -141,7 +141,7 @@ services:
     networks:
       - intra-net
     volumes:
-      - frontend-dist:/var/www/intranet-frontend
+      - ./intranet-frontend:/var/www/intranet-frontend
     develop:
       watch:
         - action: sync
@@ -177,7 +177,7 @@ services:
       - ./nginx/nginx-prod.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
       - ./ssl:/etc/nginx/ssl
-      - frontend-dist:/var/www/html:ro
+      - ./intranet-frontend-dist:/var/www/html:ro
       - backend-dist:/var/www/intranet-backend:ro
 
 
@@ -219,13 +219,13 @@ services:
     networks:
       - intra-net
     volumes:
-      - frontend-dist:/var/www/intranet-frontend/dist
+      - ./intranet-frontend-dist:/output
+    command: sh -c "cp -r /var/www/intranet-frontend/dist/* /output/"
 
 
 volumes:
   intranetDB_data:
     driver: local
-  frontend-dist:
   backend-dist:
 
 
