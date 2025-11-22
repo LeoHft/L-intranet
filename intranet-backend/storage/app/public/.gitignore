@@ -1,1 +1,3 @@
 !.gitignore
+/images/
+!/images/no-image-available.jpg

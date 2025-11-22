@@ -1,5 +1,54 @@
-*/node_modules
-*/vendor
+# Node modules
+**/node_modules/
+**/dist/
+
+# Vendor
+**/vendor/
+
+# Environment variables
 .env
-certificate.crt
-private.key
+.env.local
+.env.*.local
+
+# SSL Certificates
+ssl/certificate.crt
+ssl/private.key
+*.pem
+
+# Database data
+intranetDB_data/
+
+# Logs
+**/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Laravel specific
+intranet-backend/storage/logs/*
+intranet-backend/storage/framework/cache/*
+intranet-backend/storage/framework/sessions/*
+intranet-backend/storage/framework/views/*
+!intranet-backend/storage/.gitkeep
+!intranet-backend/storage/logs/.gitkeep
+intranet-backend/.env.backup
+intranet-backend/.phpunit.result.cache
+
+# React/Vite specific
+intranet-frontend/.vite/
+intranet-frontend/dist-ssr/
+intranet-frontend/.eslintcache

@@ -29,7 +29,7 @@ services:
       timeout: 5s
       retries: 3
     volumes:
-      - intranetDB_data:/var/lib/mysql
+      - ./intranetDB_data:/var/lib/mysql
     networks:
       - intra-net
 
@@ -52,115 +52,9 @@ services:
     networks:
       - intra-net
 
-
-  # ============ DEV ============
-  nginx-dev:
-    container_name: nginx-dev
-    profiles:
-      - dev
-    image: nginx:latest
-    ports:
-      - "8088:80" # Redirige vers 8443 (http vers https)
-      - "8443:443"
-    depends_on:
-      ssl-init:
-        condition: service_completed_successfully
-      intranet-backend-dev:
-        condition: service_started
-      intranet-frontend-dev:
-        condition: service_started
-    networks:
-      - intra-net
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
-      - ./ssl:/etc/nginx/ssl
-      - frontend-dist:/var/www/html:ro
-      - backend-dist:/var/www/intranet-backend:ro
-
-  intranet-backend-dev:
-    container_name: intranet-backend-dev
-    profiles:
-      - dev
-    build: 
-      context: ./intranet-backend
-      dockerfile: Dockerfile
-      target: development
-    depends_on:
-      intranetDB:
-        condition: service_healthy 
-    networks:
-      - intra-net
-    environment:
-      APP_ENV: development
-      APP_DEBUG: true
-      DB_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - backend-dist:/var/www/intranet-backend
-      - ./ssl:/var/www/ssl
-    develop:
-      watch:
-        - action: sync
-          path: ./intranet-backend/app
-          target: /var/www/intranet-backend/app
-        - action: sync
-          path: ./intranet-backend/config
-          target: /var/www/intranet-backend/config
-        - action: sync
-          path: ./intranet-backend/database
-          target: /var/www/intranet-backend/database
-        - action: sync
-          path: ./intranet-backend/resources
-          target: /var/www/intranet-backend/resources
-        - action: sync
-          path: ./intranet-backend/routes
-          target: /var/www/intranet-backend/routes
-        - action: rebuild
-          path: ./intranet-backend/composer.json
-        - action: rebuild
-          path: ./intranet-backend/package.json
-
-
-  intranet-frontend-dev:
-    container_name: intranet-frontend-dev
-    profiles:
-      - dev
-    build:
-      context: ./intranet-frontend
-      dockerfile: Dockerfile
-      target: development
-    environment:
-      NODE_ENV: development
-      VITE_API_URL: ${VITE_API_URL}
-      # Variables pour Vite HMR
-      CHOKIDAR_USEPOLLING: "true" 
-      WATCHPACK_POLLING: "true" 
-      FAST_REFRESH: "true" 
-    stdin_open: true
-    tty: true
-    networks:
-      - intra-net
-    volumes:
-      - frontend-dist:/var/www/intranet-frontend
-    develop:
-      watch:
-        - action: sync
-          path: ./intranet-frontend/src
-          target: /var/www/intranet-frontend/src
-        - action: sync
-          path: ./intranet-frontend/public
-          target: /var/www/intranet-frontend/public
-        - action: rebuild
-          path: ./intranet-frontend/package.json
-
-
-# ============ PROD ============
   nginx:
     container_name: nginx
-    profiles:
-      - prod
     image: nginx:latest
-    restart: unless-stopped
     ports:
       - "8088:80" # Redirige vers 8443 (http vers https)
       - "8443:443"
@@ -170,68 +64,62 @@ services:
       intranet-backend:
         condition: service_started
       intranet-frontend:
-        condition: service_completed_successfully
+        condition: service_started
     networks:
       - intra-net
+    environment:
+      - NODE_ENV=${NODE_ENV:-dev}
     volumes:
-      - ./nginx/nginx-prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
-      - ./ssl:/etc/nginx/ssl
-      - frontend-dist:/var/www/html:ro
-      - backend-dist:/var/www/intranet-backend:ro
+      - ./ssl/certificate.crt:/etc/nginx/ssl/certificate.crt:ro
+      - ./ssl/private.key:/etc/nginx/ssl/private.key:ro
+      - ./intranet-backend:/var/www/intranet-backend:ro
+      - ./intranet-frontend/dist:/var/www/intranet-frontend/dist:ro
 
 
   intranet-backend:
     container_name: intranet-backend
-    profiles:
-      - prod
-    restart: unless-stopped
     build: 
       context: ./intranet-backend
       dockerfile: Dockerfile
-      target: production
-    environment:
-      APP_ENV: production
-      APP_DEBUG: false
-      DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
       intranetDB:
         condition: service_healthy 
     networks:
       - intra-net
     volumes:
-      - backend-dist:/var/www/intranet-backend
-      - ./ssl:/var/www/ssl
-
+      - ./intranet-backend:/var/www/html
 
   intranet-frontend:
     container_name: intranet-frontend
-    profiles:
-      - prod
     build:
       context: ./intranet-frontend
       dockerfile: Dockerfile
-      target: production
       args:
-        VITE_API_URL: ${VITE_API_URL}
+        NODE_ENV: ${NODE_ENV:-dev}
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV:-dev}
+    command: npm run ${NODE_ENV:-dev}
     networks:
       - intra-net
     volumes:
-      - frontend-dist:/var/www/intranet-frontend/dist
-
-
-volumes:
-  intranetDB_data:
-    driver: local
-  frontend-dist:
-  backend-dist:
-
+      - ./intranet-frontend:/var/www/intranet-frontend
+      - /var/www/intranet-frontend/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./intranet-frontend
+          target: /var/www/intranet-frontend
+          ignore:
+            - node_modules/**
+            - dist/**
+        - action: rebuild
+          path: ./intranet-frontend/package.json
 
 networks:
   intra-net:
     name: intra-net
-    driver: bridge
+    external: true
 
     

@@ -22,8 +22,9 @@ export default defineConfig({
     },
     cors: true,
     hmr: {
+      protocol: 'wss',
       host: 'localhost',
-      clientPort: 8443,
+      port: 8443,
     },
   },
   preview: {
