@@ -1,4 +1,5 @@
-import GuestLayout from '@/Layouts/GuestLayout';
+import Layout from '@/Components/Utils/Layout';
+import SearchBar from '@/Components/Utils/SearchBar';
 
 import React, { useRef, useEffect } from 'react';
 
@@ -13,32 +14,32 @@ export default function Welcome() {
     }, []);
 
     return (
-        <GuestLayout>
+        <Layout>
             <div
                 ref={container}
-                className="container mx-auto px-4 text-center pt-8 min-h-screen"
+                className="container mx-auto px-4 text-center"
             >
                 {/* HERO */}
-                <div className="hero min-h-screen">
+                <div className="hero min-h-[calc(100vh-5rem)]">
                     <div className="hero-content text-center">
-                        <div className="max-w-md">
+                        <div className="max-w-md space-y-4">
                             <h1 className="text-6xl font-bold font-serif">Intranet</h1>
-                            <p className="text-2xl font-light font-serif opacity-70 py-6">
+                            <p className="text-2xl font-light font-serif opacity-70">
                                 Centralisez vos services auto-hébergés, gérez les accès avec finesse.
                             </p>
-                            <p className="text-xl opacity-50 font-mono">Par HOFSTETTER Léo</p>
                             <button
                                 id="buttonLogin"
                                 type="button"
                                 onClick={() => window.location.href = "/login"}
-                                className="btn btn-primary btn-lg mt-10"
+                                className="btn btn-primary btn-lg"
                             >
                                 Accédez à votre intranet
                             </button>
+                            <SearchBar />
                         </div>
                     </div>
                 </div>
             </div>
-        </GuestLayout>
+        </Layout>
     );
 }

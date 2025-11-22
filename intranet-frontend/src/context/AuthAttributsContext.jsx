@@ -17,7 +17,6 @@ export const AuthAttributesProvider = ({ children }) => {
     setIsLoading(true)
     try {
       const response = await getCurrentUserInfo()
-      console.log("Attributs de l'utilisateur récupérés:", response)
       setUserAttributes(response)
     } catch (err) {
       console.error("Erreur lors de la récupération des attributs:", err)

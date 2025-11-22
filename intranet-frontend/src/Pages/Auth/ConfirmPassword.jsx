@@ -3,7 +3,7 @@ import InputLabel from '@/Components/Utils/InputLabel';
 import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import TextInput from '@/Components/Utils/TextInput';
 
-import GuestLayout from '@/Layouts/GuestLayout';
+import Layout from '@/Components/Utils/Layout';
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -53,7 +53,7 @@ export default function ConfirmPassword() {
     };
 
     return (
-        <GuestLayout>
+        <Layout>
             <div className="mb-4 text-sm opacity-70">
                 This is a secure area of the application. Please confirm your
                 password before continuing.
@@ -82,6 +82,6 @@ export default function ConfirmPassword() {
                     </PrimaryButton>
                 </div>
             </form>
-        </GuestLayout>
+        </Layout>
     );
 }

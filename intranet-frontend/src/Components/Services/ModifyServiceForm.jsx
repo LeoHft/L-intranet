@@ -1,15 +1,16 @@
 import Modal from '@/Components/Utils/Modal';
 import InputLabel from '@/Components/Utils/InputLabel';
 import TextInput from '@/Components/Utils/TextInput';
-
-import CategorySelect from '@/Components/Category/CategorySelect';
-import StatusSelect from '@/Components/Status/StatusSelect';
-import UsersSelect from '@/Components/Users/UsersSelect';
+import CustomSelect from '@/Components/Utils/Select';
+import { getAllStatus } from '@/api/modules/status';
+import { getAllCategory } from '@/api/modules/category';
+import { getUsers } from '@/api/modules/users';
 
 import { editService } from '@/api/modules/services';
 
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import { Camera } from 'lucide-react';
 
 
 export default function ModifyServiceForm({ service, onClose, onSuccess }) {
@@ -31,6 +32,11 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
         users: [],
         status: null,
     });
+    const [categories, setCategories] = useState([]);
+    const [status, setStatus] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [imagePreview, setImagePreview] = useState(null);
+    const fileInputRef = useRef();
 
     const reset = () => {
         setData({
@@ -47,8 +53,52 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
         setSelectedUsers([]);
         setSelectedStatus(null);
         setImageFile(null);
+        setImagePreview(null);
     };
- 
+     useEffect(() => {
+        handleStatus();
+        handleCategories();
+        handleUsers();
+    }, []);
+
+    const handleStatus = () => {
+        try {
+            getAllStatus()
+                .then((response) => {
+                    setStatus(response.data.map((status) => ({
+                        value: status.id,
+                        label: status.name,
+                    })));
+                })
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+    const handleCategories = () => {
+        try {
+            getAllCategory()
+            .then((response) => {
+                setCategories(response.data.map((category) => ({
+                    value: category.id,
+                    label: category.name,
+                })));
+            })
+        } catch (error) {
+            toast.error(error.message);
+        } 
+    }
+    const handleUsers = () => {
+        getUsers()
+        .then((response) => {
+            setUsers(response.data.map((users) => ({
+                value: users.id,
+                label: users.name,
+            })));
+        })
+        .catch((error) => {
+            console.error("Erreur lors de la récupération des utilisateurs:", error);
+        });
+    }
 
     useEffect(() => {
         if (service) {
@@ -66,8 +116,27 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
             setSelectedCategories(service.categories?.map(cat => ({ value: cat.id, label: cat.name })) || []);
             setSelectedUsers(service.users?.map(user => ({ value: user.id, label: user.name })) || []);
             setSelectedStatus(service.status ? { value: service.status.id, label: service.status.name } : null);
+            setImagePreview(service.image_url || null);
         }
     }, [service]);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            // Créer une URL pour la prévisualisation
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleAvatarClick = () => {
+        fileInputRef.current.click();
+    };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -107,22 +176,43 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
 
     return (
         <Modal show={true} onClose={() => { onClose(); }}>
+            <div className="max-h-[90vh] overflow-y-auto">
             <form onSubmit={handleSubmit} className="space-y-6">
                 <h1 className="text-lg font-medium">
                     Modifier un service
                 </h1>
-                <div className="form-control">
-                    <InputLabel htmlFor="name" value="Nom du service*" />
-                    <TextInput
-                        id="name"
-                        ref={name}
-                        value={data.name}
-                        onChange={(e) => setData({ ...data, name: e.target.value})}
-                        type="text"
-                        className="w-full"
-                        placeholder="Nom du service"
-                        required
+                <div className="flex flex-row items-center gap-4">
+                    <div className="cursor-pointer" onClick={handleAvatarClick}>
+                        <div className="bg-neutral text-neutral-content rounded-full w-24 h-24 hover:opacity-80 transition-opacity flex items-center justify-center">
+                            {imagePreview ? (
+                                <img src={imagePreview} alt="Preview" className="rounded-full w-full h-full object-cover" />
+                            ) : (
+                                <Camera size={48} />
+                            )}
+                        </div>
+                    </div>
+                    <input
+                        ref={fileInputRef}
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
                     />
+
+                    <div className="form-control flex-1">
+                        <InputLabel htmlFor="name" value="Nom du service*" />
+                        <TextInput
+                            id="name"
+                            ref={name}
+                            value={data.name}
+                            onChange={(e) => setData({ ...data, name: e.target.value})}
+                            type="text"
+                            className="w-full"
+                            placeholder="Nom du service"
+                            required
+                        />
+                    </div>
                 </div>
                 <div className="form-control">
                     <InputLabel htmlFor="description" value="Description max: 255" />
@@ -160,37 +250,33 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
                         placeholder="URL externe"
                     />
                 </div>
-                <div className="form-control">
-                    <InputLabel htmlFor="image" value="Image" />
-                    {data.image && (
-                        <div>
-                            <p>Image actuelle :</p>
-                            <img src={data.image} alt="Aperçu" className="w-32 h-32 object-cover rounded" />
-                        </div>
-                    )}
-                    <input
-                        id="image"
-                        type="file"
-                        className="file-input file-input-bordered w-full"
-                        onChange={(e) => setImageFile(e.target.files[0])}
-                    />
-                </div>
-                <CategorySelect
-                    selectedCategories={selectedCategories}
-                    setSelectedCategories={setSelectedCategories}
+                <CustomSelect 
+                    options={categories}
+                    name="Catégories"
+                    placeholder="Sélectionnez une ou plusieurs catégories..."
+                    selectedOption={selectedCategories}
+                    setSelectedOption={setSelectedCategories}
                 />
-                <StatusSelect
-                    selectedStatus={selectedStatus}
-                    setSelectedStatus={setSelectedStatus}
+                <CustomSelect 
+                    options={status}
+                    name="Statut"
+                    placeholder="Sélectionnez un statut..."
+                    selectedOption={selectedStatus}
+                    setSelectedOption={setSelectedStatus}
                 />
-                <UsersSelect
-                    selectedUsers={selectedUsers}
-                    setSelectedUsers={setSelectedUsers}
+                <CustomSelect 
+                    options={users}
+                    required
+                    name="Utilisateurs"
+                    placeholder="Sélectionnez une ou plusieurs utilisateurs..."
+                    selectedOption={selectedUsers}
+                    setSelectedOption={setSelectedUsers}
                 />
                 <button type="submit" className="btn btn-primary">
                     Valider
                 </button>
             </form>
+            </div>
             <Toaster />
         </Modal>
     );

@@ -29,8 +29,8 @@ export default function ThemeSettings() {
                 name="theme-dropdown"
                 className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
                 aria-label="Light"
-                value="light"
-                checked={theme === "light"}
+                value="pastel"
+                checked={theme === "pastel"}
                 onChange={handleThemeChange} />
             </li>
             <li>
@@ -38,9 +38,9 @@ export default function ThemeSettings() {
                 type="radio"
                 name="theme-dropdown"
                 className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                aria-label="Dark"
-                value="dark"
-                checked={theme === "dark"}
+                aria-label="LightAbyss"
+                value="LightAbyss"
+                checked={theme === "LightAbyss"}
                 onChange={handleThemeChange} />
             </li>
             <li>
@@ -48,9 +48,9 @@ export default function ThemeSettings() {
                 type="radio"
                 name="theme-dropdown"
                 className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                aria-label="Cupcake"
-                value="cupcake"
-                checked={theme === "cupcake"}
+                aria-label="DarkAbyss"
+                value="DarkAbyss"
+                checked={theme === "DarkAbyss"}
                 onChange={handleThemeChange} />
             </li>
             <li>
@@ -58,9 +58,9 @@ export default function ThemeSettings() {
                 type="radio"
                 name="theme-dropdown"
                 className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                aria-label="Synthwave"
-                value="synthwave"
-                checked={theme === "synthwave"}
+                aria-label="Topaz"
+                value="topaz"
+                checked={theme === "topaz"}
                 onChange={handleThemeChange} />
             </li>
             <li>
@@ -71,46 +71,6 @@ export default function ThemeSettings() {
                 aria-label="Retro"
                 value="retro"
                 checked={theme === "retro"}
-                onChange={handleThemeChange} />
-            </li>
-            <li>
-            <input
-                type="radio"
-                name="theme-dropdown"
-                className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                aria-label="Halloween"
-                value="halloween"
-                checked={theme === "halloween"}
-                onChange={handleThemeChange} />
-            </li>
-            <li>
-            <input
-                type="radio"
-                name="theme-dropdown"
-                className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                aria-label="Abyss"
-                value="abyss"
-                checked={theme === "abyss"}
-                onChange={handleThemeChange} />
-            </li>
-            <li>
-            <input
-                type="radio"
-                name="theme-dropdown"
-                className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                aria-label="Coffee"
-                value="coffee"
-                checked={theme === "coffee"}
-                onChange={handleThemeChange} />
-            </li>
-            <li>
-            <input
-                type="radio"
-                name="theme-dropdown"
-                className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-                aria-label="Green"
-                value="greenNoise"
-                checked={theme === "greenNoise"}
                 onChange={handleThemeChange} />
             </li>
         </ul>

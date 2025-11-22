@@ -3,7 +3,7 @@ import InputLabel from '@/Components/Utils/InputLabel';
 import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import TextInput from '@/Components/Utils/TextInput';
 
-import GuestLayout from '@/Layouts/GuestLayout';
+import Layout from '@/Components/Utils/Layout';
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -68,7 +68,7 @@ export default function ResetPassword() {
     };
 
     return (
-        <GuestLayout>
+        <Layout>
             <div className="hero min-h-screen">
                 <div className="hero-content w-full max-w-md">
                     <div className="card bg-base-100/10 backdrop-blur-sm shadow-xl w-full">
@@ -151,6 +151,6 @@ export default function ResetPassword() {
                     </div>
                 </div>
             </div>
-        </GuestLayout>
+        </Layout>
     );
 }

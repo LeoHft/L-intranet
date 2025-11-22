@@ -4,7 +4,7 @@ import InputLabel from '@/Components/Utils/InputLabel';
 import PrimaryButton from '@/Components/Utils/PrimaryButton';
 import TextInput from '@/Components/Utils/TextInput';
 
-import GuestLayout from '@/Layouts/GuestLayout';
+import Layout from '@/Components/Utils/Layout';
 import { login, getCurrentUserInfo } from '@/api/modules/users'
 
 import { useState, useRef, useEffect } from 'react';
@@ -57,7 +57,7 @@ export default function Login() {
     };
 
     return (
-        <GuestLayout>
+        <Layout>
             <div className="hero min-h-screen"> 
                 <form onSubmit={submit} className="card bg-base-100/10 backdrop-blur-sm shadow-xl max-w-96 w-full">
                     <div className="card-body space-y-6">
@@ -93,23 +93,6 @@ export default function Login() {
 
                             <InputError message={errors.password} className="mt-2" />
                         </div>
-
-                        {/* Si besoin, modifier le backend pour y inclure le remember */}
-                        {/* <div className="form-control">
-                            <label className="label cursor-pointer">
-                                <Checkbox
-                                    name="remember"
-                                    checked={data.remember}
-                                    onChange={(e) =>
-                                        setData({ ...data, remember: e.target.checked })
-                                    }
-                                />
-                                <span className="label-text">
-                                    Se souvenir de moi
-                                </span>
-                            </label>
-                        </div> */}
-
                         <div className="flex items-center justify-end">
                             <Link
                                 to="/forgot-password"
@@ -126,6 +109,6 @@ export default function Login() {
                 </form>
             </div>
             <Toaster />
-        </GuestLayout>
+        </Layout>
     );
 }
