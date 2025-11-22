@@ -120,6 +120,5 @@ services:
 networks:
   intra-net:
     name: intra-net
-    external: true
-
+    driver: bridge
     
