@@ -1,5 +1,18 @@
-# Dépendances
-node_modules/
-vendor/
-
-
+vendor
+node_modules
+.git
+.gitignore
+.env
+.env.example
+README.md
+*.log
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+.DS_Store
+.vscode
+.idea
+tests
+phpunit.xml

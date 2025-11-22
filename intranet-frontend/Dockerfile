@@ -1,5 +1,5 @@
 # Multi-stage build pour React
-FROM node:22-alpine AS base
+FROM node:22-alpine
 
 WORKDIR /var/www/intranet-frontend
 
@@ -7,33 +7,14 @@ WORKDIR /var/www/intranet-frontend
 COPY package*.json ./
 
 # Installation des dépendances
-RUN npm ci
+RUN npm install
 
-# Stage de développement
-FROM base AS development
-
-# Copier le code source
+# Copier le reste des fichiers
 COPY . .
 
-# Créer un entrypoint pour le développement
-COPY entrypoint-dev.sh ./entrypoint-dev.sh
-# Convertir les fins de ligne Windows (CRLF) en Unix (LF)
-RUN sed -i 's/\r$//' ./entrypoint-dev.sh
-RUN chmod +x ./entrypoint-dev.sh
+# Variable d'environnement par défaut
+ARG NODE_ENV=dev
+ENV NODE_ENV=${NODE_ENV}
 
-# Le script sera accessible via le volume mount
-ENTRYPOINT ["/bin/sh", "./entrypoint-dev.sh"]
-
-# Stage de production
-FROM base AS production
-
-# Copier le code source
-COPY . .
-
-# Arguments de build pour les variables d'environnement
-ARG VITE_API_URL
-ENV VITE_API_URL=${VITE_API_URL}
-
-# Build de l'application avec les variables d'environnement
-RUN npm run build
-
+# Le CMD sera surchargé par docker-compose, mais défini par défaut
+CMD ["npm", "run", "dev"]

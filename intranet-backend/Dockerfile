@@ -1,17 +1,17 @@
-FROM php:8.2-fpm AS base
-
+FROM php:8.2-fpm
 # Définir le répertoire de travail
-WORKDIR /var/www/intranet-backend
+WORKDIR /var/www/html
 
 COPY . .
+
+RUN chmod -R 775 /var/www/html/storage && \
+    chmod -R 775 /var/www/html/bootstrap/cache
 
 # Installation des dépendances système et PHP
 RUN apt-get update \
   && apt-get install -y build-essential libpng-dev libjpeg-dev libonig-dev \
      libxml2-dev libzip-dev pkg-config zip unzip curl gnupg netcat-openbsd \
-     libicu-dev \
-  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-  && apt-get install -y nodejs
+     libicu-dev
 
 # Installation de composer
 RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer \
@@ -23,27 +23,8 @@ RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
-# Stage de développement
-FROM base AS development
-
 # Installer les dépendances PHP et Node.js
-RUN composer install \
-    && npm install
-
-# Configurer l'entrypoint
-RUN sed -i 's/\r$//' ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
-
-ENTRYPOINT ["./entrypoint.sh"]
-
-# Stage de production
-FROM base AS production
-
-# Installation des dépendances (sans dev) et build
-RUN composer install --no-dev \
-  && npm ci
-
-RUN npm run build
+RUN composer install
 
 # Configurer l'entrypoint
 RUN sed -i 's/\r$//' ./entrypoint.sh

@@ -47,7 +47,7 @@ IP.2 = ::1
 EOF
 
 openssl genrsa -out ${SSL_DIR}/private.key 2048
-openssl req -new -x509 -key ${SSL_DIR}/private.key -out ${SSL_DIR}/certificate.crt -days 365 -config ${SSL_DIR}/openssl.conf -extensions v3_req
+openssl req -new -x509 -key ${SSL_DIR}/private.key -out ${SSL_DIR}/certificate.crt -days 3650 -config ${SSL_DIR}/openssl.conf -extensions v3_req
 
 chmod 644 ${SSL_DIR}/private.key
 chmod 644 ${SSL_DIR}/certificate.crt
