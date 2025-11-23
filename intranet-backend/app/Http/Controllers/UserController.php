@@ -94,8 +94,20 @@ class UserController extends Controller
 
             $token = JWTAuth::claims(['is_admin' => $user->is_admin])->fromUser($user);
 
+            $isFirstConnection = is_null($user->last_login_at);
+
+            $user->last_login_at = now();
+            $user->save();
+
+            if ($isFirstConnection) {
+                return response()->json([
+                    'message' => 'connexion reussie, premiere connexion',
+                    'data' => $token,
+                ], 200);
+            }
+
             return response()->json([
-                'message' => 'Utilisateur connecté avec succès',
+                'message' => 'Connexion réussie',
                 'data' => $token
             ], 200);
 
@@ -161,6 +173,54 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Erreur lors de la mise à jour de l\'utilisateur',
+                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            ], 500);
+        }
+    }
+
+    public function updateCurrentUserFirstLogin(Request $request)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'name.required' => 'Le nom est obligatoire.',
+            'name.string' => 'Le nom doit être une chaîne de caractères.',
+            'name.max' => 'Le nom ne doit pas dépasser 255 caractères.',
+            'email.required' => 'L\'adresse e-mail est obligatoire.',
+            'email.string' => 'L\'adresse e-mail doit être une chaîne de caractères.',
+            'email.email' => 'L\'adresse e-mail doit être une adresse e-mail valide.',
+            'email.max' => 'L\'adresse e-mail ne doit pas dépasser 255 caractères.',
+            'email.unique' => 'L\'adresse e-mail est déjà utilisée par un autre utilisateur.',
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.string' => 'Le mot de passe doit être une chaîne de caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
+            'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
+        ]);
+
+        try {
+            $user->name = $validatedData['name'];
+            $user->email = $validatedData['email'];
+            $user->password = Hash::make($validatedData['password']);
+            $user->save();
+
+            return response()->json([
+                'message' => 'Informations de l\'utilisateur mises à jour avec succès',
+                'data' => $user->fresh()
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la mise à jour des informations de l\'utilisateur lors de la première connexion: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Erreur lors de la mise à jour des informations de l\'utilisateur',
                 'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
             ], 500);
         }

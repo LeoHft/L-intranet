@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { Tab } from '@headlessui/react';
+import * as React from "react";
+import { Tab } from "@headlessui/react";
 
 // Fonction utilitaire simple pour combiner les classes CSS
 const cn = (...classes: (string | undefined)[]) => {
-  return classes.filter(Boolean).join(' ')
-}
+  return classes.filter(Boolean).join(" ");
+};
 
-const Tabs = Tab.Group
+const Tabs = Tab.Group;
 
 const TabsList = React.forwardRef<
   HTMLDivElement,
@@ -14,14 +14,11 @@ const TabsList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Tab.List
     ref={ref}
-    className={cn(
-      "tabs tabs-bordered",
-      className
-    )}
+    className={cn("tabs tabs-bordered", className)}
     {...props}
   />
-))
-TabsList.displayName = "TabsList"
+));
+TabsList.displayName = "TabsList";
 
 const TabsTrigger = React.forwardRef<
   HTMLButtonElement,
@@ -29,29 +26,20 @@ const TabsTrigger = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Tab
     ref={ref}
-    className={({ selected }) => cn(
-      "tab",
-      selected ? "tab-active" : "",
-      className
-    )}
+    className={({ selected }) =>
+      cn("tab", selected ? "tab-active" : "", className)
+    }
     {...props}
   />
-))
-TabsTrigger.displayName = "TabsTrigger"
+));
+TabsTrigger.displayName = "TabsTrigger";
 
 const TabsContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <Tab.Panel
-    ref={ref}
-    className={cn(
-      "mt-4",
-      className
-    )}
-    {...props}
-  />
-))
-TabsContent.displayName = "TabsContent"
+  <Tab.Panel ref={ref} className={cn("mt-4", className)} {...props} />
+));
+TabsContent.displayName = "TabsContent";
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsList, TabsTrigger, TabsContent };

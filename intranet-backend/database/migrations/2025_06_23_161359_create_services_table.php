@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('internal_url')->nullable();
             $table->string('external_url')->nullable();
-            $table->string('image_url');
+            $table->string('image_url')->nullable();
             $table->foreignId('status_id')->nullable()->constrained('status')->nullOnDelete();
             $table->timestamps();
         });

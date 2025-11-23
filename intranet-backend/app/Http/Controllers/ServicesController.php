@@ -23,7 +23,7 @@ class ServicesController extends Controller
     public function getServices(): JsonResponse
     {
         try {
-            $services = Services::with('categories')->with('status')->with('users')->get();
+            $services = Services::with(['categories', 'status', 'users'])->get();
             
             return response()->json([
                 'message' => 'Services récupérés avec succès',
@@ -44,15 +44,8 @@ class ServicesController extends Controller
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
-            
-            if (!$user) {
-                return response()->json([
-                    'message' => 'Non autorisé',
-                    'error' => 'Token invalide ou utilisateur non authentifié'
-                ], 401);
-            }
     
-            $services = Services::with('categories', 'status', 'users')
+            $services = Services::with(['categories', 'status', 'users'])
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 })
@@ -62,14 +55,6 @@ class ServicesController extends Controller
                 'message' => 'Services récupérés avec succès',
                 'data' => $services
             ], 200);
-
-        } catch (JWTException $e) {
-            Log::error('Erreur JWT lors de la récupération des services utilisateur: ' . $e->getMessage());
-            
-            return response()->json([
-                'message' => 'Erreur d\'authentification',
-                'error' => config('app.debug') ? $e->getMessage() : 'Token invalide ou expiré'
-            ], 401);
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération des services utilisateur: ' . $e->getMessage());
             
@@ -90,12 +75,14 @@ class ServicesController extends Controller
             'external_url' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status_id' => 'nullable|exists:status,id',
-            'category_id' => 'nullable|string',
-            'user_id' => 'required|string',
+            'category_id' => 'nullable|array',
+            'category_id.*' => 'exists:categories,id',
+            'user_id' => 'required|array',
+            'user_id.*' => 'exists:users,id',
         ]);
 
         try {
-            $image_url = null;
+            $image_url = '/storage/images/no-image-available.jpg';
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('images', 'public');
                 $image_url = '/storage/' . $imagePath;
@@ -103,21 +90,23 @@ class ServicesController extends Controller
             
             $service = Services::create([
                 'name' => $validatedData['name'],
-                'description' => $validatedData['description'],
-                'internal_url' => $validatedData['internal_url'],
-                'external_url' => $validatedData['external_url'],
+                'description' => $validatedData['description'] ?? null,
+                'internal_url' => $validatedData['internal_url'] ?? null,
+                'external_url' => $validatedData['external_url'] ?? null,
                 'image_url' => $image_url,
-                'status_id' => $validatedData['status_id'],
+                'status_id' => $validatedData['status_id'] ?? null,
             ]);
 
             if ($service) {
-                foreach (json_decode($validatedData['category_id']) as $categoryId) {
-                    CategoriesServices::create([
-                        'category_id' => $categoryId,
-                        'service_id' => $service->id,
-                    ]);
+                if (!empty($validatedData['category_id'])) {
+                    foreach ($validatedData['category_id'] as $categoryId) {
+                        CategoriesServices::create([
+                            'category_id' => $categoryId,
+                            'service_id' => $service->id,
+                        ]);
+                    }
                 }
-                foreach (json_decode($validatedData['user_id']) as $userId) {
+                foreach ($validatedData['user_id'] as $userId) {
                     ServicesAccess::create([
                         'user_id' => $userId,
                         'service_id' => $service->id,
@@ -150,8 +139,10 @@ class ServicesController extends Controller
             'external_url' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status_id' => 'nullable|exists:status,id',
-            'category_id' => 'nullable|string',
-            'user_id' => 'required|string',
+            'category_id' => 'nullable|array',
+            'category_id.*' => 'exists:categories,id',
+            'user_id' => 'required|array',
+            'user_id.*' => 'exists:users,id',
         ]);
 
         try {
@@ -166,35 +157,29 @@ class ServicesController extends Controller
 
             $service->update([
                 'name' => $validatedData['name'],
-                'description' => $validatedData['description'],
-                'internal_url' => $validatedData['internal_url'],
-                'external_url' => $validatedData['external_url'],
+                'description' => $validatedData['description'] ?? null,
+                'internal_url' => $validatedData['internal_url'] ?? null,
+                'external_url' => $validatedData['external_url'] ?? null,
                 'image_url' => $image_url,
-                'status_id' => $validatedData['status_id'],
+                'status_id' => $validatedData['status_id'] ?? null,
             ]);
 
             // Update categories
             CategoriesServices::where('service_id', $id)->delete();
             
-            // Gérer les catégories (JSON string ou array)
-            $categoryIds = is_string($validatedData['category_id']) ? 
-                json_decode($validatedData['category_id']) : $validatedData['category_id'];
-            
-            foreach ($categoryIds as $categoryId) {
-                CategoriesServices::create([
-                    'category_id' => $categoryId,
-                    'service_id' => $service->id,
-                ]);
+            if (!empty($validatedData['category_id'])) {
+                foreach ($validatedData['category_id'] as $categoryId) {
+                    CategoriesServices::create([
+                        'category_id' => $categoryId,
+                        'service_id' => $service->id,
+                    ]);
+                }
             }
             
             // Update users
             ServicesAccess::where('service_id', $id)->delete();
             
-            // Gérer les utilisateurs (JSON string ou array)
-            $userIds = is_string($validatedData['user_id']) ? 
-                json_decode($validatedData['user_id']) : $validatedData['user_id'];
-            
-            foreach ($userIds as $userId) {
+            foreach ($validatedData['user_id'] as $userId) {
                 ServicesAccess::create([
                     'user_id' => $userId,
                     'service_id' => $service->id,

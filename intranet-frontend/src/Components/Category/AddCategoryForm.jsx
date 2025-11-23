@@ -1,117 +1,113 @@
-import PrimaryButton from '@/Components/Utils/PrimaryButton';
-import Modal from '@/Components/Utils/Modal';
-import InputLabel from '@/Components/Utils/InputLabel';
-import TextInput from '@/Components/Utils/TextInput';
+import PrimaryButton from "@/Components/Utils/PrimaryButton";
+import Modal from "@/Components/Utils/Modal";
+import InputLabel from "@/Components/Utils/InputLabel";
+import TextInput from "@/Components/Utils/TextInput";
 
-import { storeCategory } from '@/api/modules/category';
+import { storeCategory } from "@/api/modules/category";
 
-import { useState, useRef } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-
+import { useState, useRef } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function AddCategoryForm({ onCategoryAdded }) {
-    const [showingAddCategoryModal, setShowingAddCategoryModal] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const name = useRef();
-    const description = useRef();
-    const [data, setData] = useState({
-        name: '',
-        description: '',
+  const [showingAddCategoryModal, setShowingAddCategoryModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const name = useRef();
+  const description = useRef();
+  const [data, setData] = useState({
+    name: "",
+    description: "",
+  });
+
+  const reset = () => {
+    setData({
+      name: "",
+      description: "",
     });
+  };
 
+  const AddCategory = () => {
+    setShowingAddCategoryModal(true);
+  };
 
-    const reset = () => {
-        setData({
-            name: '',
-            description: '',
-        });
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const AddCategory = () => {
-        setShowingAddCategoryModal(true);
+    if (!data.name.trim()) {
+      // Si pas de texte, alors renvoie true
+      toast.error("Le nom de la catégorie est requis");
+      return;
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (!data.name.trim()) { // Si pas de texte, alors renvoie true
-            toast.error('Le nom de la catégorie est requis');
-            return;
-        }
+    setIsLoading(true);
 
-        setIsLoading(true);
-        
-        toast.promise(
-            storeCategory(data),
-            {
-                loading: 'Ajout de la catégorie en cours...',
-                success: (response) => {
-                    reset();
-                    setShowingAddCategoryModal(false);
-                    setIsLoading(false);
-                    onCategoryAdded();
-                    return response.message;
-                },
-                error: (error) => {
-                    setIsLoading(false);
-                    return error.message;
-                }
-            }
-        );
-    }
+    toast.promise(storeCategory(data), {
+      loading: "Ajout de la catégorie en cours...",
+      success: (response) => {
+        reset();
+        setShowingAddCategoryModal(false);
+        setIsLoading(false);
+        onCategoryAdded();
+        return response.message;
+      },
+      error: (error) => {
+        setIsLoading(false);
+        return error.message;
+      },
+    });
+  };
 
-    return (
-        <section>
-            <PrimaryButton onClick={AddCategory}> Ajouter une catégorie </PrimaryButton>
+  return (
+    <section>
+      <PrimaryButton onClick={AddCategory}>
+        {" "}
+        Ajouter une catégorie{" "}
+      </PrimaryButton>
 
-            <Modal show={showingAddCategoryModal} onClose={() => setShowingAddCategoryModal(false)}>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <h1 className="text-lg font-medium">
-                        Ajouter une catégorie
-                    </h1>
-                    <div className="form-control">
-                        <InputLabel htmlFor="name" value="Nom de la catégorie*" />
-                        <TextInput
-                            id="name"
-                            ref={name}
-                            value={data.name}
-                            onChange={(e) => setData({ ...data, name: e.target.value })}
-                            type="text"
-                            className="w-full"
-                            placeholder="Nom de la catégorie"
-                            required
-                        />
-                    </div>
-                    <div className="form-control">
-                        <InputLabel htmlFor="description" value="Description max: 255" />
-                        <TextInput
-                            id="description"
-                            ref={description}
-                            value={data.description}
-                            onChange={(e) => setData({ ...data, description: e.target.value })}
-                            type="text"
-                            className="w-full"
-                            placeholder="Description de la catégorie"
-                        />
-                    </div>
-                    <button 
-                        type="submit" 
-                        disabled={isLoading}
-                        className={`btn ${
-                            isLoading 
-                                ? 'btn-disabled' 
-                                : 'btn-primary'
-                        }`}
-                    >
-                        {isLoading ? 'Ajout en cours...' : 'Valider'}
-                    </button>
-                    
-                </form>
-            </Modal>
-            <Toaster />
-        </section>
-
-    );
-
-
+      <Modal
+        show={showingAddCategoryModal}
+        onClose={() => setShowingAddCategoryModal(false)}
+      >
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <h1 className="text-lg font-medium">Ajouter une catégorie</h1>
+          <div className="form-control">
+            <InputLabel htmlFor="name" value="Nom de la catégorie*" />
+            <TextInput
+              id="name"
+              ref={name}
+              value={data.name}
+              onChange={(e) => setData({ ...data, name: e.target.value })}
+              type="text"
+              className="w-full"
+              placeholder="Nom de la catégorie"
+              required
+            />
+          </div>
+          <div className="form-control">
+            <InputLabel htmlFor="description" value="Description max: 255" />
+            <TextInput
+              id="description"
+              ref={description}
+              value={data.description}
+              onChange={(e) =>
+                setData({ ...data, description: e.target.value })
+              }
+              type="text"
+              className="w-full"
+              placeholder="Description de la catégorie"
+            />
+          </div>
+          <div className="modal-action">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`btn ${isLoading ? "btn-disabled" : "btn-primary"}`}
+            >
+              {isLoading ? "Ajout en cours..." : "Valider"}
+            </button>
+          </div>
+        </form>
+      </Modal>
+      <Toaster />
+    </section>
+  );
 }

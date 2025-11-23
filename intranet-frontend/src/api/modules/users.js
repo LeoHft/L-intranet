@@ -85,6 +85,23 @@ export const updateUser = async (userData, userId) => {
 }
 
 
+export const updateCurrentUserFirstLogin = async (userData) => {
+  console.log("Modification de l\'utilisateur actuel en cours ...");
+  try {
+    const response = await apiClient.put('/updateCurrentUserFirstLogin', userData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || "Erreur cliente lors de la modification de l'utilisateur";
+    console.error(error.response?.data?.error);
+    throw new Error(message);
+  }
+}
+
+
 export const updateCurrentUser = async (userData) => {
   console.log("Modification de l\'utilisateur actuel en cours ...");
   try {
