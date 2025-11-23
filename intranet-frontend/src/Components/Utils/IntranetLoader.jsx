@@ -1,6 +1,13 @@
 import { motion } from "framer-motion"; // Note: assurez-vous d'utiliser 'framer-motion' ou 'motion/react' selon votre version
+import { useEffect } from "react";
 
 export default function IntranetLoader() {
+
+  useEffect(() => {
+    document.title = "Chargement - Intranet";
+  }, []);
+
+
   return (
     // CONTAINER PRINCIPAL : Utilisation de bg-base-200 pour s'adapter au thème (sombre/clair)
     <div className="relative min-h-screen w-full overflow-hidden bg-base-200 flex items-center justify-center font-sans">
@@ -35,7 +42,7 @@ export default function IntranetLoader() {
             transition={{ delay: 0.2 }}
             className="card-title text-4xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
           >
-            L'Intranet
+            Intranet
           </motion.h1>
 
           {/* Sous-titre */}
