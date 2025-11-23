@@ -1,26 +1,85 @@
-# Quel est le but de cette application ?
-L'Intranet permet aux utilisateurs hébergeant des services chez eux, sur leur serveur, de regrouper l'accès à tous leurs services en un seul endroit, comme un tableau de bord (dashboard).
-Il propose également des fonctionnalités supplémentaires : l’admin peut ajouter des utilisateurs et leur attribuer l’accès à certaines applications uniquement, selon ses préférences.
-Il peut aussi ajouter des catégories, des services, des statuts et des utilisateurs, le tout dans une base de données MariaDB entièrement modulable.
-L’Intranet permet d’attribuer à chaque service un lien local et un lien externe, une description, ainsi que des catégories et des statuts.
-De plus, l’admin peut consulter les statistiques d’accès à chaque service, par utilisateur, par lien et par date.
-Les utilisateurs peuvent se connecter via le compte créé par l’admin et voir les services auxquels ils ont accès, le tout sur une interface épurée intégrant plusieurs animations.
+# L'intranet : Votre Dashboard pour l'Auto-Hébergement
 
-Il existe 2 branches que vous pouvez utiliser : 
-1) master qui contient la version frontend la plus avancée avec 10 thèmes disponibles.
-2) Without_Themes qui contient la version originale du frontend sans possibilité de personnaliser le thème.
+## Pourquoi utiliser L'intranet  ?
 
-## [Installation](https://github.com/LeoHft/L-intranet/wiki/Installation-en-local-du-projet) 
+Vous hébergez plusieurs services chez vous (Homelab) ? Vous en avez assez de gérer des dizaines de favoris ou de retenir des ports IP différents ?
+**L'intranet** transforme votre expérience serveur en regroupant l'accès à toutes vos applications via un tableau de bord moderne, fluide et animé.
 
+
+
+---
+
+## Fonctionnalités Clés
+
+### Pour l'Administrateur (Contrôle Total)
+* **Gestion fine des accès (RBAC) :** Créez des utilisateurs et définissez précisément quels services ils peuvent voir ou utiliser.
+* **Configuration avancée des services :**
+    * Ajout de liens locaux (LAN) et externes (WAN).
+    * Personnalisation complète : Descriptions, images, catégories et statuts.
+* **Analytique intégrée :** Suivez l'utilisation de vos services avec des statistiques détaillées par utilisateur, par lien et par date.
+
+### Pour l'Utilisateur (Expérience Fluide)
+* **Interface Moderne :** Une UI épurée intégrant des animations soignées pour une navigation agréable.
+* **Accès Personnalisé :** Ne voyez que les services auxquels vous avez un droit d'accès.
+* **Productivité Boostée :** Chaque utilisateur peut configurer jusqu'à **10 raccourcis rapides** (avec émojis personnalisés) pour accéder instantanément à ses sites favoris.
+
+---
+
+## 🛠️ Installation & Configuration étape par étape
+/!\ Vous avez besoin de docker compose installé.
+
+1) ```sh 
+    git clone https://github.com/LeoHft/L-intranet.git
+    ```
+
+2) ```sh
+    cd ./L-intranet/
+    ```
+
+3) ```sh
+    sudo chmod +x ./nginx/docker-entrypoint.sh
+    ```
+
+4) ```sh
+    sudo chmod +x ./intranet-backend/entrypoint.sh
+    ```
+
+5) ```sh
+    cp ./env/.env.prod .env
+    ```
+
+6) ```sh
+    vi .env 
+    ```
+    Et modifiez la variable `SERVER_NAME` et `DB_PASSWORD` tel que noté dans les lignes au dessus `TODO`
+
+7) ```sh
+    cp intranet-backend/.env.example ./intranet-backend/.env
+    ```
+
+8) ```sh
+    vi intranet-backend/.env
+    ```
+    Et modifiez la variable `APP_URL` et `DB_PASSWORD` par le même password que vous avez noté dans le .env étape `6`
+
+9) ```sh
+    cp ./intranet-frontend/.env.example ./intranet-frontend/.env
+    ```
+
+10) ```sh
+    vi ./intranet-frontend/.env
+    ```
+    Et modifiez la variable `VITE_API_URL` tel que noté dans la ligne au dessus `TODO`
+
+11) ```sh
+    docker compose up --build -d
+    ```
+
+12) Une fois l'application construite, accédez à l'application par l'IP / nom de domaine que vous avez noté dans le .env de l'étape `6` par exemple `https://192.168.15.12` ou `https://intranet.com` (attention à mettre seulement l'IP / nom de domaine dans l'étpae `6` et non pas l'url entière).
+
+13) Une fois que vous accédez à l'application, connectez vous avec `admin@example.com` et `password`, un formulaire s'ouvrira pour modifier les informations de l'utilisateur admin (nom, mail, mot de passe).
+
+14) Vous êtes prêt à utiliser l'application.
 
 # Quelques photos :
-<img width="1280" height="655" alt="Nouveau projet" src="https://github.com/user-attachments/assets/6b6159e1-ff97-4de0-b2ca-6d6e9c0a3ce7" />
-<img width="1529" height="793" alt="theme_dashboard" src="https://github.com/user-attachments/assets/c49ba1db-1b0f-4910-babf-6c9a485c35be" />
-<img width="1543" height="835" alt="theme_dashboard_details" src="https://github.com/user-attachments/assets/9ada9647-8993-40b8-ab2e-a7cad640941d" />
-<img width="1530" height="860" alt="theme_graph_1" src="https://github.com/user-attachments/assets/2f6a1367-fc20-4fc2-a5b2-36297f77aba1" />
-<img width="1372" height="1229" alt="theme_graph_2" src="https://github.com/user-attachments/assets/cf55e1a9-fc97-43a9-86d6-7bba17a2b80a" />
-<img width="1370" height="755" alt="theme_services" src="https://github.com/user-attachments/assets/f7857801-9797-471c-af36-8b2fdb469da4" />
-<img width="1378" height="361" alt="theme_categories" src="https://github.com/user-attachments/assets/24650181-a361-42b9-8a90-538e7e36c1cf" />
-<img width="1380" height="363" alt="theme_status" src="https://github.com/user-attachments/assets/9d77596d-6fc1-4fb0-b706-d219254c7751" />
-<img width="1380" height="474" alt="theme_users" src="https://github.com/user-attachments/assets/c03ce05c-bb7f-4764-8fc8-2b0a17cd261d" />
-<img width="1387" height="868" alt="theme_profil" src="https://github.com/user-attachments/assets/25645fa9-eba7-4595-a334-b2d2fcc5218b" />
+
