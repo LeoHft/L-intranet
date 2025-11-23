@@ -1,6 +1,5 @@
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
-import TextInput from "@/Components/Utils/TextInput";
 
 import { updateStatus } from "@/api/modules/status";
 
@@ -37,7 +36,7 @@ export default function ModifyStatusForm({ status, onClose, onSuccess }) {
 
     setIsLoading(true);
     toast.promise(updateStatus(data, status.id), {
-      loading: "Modification du status en cours ...",
+      loading: "Modification du statut en cours ...",
       success: (response) => {
         setIsLoading(false);
         reset();
@@ -64,30 +63,30 @@ export default function ModifyStatusForm({ status, onClose, onSuccess }) {
       }}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        <h1 className="text-lg font-medium">Modifier un status</h1>
+        <h1 className="text-lg font-medium">Modifier un statut</h1>
         <div className="form-control">
-          <InputLabel htmlFor="name" value="Nom du status*" />
-          <TextInput
+          <InputLabel htmlFor="name" value="Nom du statut"/><span className="text-error">*</span>
+          <input
+            type="text"
             id="name"
             ref={name}
             value={data.name}
             onChange={(e) => setData({ ...data, name: e.target.value })}
-            type="text"
-            className="w-full"
-            placeholder="Nom du status"
+            className="w-full input input-bordered focus:input-primary"
+            placeholder="Nom du statut"
             required
           />
         </div>
         <div className="form-control">
-          <InputLabel htmlFor="description" value="Description max: 255" />
-          <TextInput
+          <InputLabel htmlFor="description" value="Description" />
+          <textarea
             id="description"
             ref={description}
             value={data.description}
+            maxLength={255}
             onChange={(e) => setData({ ...data, description: e.target.value })}
-            type="text"
-            className="w-full"
-            placeholder="Description du status"
+            className="w-full textarea textarea-bordered focus:textarea-primary"
+            placeholder="Description du statut"
           />
         </div>
         <div className="modal-action">

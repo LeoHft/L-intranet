@@ -6,12 +6,12 @@ import {
   updateNumberServiceClick,
 } from "@/api/modules/services";
 
-import React, { useState, useEffect, useContext } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import dayjs from "dayjs";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function CardServices({ selectedCategories, selectedStatus }) {
+export default function CardServices({ selectedCategories, selectedStatus, searchQuery }) {
   const authContext = useAuthAttributes();
   const user = authContext?.userAttributes;
   const [enabled, setEnabled] = useState(() => {
@@ -70,8 +70,15 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
       );
     }
 
+    if (searchQuery && searchQuery.trim() !== "") {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      filtered = filtered.filter((service) =>
+        service.name.toLowerCase().includes(lowerCaseQuery)
+      );
+    }
+
     setFilteredServices(filtered);
-  }, [servicesList, selectedCategories, selectedStatus]);
+  }, [servicesList, selectedCategories, selectedStatus, searchQuery]);
 
   const DetailService = (service) => {
     setSelectedService(service);
@@ -108,44 +115,64 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      y: 50,
+      scale: 0.8,
+      rotateX: -15,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      rotateX: 0,
+      transition: {
+        duration: 0.6,
+        type: "spring",
+        damping: 20,
+        stiffness: 300,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -30,
+      scale: 0.9,
+      transition: { duration: 0.2 },
+    },
+  };
+
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-      <AnimatePresence>
+    <>
+      <motion.section
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4"
+      >
+        <AnimatePresence mode="popLayout">
         {filteredServices.length > 0 ? (
-          filteredServices.map((service, index) => (
+          filteredServices.map((service) => (
             <motion.div
               key={service.id}
-              initial={{
-                opacity: 0,
-                y: 50,
-                scale: 0.8,
-                rotateX: -15,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                rotateX: 0,
-                transition: {
-                  delay: index * 0.1,
-                  duration: 0.6,
-                  type: "spring",
-                  damping: 20,
-                  stiffness: 300,
-                },
-              }}
-              exit={{
-                opacity: 0,
-                y: -30,
-                scale: 0.9,
-                transition: { duration: 0.2 },
-              }}
+              layout
+              variants={itemVariants}
+              exit="exit"
               whileHover={{
                 y: -8,
                 scale: 1.02,
                 transition: { duration: 0.2 },
               }}
-              layout
             >
               <div
                 onClick={() => DetailService(service)}
@@ -170,7 +197,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                     </div>
                     <div className="absolute top-2 left-2 space-x-1">
                       {Array.isArray(service.categories) &&
-                        service.categories.map((category, catIndex) => (
+                        service.categories.map((category) => (
                           <span className="text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
                             {category.name}
                           </span>
@@ -202,8 +229,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                             </a> // Evite la propagation du click pour ne pas ouvrir le modal
                           ) : (
                             <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
-                              {" "}
-                              Aucun lien{" "}
+                              Aucun lien
                             </div>
                           )
                         ) : service.external_url ? (
@@ -220,8 +246,7 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                           </a> // Evite la propagation du click pour ne pas ouvrir le modal
                         ) : (
                           <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
-                            {" "}
-                            Aucun lien{" "}
+                            Aucun lien
                           </div>
                         )}
                       </div>
@@ -355,18 +380,16 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                       {selectedService.name}
                     </p>
                     <p className="text-base-content/70 text-sm">
-                      {" "}
                       Créer le :{" "}
                       {dayjs(selectedService.created_at).format(
                         "DD/MM/YYYY"
-                      )}{" "}
+                      )}
                     </p>
                     <p className="text-base-content/70 text-sm">
-                      {" "}
                       Modifié le :{" "}
                       {dayjs(selectedService.modified_at).format(
                         "DD/MM/YYYY"
-                      )}{" "}
+                      )}
                     </p>
                   </motion.div>
                   <motion.div
@@ -410,8 +433,12 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                       >
                         {selectedService.internal_url}
                       </motion.a>
+                    ) : user.is_admin ? (
+                      <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
+                        Aucun lien
+                      </div>
                     ) : null}
-                    {selectedService.external_url && (
+                    {selectedService.external_url ? (
                       <motion.a
                         href={selectedService.external_url}
                         onClick={(e) => {
@@ -446,6 +473,10 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
                       >
                         {selectedService.external_url}
                       </motion.a>
+                    ) : (
+                      <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
+                        Aucun lien
+                      </div>
                     )}
                   </motion.div>
                 </div>
@@ -464,6 +495,8 @@ export default function CardServices({ selectedCategories, selectedStatus }) {
           )}
         </AnimatePresence>
       </Modal>
-    </section>
+      </motion.section>
+      <Toaster />
+    </>
   );
 }

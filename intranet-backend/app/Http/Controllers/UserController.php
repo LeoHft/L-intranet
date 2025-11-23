@@ -129,7 +129,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'is_admin' => 'required|boolean',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $user = User::create($validatedData);
@@ -156,7 +156,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id, // Vérifie que le mail est unique dans la table users, colonne , email mais ignore l'enregistrement avec l'ID $id
             'is_admin' => 'required|boolean',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $user = User::findOrFail($id);
@@ -190,20 +190,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'required|string|min:6|confirmed',
-        ], [
-            'name.required' => 'Le nom est obligatoire.',
-            'name.string' => 'Le nom doit être une chaîne de caractères.',
-            'name.max' => 'Le nom ne doit pas dépasser 255 caractères.',
-            'email.required' => 'L\'adresse e-mail est obligatoire.',
-            'email.string' => 'L\'adresse e-mail doit être une chaîne de caractères.',
-            'email.email' => 'L\'adresse e-mail doit être une adresse e-mail valide.',
-            'email.max' => 'L\'adresse e-mail ne doit pas dépasser 255 caractères.',
-            'email.unique' => 'L\'adresse e-mail est déjà utilisée par un autre utilisateur.',
-            'password.required' => 'Le mot de passe est obligatoire.',
-            'password.string' => 'Le mot de passe doit être une chaîne de caractères.',
-            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
-            'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $user->name = $validatedData['name'];
@@ -354,5 +341,32 @@ class UserController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
             ], 500);
         }
+    }
+
+    public function validationErrorMessage()
+    {
+        return [
+            // --- Name ---
+            'name.required' => 'Le nom est obligatoire.',
+            'name.string' => 'Le nom doit être une chaîne de caractères.',
+            'name.max' => 'Le nom ne doit pas dépasser 255 caractères.',
+
+            // --- Email ---
+            'email.required' => "L'adresse email est obligatoire.",
+            'email.string' => "L'adresse email doit être une chaîne de caractères.",
+            'email.email' => "L'adresse email doit être un format valide.",
+            'email.max' => "L'adresse email ne doit pas dépasser 255 caractères.",
+            'email.unique' => "Cette adresse email est déjà utilisée par un autre compte.",
+
+            // --- Password ---
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.string' => 'Le mot de passe doit être une chaîne de caractères.',
+            'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
+
+            // --- Is Admin ---
+            'is_admin.required' => 'Le choix du rôle (admin ou non) est obligatoire.',
+            'is_admin.boolean' => 'Le champ administrateur doit être vrai ou faux.',
+        ];
     }
 }

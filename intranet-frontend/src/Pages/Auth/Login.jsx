@@ -1,7 +1,6 @@
 import InputError from "@/Components/Utils/InputError";
 import InputLabel from "@/Components/Utils/InputLabel";
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
-import TextInput from "@/Components/Utils/TextInput";
 import { useAuthAttributes } from "@/context/AuthAttributsContext";
 
 import Layout from "@/Components/Utils/Layout";
@@ -118,12 +117,12 @@ export default function Login() {
           <div className="card-body space-y-6">
             <div className="form-control">
               <InputLabel htmlFor="email" value="Email" />
-              <TextInput
+              <input
                 id="email"
                 type="email"
                 name="email"
                 value={data.email}
-                className="w-full"
+                className="w-full input input-bordered focus:input-primary"
                 autoComplete="username"
                 isFocused={true}
                 onChange={(e) => setData({ ...data, email: e.target.value })}
@@ -133,12 +132,12 @@ export default function Login() {
 
             <div className="form-control">
               <InputLabel htmlFor="password" value="Mot de passe" />
-              <TextInput
+              <input
                 id="password"
                 type="password"
                 name="password"
                 value={data.password}
-                className="w-full"
+                className="w-full input input-bordered focus:input-primary"
                 autoComplete="current-password"
                 onChange={(e) => setData({ ...data, password: e.target.value })}
               />
@@ -172,13 +171,13 @@ export default function Login() {
               connexion.
             </p>
             <div className="form-control">
-              <InputLabel htmlFor="name" value="Nom*" />
-              <TextInput
+              <InputLabel htmlFor="name" value="Nom"/><span className="text-error">*</span>
+              <input
                 id="name"
                 name="name"
                 placeholder="Nom de l'utilisateur"
                 value={updatedData.name}
-                className="w-full"
+                className="w-full input input-bordered focus:input-primary"
                 autoComplete="name"
                 isFocused={true}
                 onChange={(e) =>
@@ -189,14 +188,14 @@ export default function Login() {
               <InputError message={errors.name} className="mt-2" />
             </div>
             <div className="form-control">
-              <InputLabel htmlFor="email" value="Email*" />
-              <TextInput
+              <InputLabel htmlFor="email" value="Email"/><span className="text-error">*</span>
+              <input
                 id="email"
                 type="email"
                 name="email"
                 placeholder="Email de l'utilisateur"
                 value={updatedData.email}
-                className="w-full"
+                className="w-full input input-bordered focus:input-primary"
                 autoComplete="username"
                 onChange={(e) =>
                   setUpdatedData({ ...updatedData, email: e.target.value })
@@ -206,14 +205,14 @@ export default function Login() {
               <InputError message={errors.email} className="mt-2" />
             </div>
             <div className="form-control">
-              <InputLabel htmlFor="password" value="Mot de passe*" />
-              <TextInput
+              <InputLabel htmlFor="password" value="Mot de passe"/><span className="text-error">*</span>
+              <input
                 id="password"
                 type="password"
                 name="password"
                 placeholder="Mot de passe de l'utilisateur"
                 value={updatedData.password}
-                className="w-full"
+                className="w-full input input-bordered focus:input-primary"
                 autoComplete="new-password"
                 onChange={(e) =>
                   setUpdatedData({ ...updatedData, password: e.target.value })
@@ -225,15 +224,15 @@ export default function Login() {
             <div className="form-control">
               <InputLabel
                 htmlFor="password_confirmation"
-                value="Confirmer le mot de passe*"
-              />
-              <TextInput
+                value="Confirmer le mot de passe"
+              /><span className="text-error">*</span>
+              <input
                 id="password_confirmation"
                 type="password"
                 name="password_confirmation"
                 placeholder="Confirmer le mot de passe"
                 value={updatedData.password_confirmation}
-                className="w-full"
+                className="w-full input input-bordered focus:input-primary"
                 autoComplete="new-password"
                 onChange={(e) =>
                   setUpdatedData({

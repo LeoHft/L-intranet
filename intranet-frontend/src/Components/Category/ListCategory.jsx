@@ -12,12 +12,10 @@ import toast, { Toaster } from "react-hot-toast";
 export default function ListCategory({ refreshTrigger }) {
   const [categoriesList, setCategoriesList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [showModalModifyCategory, setShowModalModifyCategory] = useState(false);
   const [showModalDeleteCategory, setShowModalDeleteCategory] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
     fetchCategories();
   }, [refreshTrigger]);
 
@@ -26,11 +24,9 @@ export default function ListCategory({ refreshTrigger }) {
       loading: "Chargement des catégories...",
       success: (response) => {
         setCategoriesList(response.data);
-        setIsLoading(false);
         return response.message;
       },
       error: (error) => {
-        setIsLoading(false);
         return error.message;
       },
     });
@@ -69,22 +65,22 @@ export default function ListCategory({ refreshTrigger }) {
       <table className="table table-zebra w-full">
         <thead>
           <tr>
-            <th>Nom</th>
-            <th>Description</th>
-            <th>Date d'ajout</th>
-            <th>Date de modification</th>
-            <th>Actions</th>
+            <th className="text-center">Nom</th>
+            <th className="text-center">Description</th>
+            <th className="text-center">Date d'ajout</th>
+            <th className="text-center">Date de modification</th>
+            <th className="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
           {categoriesList.length > 0 ? (
             categoriesList.map((category) => (
               <tr key={category.id}>
-                <td>{category.name}</td>
-                <td>{category.description}</td>
-                <td>{dayjs(category.created_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td>{dayjs(category.updated_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="flex gap-2 content-center items-center justify-center py-1">
+                <td className="text-center">{category.name}</td>
+                <td className="text-center">{category.description}</td>
+                <td className="text-center">{dayjs(category.created_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td className="text-center">{dayjs(category.updated_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td className="flex gap-2 justify-center items-center py-1">
                   <SecondaryButton onClick={() => ModifyCategory(category)}>
                     Modifier
                   </SecondaryButton>

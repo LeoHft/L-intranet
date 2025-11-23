@@ -1,6 +1,5 @@
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
-import TextInput from "@/Components/Utils/TextInput";
 import CustomSelect from "@/Components/Utils/Select";
 import { getAllStatus } from "@/api/modules/status";
 import { getAllCategory } from "@/api/modules/category";
@@ -36,7 +35,6 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
   const [users, setUsers] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef();
-  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const reset = () => {
@@ -55,7 +53,6 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
     setSelectedStatus(null);
     setImageFile(null);
     setImagePreview(null);
-    setErrors({});
   };
   useEffect(() => {
     handleStatus();
@@ -168,37 +165,8 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
     fileInputRef.current.click();
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Validation du nom (obligatoire)
-    if (!data.name || data.name.trim() === "") {
-      newErrors.name = "Le nom du service est obligatoire";
-    }
-
-    // Validation de la description (max 255 caractères)
-    if (data.description && data.description.length > 255) {
-      newErrors.description =
-        "La description ne doit pas dépasser 255 caractères";
-    }
-
-    // Validation des utilisateurs (obligatoire)
-    if (!selectedUsers || selectedUsers.length === 0) {
-      newErrors.users = "Au moins un utilisateur doit être sélectionné";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Valider le formulaire
-    if (!validateForm()) {
-      toast.error("Veuillez corriger les erreurs dans le formulaire");
-      return;
-    }
 
     const formData = new FormData();
     formData.append("name", data.name);
@@ -276,73 +244,60 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
             />
 
             <div className="form-control flex-1">
-              <InputLabel htmlFor="name" value="Nom du service*" />
-              <TextInput
+              <InputLabel htmlFor="name" value="Nom du service"/><span className="text-error">*</span>
+              <input
+                type="text"
                 id="name"
                 ref={name}
                 value={data.name}
                 onChange={(e) => {
                   setData({ ...data, name: e.target.value });
-                  if (errors.name) setErrors({ ...errors, name: null });
                 }}
-                type="text"
-                className={`w-full ${
-                  errors.name ? "input-error border-error" : ""
-                }`}
+                className="w-full input input-bordered focus:input-primary"
                 placeholder="Nom du service"
                 required
               />
-              {errors.name && (
-                <p className="text-error text-sm mt-1">{errors.name}</p>
-              )}
             </div>
           </div>
           <div className="form-control">
-            <InputLabel htmlFor="description" value="Description max: 255" />
+            <InputLabel htmlFor="description" value="Description" />
             <textarea
               id="description"
               ref={description}
               value={data.description}
               onChange={(e) => {
                 setData({ ...data, description: e.target.value });
-                if (errors.description)
-                  setErrors({ ...errors, description: null });
               }}
-              type="text"
-              className={`textarea textarea-bordered w-full ${
-                errors.description ? "textarea-error border-error" : ""
-              }`}
+              maxLength={255}
+              className="textarea textarea-bordered w-full focus:textarea-primary"
               placeholder="Description du service"
             />
-            {errors.description && (
-              <p className="text-error text-sm mt-1">{errors.description}</p>
-            )}
           </div>
           <div className="form-control">
             <InputLabel htmlFor="internal_url" value="Url interne" />
-            <TextInput
+            <input
+              type="url"
               id="internal_url"
               ref={internal_url}
               value={data.internal_url}
               onChange={(e) =>
                 setData({ ...data, internal_url: e.target.value })
               }
-              type="text"
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               placeholder="Url interne"
             />
           </div>
           <div className="form-control">
             <InputLabel htmlFor="external_url" value="Url externe" />
-            <TextInput
+            <input
+              type="url"
               id="external_url"
               ref={external_url}
               value={data.external_url}
               onChange={(e) =>
                 setData({ ...data, external_url: e.target.value })
               }
-              type="text"
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               placeholder="URL externe"
             />
           </div>
@@ -359,6 +314,7 @@ export default function ModifyServiceForm({ service, onClose, onSuccess }) {
             placeholder="Sélectionnez un statut..."
             selectedOption={selectedStatus}
             setSelectedOption={setSelectedStatus}
+            isMulti={false}
           />
           <CustomSelect
             options={users}

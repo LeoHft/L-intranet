@@ -13,15 +13,7 @@ class ShortcutController extends Controller
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
-            Log::info('Utilisateur authentifié pour la récupération des shortcuts: ' . ($user ? $user->id : 'Aucun utilisateur'));
-            
-            if (!$user) {
-                return response()->json([
-                    'message' => 'Non autorisé',
-                    'error' => 'Token invalide ou utilisateur non authentifié'
-                ], 401);
-            }
-
+        
 
             $shortcuts = Shortcuts::where('user_id', $user->id)->get();
 
@@ -110,5 +102,17 @@ class ShortcutController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
             ], 500);
         }
+    }
+
+    public function validationErrorMessage()
+    {
+        return [
+            'url.required' => 'L\'URL du shortcut est obligatoire.',
+            'url.string' => 'L\'URL du shortcut doit être une chaîne de caractères.',
+            'url.max' => 'L\'URL du shortcut ne doit pas dépasser 255 caractères.',
+            'icon.required' => 'L\'icône du shortcut est obligatoire.',
+            'icon.string' => 'L\'icône du shortcut doit être une chaîne de caractères.',
+            'icon.max' => 'L\'icône du shortcut ne doit pas dépasser 255 caractères.',
+        ]; 
     }
 }

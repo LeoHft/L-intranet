@@ -62,41 +62,41 @@ export default function ListUsers({ refreshTrigger }) {
       <table className="table table-zebra w-full">
         <thead>
           <tr>
-            <th>Nom</th>
-            <th>Email</th>
-            <th>Applications autorisées</th>
-            <th>Rôle</th>
-            <th>Date d'ajout</th>
-            <th>Date de modification</th>
-            <th>Actions</th>
+            <th className="text-center">Nom</th>
+            <th className="text-center">Email</th>
+            <th className="text-center">Applications autorisées</th>
+            <th className="text-center">Rôle</th>
+            <th className="text-center">Date d'ajout</th>
+            <th className="text-center">Date de modification</th>
+            <th className="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
           {usersList.length > 0 ? (
             usersList.map((user) => (
               <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>
+                <td className="text-center">{user.name}</td>
+                <td className="text-center">{user.email}</td>
+                <td className="text-center">
                   {user.services.map((service) => (
                     <span
                       key={service.id}
-                      className="badge badge-ghost mr-2 mb-1"
+                      className="badge badge-primary badge-outline mr-2 mb-1"
                     >
                       {service.name}
                     </span>
                   ))}
                 </td>
-                <td>
+                <td className="text-center">
                   {user.is_admin ? (
                     <span className="badge badge-info">Administrateur</span>
                   ) : (
                     <span className="badge badge-success">Utilisateur</span>
                   )}
                 </td>
-                <td>{dayjs(user.created_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td>{dayjs(user.updated_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="flex gap-2">
+                <td className="text-center">{dayjs(user.created_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td className="text-center">{dayjs(user.updated_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td className="flex gap-2 items-center justify-center">
                   <SecondaryButton onClick={() => ModifyUser(user)}>
                     Modifier
                   </SecondaryButton>

@@ -12,6 +12,15 @@ class JwtMiddleware
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
+
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Non autorisé',
+                    'error' => 'Session expirée, veuillez vous reconnecter'
+                ], 403);
+            } else {
+                return $next($request);
+            }
         } catch (JWTException $e) {
             if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
                 return response()->json(['status' => 'Token is Invalid']);
@@ -21,7 +30,5 @@ class JwtMiddleware
                 return response()->json(['status' => 'Authorization Token not found']);
             }        
         }
-
-        return $next($request);
     }
 }

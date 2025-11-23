@@ -58,7 +58,7 @@ export default function Modal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="modal-backdrop" />
+          <div className="modal-backdrop hover:cursor-pointer" />
         </TransitionChild>
 
         <TransitionChild
@@ -76,11 +76,20 @@ export default function Modal({
               msOverflowStyle: "none" /* Internet Explorer 10+ */,
             }}
           >
-            <style jsx>{`
-              .modal-box::-webkit-scrollbar {
-                display: none; /* Safari and Chrome */
-              }
-            `}</style>
+            <style jsx>
+              {`
+                .modal-box::-webkit-scrollbar {
+                  display: none; /* Safari and Chrome */
+                }
+              `}
+            </style>
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={close}
+            >
+              ✕
+            </button>
+
             {children}
           </DialogPanel>
         </TransitionChild>

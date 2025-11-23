@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { HouseWifi } from "lucide-react";
 
 export default function ToggleSwitch() {
@@ -28,18 +28,20 @@ export default function ToggleSwitch() {
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <input
-        type="checkbox"
-        className="toggle toggle-primary"
-        checked={enabled}
-        onChange={() => {
-          const newValue = !enabled;
-          setEnabled(newValue);
-          notification(newValue);
-        }}
-      />
-      <HouseWifi />
-    </div>
+    <>
+      <div className="flex items-center gap-3">
+        <input
+          type="checkbox"
+          className="toggle toggle-primary"
+          checked={enabled}
+          onChange={() => {
+            const newValue = !enabled;
+            setEnabled(newValue);
+            notification(newValue);
+          }}
+        />
+        <HouseWifi />
+      </div>
+    </>
   );
 }

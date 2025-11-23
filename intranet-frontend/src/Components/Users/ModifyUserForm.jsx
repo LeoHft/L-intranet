@@ -1,11 +1,8 @@
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
-import TextInput from "@/Components/Utils/TextInput";
 import InputError from "@/Components/Utils/InputError";
 
 import { updateUser } from "@/api/modules/users";
-
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState, useRef } from "react";
 
@@ -78,28 +75,28 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
       <form onSubmit={handleSubmit} className="space-y-6">
         <h1 className="text-lg font-medium">Modifier un utilisateur</h1>
         <div className="form-control">
-          <InputLabel htmlFor="name" value="Nom de l'utilisateur*" />
-          <TextInput
+          <InputLabel htmlFor="name" value="Nom de l'utilisateur"/><span className="text-error">*</span>
+          <input
+            type="text"
             id="name"
             ref={name}
             value={data.name}
             onChange={(e) => setData({ ...data, name: e.target.value })}
-            type="text"
-            className="w-full"
+            className="w-full input input-bordered focus:input-primary"
             placeholder="Nom de l'utilisateur"
             required
           />
           <InputError message={errors.name} className="mt-2" />
         </div>
         <div className="form-control">
-          <InputLabel htmlFor="email" value="Email*" />
-          <TextInput
+          <InputLabel htmlFor="email" value="Email"/><span className="text-error">*</span>
+          <input
+            type="email"
             id="email"
             ref={email}
             value={data.email}
             onChange={(e) => setData({ ...data, email: e.target.value })}
-            type="text"
-            className="w-full"
+            className="w-full input input-bordered focus:input-primary"
             placeholder="Email de l'utilisateur"
             required
           />

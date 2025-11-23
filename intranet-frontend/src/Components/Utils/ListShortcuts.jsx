@@ -8,13 +8,13 @@ import {
 import React, { useState, useEffect } from "react";
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
-import TextInput from "@/Components/Utils/TextInput";
 
 export default function ListShortcuts() {
   const [shortcuts, setShortcuts] = useState([]);
   const [showAddShortcut, setShowAddShortcut] = useState(false);
   const [newShortcut, setNewShortcut] = useState({ url: "", icon: "" });
   const [iconSearch, setIconSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchShortcuts();
@@ -35,16 +35,18 @@ export default function ListShortcuts() {
   };
 
   const handleAddShortcut = (e) => {
+    setIsLoading(true);
     e.preventDefault();
-
     addShortcut(newShortcut)
       .then((response) => {
         setShortcuts([...shortcuts, response.data]);
         setNewShortcut({ url: "", icon: "" });
+        setIsLoading(false);
         setShowAddShortcut(false);
       })
       .catch((error) => {
         console.error("Erreur lors de l'ajout du shortcut:", error);
+        setIsLoading(false);
       });
   };
 
@@ -95,27 +97,27 @@ export default function ListShortcuts() {
           <form onSubmit={handleAddShortcut} className="space-y-4">
             <h1 className="text-lg font-medium">Ajouter un shortcut</h1>
             <div className="form-control">
-              <InputLabel htmlFor="url" value="Lien du shortcut*" />
-              <TextInput
+              <InputLabel htmlFor="url" value="Lien du shortcut"/><span className="text-error">*</span>
+              <input
+                type="url"
                 id="url"
                 value={newShortcut.url}
                 onChange={(e) =>
                   setNewShortcut({ ...newShortcut, url: e.target.value })
                 }
-                type="url"
-                className="w-full"
+                className="w-full input input-bordered focus:input-primary"
                 placeholder="https://example.com"
                 required
               />
             </div>
             <div className="form-control">
-              <InputLabel htmlFor="icon" value="Icône*" />
-              <TextInput
+              <InputLabel htmlFor="icon" value="Icône"/><span className="text-error">*</span>
+              <input
                 id="icon-search"
                 value={iconSearch}
                 onChange={(e) => setIconSearch(e.target.value)}
                 type="text"
-                className="w-full mb-2"
+                className="w-full input input-bordered focus:input-primary mb-2"
                 placeholder="Rechercher une icône..."
               />
               <div className="grid grid-cols-6 gap-2 max-h-60 overflow-y-auto border rounded p-2">
@@ -142,9 +144,9 @@ export default function ListShortcuts() {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={!newShortcut.icon}
+              disabled={!newShortcut.icon || isLoading}
             >
-              Ajouter
+              {isLoading ? "Ajout en cours..." : "Ajouter"}
             </button>
           </form>
         </Modal>

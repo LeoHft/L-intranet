@@ -1,13 +1,7 @@
 import Layout from "@/Components/Utils/Layout";
+import { useEffect } from "react";
 
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-export default function ForgotPassword({}) {
-  const [data, setData] = useState({
-    email: "",
-  });
-
+export default function ForgotPassword() {
   useEffect(() => {
     document.title = "Forgot password - Intranet";
   }, []);

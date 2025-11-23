@@ -63,23 +63,23 @@ export default function ListServices({ refreshTrigger }) {
       <table className="table table-zebra w-full">
         <thead>
           <tr>
-            <th>Nom</th>
-            <th>Description</th>
-            <th>URL Intern</th>
-            <th>URL Externe</th>
-            <th> Catégorie(s) </th>
-            <th>Statut</th>
-            <th>Utilisateur(s)</th>
+            <th className="text-center">Nom</th>
+            <th className="text-center">Description</th>
+            <th className="text-center">URL Intern</th>
+            <th className="text-center">URL Externe</th>
+            <th className="text-center"> Catégorie(s) </th>
+            <th className="text-center">Statut</th>
+            <th className="text-center">Utilisateur(s)</th>
             {/* <th>Date d'ajout</th>
                         <th>Date de modification</th> */}
-            <th>Actions</th>
+            <th className="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
           {servicesList.length > 0 ? (
             servicesList.map((service) => (
               <tr key={service.id}>
-                <td>
+                <td className="text-center">
                   <div className="flex flex-col items-center text-center">
                     {service.image_url && (
                       <img
@@ -91,10 +91,10 @@ export default function ListServices({ refreshTrigger }) {
                     {service.name}{" "}
                   </div>
                 </td>
-                <td className="truncate max-w-[160px]">
+                <td className="truncate max-w-[160px] text-center">
                   {service.description}
                 </td>
-                <td>
+                <td className="text-center">
                   <a
                     href={service.internal_url}
                     target="blank"
@@ -103,7 +103,7 @@ export default function ListServices({ refreshTrigger }) {
                     {service.internal_url || "Aucun lien"}
                   </a>
                 </td>
-                <td>
+                <td className="text-center">
                   <a
                     href={service.external_url}
                     target="blank"
@@ -112,7 +112,7 @@ export default function ListServices({ refreshTrigger }) {
                     {service.external_url || "Aucun lien"}
                   </a>
                 </td>
-                <td>
+                <td className="text-center">
                   {service.categories
                     .filter((category) => category !== null)
                     .map((category) => (
@@ -124,7 +124,7 @@ export default function ListServices({ refreshTrigger }) {
                       </span>
                     ))}
                 </td>
-                <td>
+                <td className="text-center">
                   {service.status?.name ? (
                     <span className="badge badge-primary">
                       {service.status.name}
@@ -133,7 +133,7 @@ export default function ListServices({ refreshTrigger }) {
                     <span className="text-base-content/50"> </span>
                   )}
                 </td>
-                <td>
+                <td className="text-center">
                   {service.users
                     .filter((user) => user !== null)
                     .map((user) => (
@@ -147,13 +147,15 @@ export default function ListServices({ refreshTrigger }) {
                 </td>
                 {/* <td>{dayjs(service.created_at).format('DD/MM/YYYY HH:mm')}</td>
                                 <td>{dayjs(service.updated_at).format('DD/MM/YYYY HH:mm')}</td> */}
-                <td className="flex gap-2 content-center items-center justify-center h-full">
-                  <SecondaryButton onClick={() => modifyService(service)}>
-                    Modifier
-                  </SecondaryButton>
-                  <DangerButton onClick={() => deleteServiceShow(service)}>
-                    Supprimer
-                  </DangerButton>
+                <td>
+                  <div className="flex gap-2 items-center justify-center">
+                    <SecondaryButton onClick={() => modifyService(service)}>
+                      Modifier
+                    </SecondaryButton>
+                    <DangerButton onClick={() => deleteServiceShow(service)}>
+                      Supprimer
+                    </DangerButton>
+                  </div>
                 </td>
               </tr>
             ))

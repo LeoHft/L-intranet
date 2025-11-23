@@ -1,12 +1,7 @@
-import InputError from "@/Components/Utils/InputError";
 import InputLabel from "@/Components/Utils/InputLabel";
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
-import TextInput from "@/Components/Utils/TextInput";
-
 import { useAuthAttributes } from "@/context/AuthAttributsContext";
 import { updateCurrentUser } from "@/api/modules/users";
-
-import { Transition } from "@headlessui/react";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -65,10 +60,10 @@ export default function UpdateProfileInformation() {
         <form onSubmit={submit} className="space-y-6">
           <div className="form-control">
             <InputLabel htmlFor="name" value="Nom" />
-
-            <TextInput
+            <input
+              type="text"
               id="name"
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               value={data.name}
               onChange={(e) => setData({ ...data, name: e.target.value })}
               required
@@ -79,18 +74,16 @@ export default function UpdateProfileInformation() {
 
           <div className="form-control">
             <InputLabel htmlFor="email" value="E-mail" />
-
-            <TextInput
+            <input
               id="email"
               type="email"
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               value={data.email}
               onChange={(e) => setData({ ...data, email: e.target.value })}
               required
               autoComplete="username"
             />
           </div>
-
           <div className="flex items-center gap-4">
             <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
           </div>

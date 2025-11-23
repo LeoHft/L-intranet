@@ -7,6 +7,7 @@ export default function CustomSelect({
   setSelectedOption,
   name,
   placeholder,
+  isMulti = true,
   required = false,
 }) {
   return (
@@ -20,7 +21,7 @@ export default function CustomSelect({
         value={selectedOption || []}
         onChange={setSelectedOption}
         placeholder={placeholder}
-        isMulti
+        isMulti={isMulti}
         isClearable
         unstyled
         className="w-full"
@@ -29,9 +30,9 @@ export default function CustomSelect({
             "input input-bordered flex items-center w-full h-12 min-h-12 max-h-32 overflow-auto",
           placeholder: () => "text-base-content/50",
           input: () => "text-base-content",
-          valueContainer: () => "flex flex-wrap gap-1 mr-6",
+          valueContainer: () => "flex flex-wrap gap-1 mr-6 pr-2",
           multiValue: () =>
-            "badge badge-primary badge-outline mr-2 max-w-[200px] overflow-hidden",
+            "badge badge-primary badge-outline mr-2 mb-1 max-w-[200px] overflow-hidden",
           multiValueLabel: () => "truncate text-primary",
           multiValueRemove: () =>
             "hover:cursor-pointer hover:bg-error/20 hover:text-error rounded transition-colors",
@@ -52,11 +53,6 @@ export default function CustomSelect({
             }`,
         }}
       />
-      {required && (!selectedOption || selectedOption.length === 0) && (
-        <p className="text-sm text-error">
-          Au moins une option doit être sélectionnée
-        </p>
-      )}
     </div>
   );
 }

@@ -33,7 +33,7 @@ class StatusController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:status,name',
             'description' => 'nullable|string|max:255',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $status = Status::create($validatedData);
@@ -59,7 +59,7 @@ class StatusController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:status,name,' . $id, // Vérifie que le nom est unique dans la table status, colonne name, mais ignore l'enregistrement avec l'ID $id
             'description' => 'nullable|string|max:255',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $status = Status::findOrFail($id);
@@ -99,5 +99,20 @@ class StatusController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
             ], 500);
         }
+    }
+
+    public function validationErrorMessage()
+    {
+        return [
+            // --- Name ---
+            'name.required' => 'Le nom du statut est obligatoire.',
+            'name.string' => 'Le nom du statut doit être une chaîne de caractères.',
+            'name.max' => 'Le nom du statut ne doit pas dépasser 255 caractères.',
+            'name.unique' => 'Ce nom de statut est déjà utilisé.',
+
+            // --- Description ---
+            'description.string' => 'La description doit être une chaîne de caractères.',
+            'description.max' => 'La description ne doit pas dépasser 255 caractères.',
+        ];
     }
 }

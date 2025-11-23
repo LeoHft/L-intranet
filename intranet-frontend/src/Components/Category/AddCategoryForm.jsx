@@ -1,7 +1,6 @@
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
-import TextInput from "@/Components/Utils/TextInput";
 
 import { storeCategory } from "@/api/modules/category";
 
@@ -70,29 +69,29 @@ export default function AddCategoryForm({ onCategoryAdded }) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <h1 className="text-lg font-medium">Ajouter une catégorie</h1>
           <div className="form-control">
-            <InputLabel htmlFor="name" value="Nom de la catégorie*" />
-            <TextInput
+            <InputLabel htmlFor="name" value="Nom de la catégorie"/><span className="text-error">*</span>
+            <input
+              type="text"
               id="name"
               ref={name}
               value={data.name}
               onChange={(e) => setData({ ...data, name: e.target.value })}
-              type="text"
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               placeholder="Nom de la catégorie"
               required
             />
           </div>
           <div className="form-control">
-            <InputLabel htmlFor="description" value="Description max: 255" />
-            <TextInput
+            <InputLabel htmlFor="description" value="Description" />
+            <textarea
               id="description"
               ref={description}
               value={data.description}
               onChange={(e) =>
                 setData({ ...data, description: e.target.value })
               }
-              type="text"
-              className="w-full"
+              maxLength={255}
+              className="w-full textarea textarea-bordered focus:textarea-primary"
               placeholder="Description de la catégorie"
             />
           </div>

@@ -1,8 +1,5 @@
-import InputError from "@/Components/Utils/InputError";
 import InputLabel from "@/Components/Utils/InputLabel";
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
-import TextInput from "@/Components/Utils/TextInput";
-
 import { useAuthAttributes } from "@/context/AuthAttributsContext";
 import { updateCurrentUserPassword } from "@/api/modules/users";
 
@@ -11,7 +8,6 @@ import toast, { Toaster } from "react-hot-toast";
 
 export default function UpdatePasswordForm() {
   const authContext = useAuthAttributes();
-  const user = authContext?.userAttributes;
   const passwordInput = useRef();
   const currentPasswordInput = useRef();
 
@@ -21,28 +17,6 @@ export default function UpdatePasswordForm() {
     new_password_confirmation: "",
   });
   const [processing, setProcessing] = useState(false);
-
-  const reset = (fields = null) => {
-    if (fields) {
-      // Reset de champs spécifiques
-      const newData = { ...data };
-      if (Array.isArray(fields)) {
-        fields.forEach((field) => {
-          newData[field] = "";
-        });
-      } else {
-        newData[fields] = "";
-      }
-      setData(newData);
-    } else {
-      // Reset complet
-      setData({
-        current_password: "",
-        new_password: "",
-        new_password_confirmation: "",
-      });
-    }
-  };
 
   const updatePassword = async (e) => {
     e.preventDefault();
@@ -81,8 +55,7 @@ export default function UpdatePasswordForm() {
               htmlFor="current_password"
               value="Mot de passe actuel"
             />
-
-            <TextInput
+            <input
               id="current_password"
               ref={currentPasswordInput}
               value={data.current_password}
@@ -90,15 +63,14 @@ export default function UpdatePasswordForm() {
                 setData({ ...data, current_password: e.target.value })
               }
               type="password"
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               autoComplete="current-password"
             />
           </div>
 
           <div className="form-control">
             <InputLabel htmlFor="password" value="Nouveau mot de passe" />
-
-            <TextInput
+            <input
               id="password"
               ref={passwordInput}
               value={data.new_password}
@@ -106,7 +78,7 @@ export default function UpdatePasswordForm() {
                 setData({ ...data, new_password: e.target.value })
               }
               type="password"
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               autoComplete="new-password"
             />
           </div>
@@ -116,15 +88,14 @@ export default function UpdatePasswordForm() {
               htmlFor="password_confirmation"
               value="Confirmer le mot de passe"
             />
-
-            <TextInput
+            <input
               id="password_confirmation"
               value={data.new_password_confirmation}
               onChange={(e) =>
                 setData({ ...data, new_password_confirmation: e.target.value })
               }
               type="password"
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               autoComplete="new-password"
             />
           </div>

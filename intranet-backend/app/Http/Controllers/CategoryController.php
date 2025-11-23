@@ -35,7 +35,7 @@ class CategoryController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string|max:255',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $category = Categories::create($validatedData);
@@ -61,7 +61,7 @@ class CategoryController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $id, //Vérifie que le nom est unique dans la table categories, colonne name, mais ignore l'enregistrement avec l'ID $id
             'description' => 'nullable|string|max:255',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $category = Categories::findOrFail($id);
@@ -101,5 +101,20 @@ class CategoryController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
             ], 500);
         }
+    }
+
+    public function validationErrorMessage()
+    {
+        return [
+            // --- Name ---
+            'name.required' => 'Le nom de la catégorie est obligatoire.',
+            'name.string' => 'Le nom de la catégorie doit être une chaîne de caractères.',
+            'name.max' => 'Le nom de la catégorie ne doit pas dépasser 255 caractères.',
+            'name.unique' => 'Ce nom de catégorie est déjà utilisé.',
+
+            // --- Description ---
+            'description.string' => 'La description doit être une chaîne de caractères.',
+            'description.max' => 'La description ne doit pas dépasser 255 caractères.',
+        ];
     }
 }

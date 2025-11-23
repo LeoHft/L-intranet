@@ -5,7 +5,7 @@ import FilterServices from "@/Components/ListServices/FilterServices";
 import { Funnel, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function Dashboard({}) {
+export default function Dashboard() {
   useEffect(() => {
     document.title = "Dashboard - Intranet";
   }, []);
@@ -17,6 +17,7 @@ export default function Dashboard({}) {
   // États pour les filtres
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <Layout>
@@ -50,23 +51,9 @@ export default function Dashboard({}) {
               setSelectedCategories={setSelectedCategories}
               selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
             />
-          </div>
-
-          <div
-            className={`md:hidden collapse ${
-              showingFilters ? "collapse-open" : "collapse-close"
-            }`}
-          >
-            <div className="collapse-content">
-              <FilterServices
-                className=""
-                selectedCategories={selectedCategories}
-                setSelectedCategories={setSelectedCategories}
-                selectedStatus={selectedStatus}
-                setSelectedStatus={setSelectedStatus}
-              />
-            </div>
           </div>
         </div>
 
@@ -74,6 +61,7 @@ export default function Dashboard({}) {
           <CardServices
             selectedCategories={selectedCategories}
             selectedStatus={selectedStatus}
+            searchQuery={searchQuery}
           />
         </div>
       </div>

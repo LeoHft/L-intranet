@@ -1,7 +1,6 @@
 import InputError from "@/Components/Utils/InputError";
 import InputLabel from "@/Components/Utils/InputLabel";
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
-import TextInput from "@/Components/Utils/TextInput";
 import Modal from "@/Components/Utils/Modal";
 
 import { addUser } from "@/api/modules/users";
@@ -67,79 +66,72 @@ export default function AddUserForm({ onUserAdded }) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <h1 className="text-lg font-medium">Ajouter un utilisateur</h1>
           <div className="form-control">
-            <InputLabel htmlFor="name" value="Nom*" />
-
-            <TextInput
+            <InputLabel htmlFor="name" value="Nom"/><span className="text-error">*</span>
+            <input
+              type="text"
               id="name"
               name="name"
               placeholder="Nom de l'utilisateur"
               value={data.name}
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               autoComplete="name"
               isFocused={true}
               onChange={(e) => setData({ ...data, name: e.target.value })}
               required
             />
-
             <InputError message={errors.name} className="mt-2" />
           </div>
 
           <div className="form-control">
-            <InputLabel htmlFor="email" value="Email*" />
-
-            <TextInput
-              id="email"
+            <InputLabel htmlFor="email" value="Email"/><span className="text-error">*</span>
+            <input
               type="email"
+              id="email"
               name="email"
               placeholder="Email de l'utilisateur"
               value={data.email}
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               autoComplete="username"
               onChange={(e) => setData({ ...data, email: e.target.value })}
               required
             />
-
             <InputError message={errors.email} className="mt-2" />
           </div>
 
           <div className="form-control">
-            <InputLabel htmlFor="password" value="Mot de passe*" />
-
-            <TextInput
+            <InputLabel htmlFor="password" value="Mot de passe"/><span className="text-error">*</span>
+            <input
               id="password"
               type="password"
               name="password"
               placeholder="Mot de passe de l'utilisateur"
               value={data.password}
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               autoComplete="new-password"
               onChange={(e) => setData({ ...data, password: e.target.value })}
               required
             />
-
             <InputError message={errors.password} className="mt-2" />
           </div>
 
           <div className="form-control">
             <InputLabel
               htmlFor="password_confirmation"
-              value="Confirmer le mot de passe*"
-            />
-
-            <TextInput
+              value="Confirmer le mot de passe"
+            /><span className="text-error">*</span>
+            <input
               id="password_confirmation"
               type="password"
               name="password_confirmation"
               placeholder="Confirmer le mot de passe"
               value={data.password_confirmation}
-              className="w-full"
+              className="w-full input input-bordered focus:input-primary"
               autoComplete="new-password"
               onChange={(e) =>
                 setData({ ...data, password_confirmation: e.target.value })
               }
               required
             />
-
             <InputError
               message={errors.password_confirmation}
               className="mt-2"

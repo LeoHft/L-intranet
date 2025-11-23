@@ -65,22 +65,22 @@ export default function ListStatus({ refreshTrigger }) {
       <table className="table table-zebra w-full">
         <thead>
           <tr>
-            <th>Nom</th>
-            <th>Description</th>
-            <th>Date d'ajout</th>
-            <th>Date de modification</th>
-            <th>Actions</th>
+            <th className="text-center">Nom</th>
+            <th className="text-center">Description</th>
+            <th className="text-center">Date d'ajout</th>
+            <th className="text-center">Date de modification</th>
+            <th className="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
           {StatusList.length > 0 ? (
             StatusList.map((status) => (
               <tr key={status.id}>
-                <td>{status.name}</td>
-                <td>{status.description}</td>
-                <td>{dayjs(status.created_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td>{dayjs(status.updated_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="flex gap-2 content-center items-center justify-center py-1">
+                <td className="text-center">{status.name}</td>
+                <td className="text-center">{status.description}</td>
+                <td className="text-center">{dayjs(status.created_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td className="text-center">{dayjs(status.updated_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td className="flex gap-2 justify-center items-center py-1">
                   <SecondaryButton onClick={() => ModifyStatus(status)}>
                     Modifier
                   </SecondaryButton>

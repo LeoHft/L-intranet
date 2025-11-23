@@ -39,7 +39,7 @@ export default function AdminDashboard() {
           <TabsTrigger value="overview">Statistiques</TabsTrigger>
           <TabsTrigger value="Servicessettings">Services</TabsTrigger>
           <TabsTrigger value="CategoriesSettings">Catégories</TabsTrigger>
-          <TabsTrigger value="StatusSettings">Status</TabsTrigger>
+          <TabsTrigger value="StatusSettings">Statuts</TabsTrigger>
           <TabsTrigger value="users">Utilisateurs</TabsTrigger>
         </TabsList>
 

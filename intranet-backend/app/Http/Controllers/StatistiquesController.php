@@ -3,18 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Categories;
-use App\Models\CategoriesServices;
-use App\Models\Services;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
-use App\Models\ServicesAccess;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
-use App\Models\User;
 use App\Models\NumberClickByServiceByUserByDay;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\DB;
+
 
 class StatistiquesController extends Controller
 {
@@ -26,7 +19,7 @@ class StatistiquesController extends Controller
             'linkTypes' => 'nullable|array',
             'startDate' => 'required|date',
             'endDate' => 'required|date|after_or_equal:startDate',
-        ]);
+        ], $this->validationErrorMessage());
         
         $serviceId = $validatedData['serviceId'] ?? [];
         $userIds = $validatedData['userIds'] ?? [];
@@ -48,11 +41,11 @@ class StatistiquesController extends Controller
             $includeExternal = empty($linkTypes) || in_array('external', $linkTypes);
 
             if ($includeInternal) {
-                $selectFields[] = \DB::raw('SUM(number_click_by_service_by_user_by_day.internal_url_click) as internal_url_click');
+                $selectFields[] = DB::raw('SUM(number_click_by_service_by_user_by_day.internal_url_click) as internal_url_click');
             }
 
             if ($includeExternal) {
-                $selectFields[] = \DB::raw('SUM(number_click_by_service_by_user_by_day.external_url_click) as external_url_click');
+                $selectFields[] = DB::raw('SUM(number_click_by_service_by_user_by_day.external_url_click) as external_url_click');
             }
 
             $query = NumberClickByServiceByUserByDay::query()
@@ -108,5 +101,24 @@ class StatistiquesController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
             ], 500);
         }
+    }
+
+    public function validationErrorMessage()
+    {
+        return [
+            // --- Tableaux (IDs & Types) ---
+            'serviceId.array' => 'Le format de la sélection des services est invalide.',
+            'userIds.array' => 'Le format de la sélection des utilisateurs est invalide.',
+            'linkTypes.array' => 'Le format des types de liens est invalide.',
+
+            // --- Date de début ---
+            'startDate.required' => 'La date de début est obligatoire.',
+            'startDate.date' => 'La date de début doit être une date valide.',
+
+            // --- Date de fin ---
+            'endDate.required' => 'La date de fin est obligatoire.',
+            'endDate.date' => 'La date de fin doit être une date valide.',
+            'endDate.after_or_equal' => 'La date de fin doit être ultérieure ou égale à la date de début.',
+        ];
     }
 }

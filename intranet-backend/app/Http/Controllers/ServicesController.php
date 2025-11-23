@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categories;
 use App\Models\CategoriesServices;
 use App\Models\Services;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 use App\Models\ServicesAccess;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
-use App\Models\User;
 use App\Models\NumberClickByServiceByUserByDay;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-
+use Illuminate\Support\Facades\DB;
 
 
 class ServicesController extends Controller
@@ -23,7 +18,7 @@ class ServicesController extends Controller
     public function getServices(): JsonResponse
     {
         try {
-            $services = Services::with(['categories', 'status', 'users'])->get();
+            $services = Services::with(['categories', 'status', 'users'])->orderBy('name', 'asc')->get();
             
             return response()->json([
                 'message' => 'Services récupérés avec succès',
@@ -48,7 +43,7 @@ class ServicesController extends Controller
             $services = Services::with(['categories', 'status', 'users'])
                 ->whereHas('users', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
-                })
+                })->orderBy('name', 'asc')
                 ->get();
     
             return response()->json([
@@ -71,15 +66,15 @@ class ServicesController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'internal_url' => 'nullable|string',
-            'external_url' => 'nullable|string',
+            'internal_url' => 'nullable|url',
+            'external_url' => 'nullable|url',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status_id' => 'nullable|exists:status,id',
             'category_id' => 'nullable|array',
             'category_id.*' => 'exists:categories,id',
             'user_id' => 'required|array',
             'user_id.*' => 'exists:users,id',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $image_url = '/storage/images/no-image-available.jpg';
@@ -135,15 +130,15 @@ class ServicesController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'internal_url' => 'nullable|string',
-            'external_url' => 'nullable|string',
+            'internal_url' => 'nullable|url',
+            'external_url' => 'nullable|url',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status_id' => 'nullable|exists:status,id',
             'category_id' => 'nullable|array',
             'category_id.*' => 'exists:categories,id',
             'user_id' => 'required|array',
             'user_id.*' => 'exists:users,id',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $service = Services::findOrFail($id);
@@ -231,7 +226,7 @@ class ServicesController extends Controller
         $validatedData = $request->validate([
             'isInternalUrl' => 'boolean',
             'userId' => 'nullable|exists:users,id',
-        ]);
+        ], $this->validationErrorMessage());
 
         try {
             $columnToIncrement = $validatedData['isInternalUrl'] ? 'internal_url_click' : 'external_url_click';
@@ -242,7 +237,7 @@ class ServicesController extends Controller
                     'user_id' => $validatedData['userId'],
                     'click_date' => now()->format('Y-m-d'),
                 ],
-                [$columnToIncrement => \DB::raw($columnToIncrement . ' + 1')]
+                [$columnToIncrement => DB::raw($columnToIncrement . ' + 1')]
             );
 
             Log::info('Nombre de clics mis à jour pour le service ID: ' . $service_id . ', User ID: ' . $validatedData['userId'] . ', Date: ' . now()->format('Y-m-d') . ', Type: ' . ($validatedData['isInternalUrl'] ? 'interne' : 'externe'));
@@ -261,5 +256,39 @@ class ServicesController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
             ], 500);
         }
+    }
+
+    public function validationErrorMessage()
+    {
+        return [
+            // --- Name ---
+            'name.required' => 'Le nom du service est obligatoire.',
+            'name.string' => 'Le nom du service doit être une chaîne de caractères.',
+            'name.max' => 'Le nom du service ne doit pas dépasser 255 caractères.',
+
+            // --- Description ---
+            'description.string' => 'La description doit être une chaîne de caractères.',
+
+            // --- URLs ---
+            'internal_url.url' => "Le format de l'URL interne est invalide.",
+            'external_url.url' => "Le format de l'URL externe est invalide.",
+
+            // --- Image ---
+            'image.image' => "Le fichier doit être une image.",
+            'image.mimes' => "L'image doit être au format : jpeg, png, jpg, gif ou webp.",
+            'image.max' => "L'image ne doit pas dépasser 2 Mo.", // 2048 KB = 2 MB
+
+            // --- Status ---
+            'status_id.exists' => "Le statut sélectionné est invalide ou n'existe pas.",
+
+            // --- Categories ---
+            'category_id.array' => "Le format des catégories est invalide.",
+            'category_id.*.exists' => "Une des catégories sélectionnées est invalide.",
+
+            // --- Users ---
+            'user_id.required' => "Au moins un utilisateur doit être assigné au service.",
+            'user_id.array' => "Le format de la sélection des utilisateurs est invalide.",
+            'user_id.*.exists' => "Un des utilisateurs sélectionnés est invalide ou n'existe pas.",
+        ];
     }
 }

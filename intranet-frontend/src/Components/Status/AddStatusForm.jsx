@@ -1,7 +1,6 @@
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
-import TextInput from "@/Components/Utils/TextInput";
 
 import { storeStatus } from "@/api/modules/status";
 
@@ -34,7 +33,7 @@ export default function AddStatusForm({ onStatusAdded }) {
     e.preventDefault();
     setIsLoading(true);
     toast.promise(storeStatus(data), {
-      loading: "Ajout du status en cours ...",
+      loading: "Ajout du statut en cours ...",
       success: (response) => {
         reset();
         setIsLoading(false);
@@ -51,39 +50,39 @@ export default function AddStatusForm({ onStatusAdded }) {
 
   return (
     <section>
-      <PrimaryButton onClick={AddStatus}> Ajouter un status </PrimaryButton>
+      <PrimaryButton onClick={AddStatus}> Ajouter un statut </PrimaryButton>
 
       <Modal
         show={showingAddStatusModal}
         onClose={() => setShowingAddStatusModal(false)}
       >
         <form onSubmit={handleSubmit} className="space-y-6">
-          <h1 className="text-lg font-medium">Ajouter un status</h1>
+          <h1 className="text-lg font-medium">Ajouter un statut</h1>
           <div className="form-control">
-            <InputLabel htmlFor="name" value="Nom du status*" />
-            <TextInput
+            <InputLabel htmlFor="name" value="Nom du statut"/><span className="text-error">*</span>
+            <input
+              type="text"
               id="name"
               ref={name}
               value={data.name}
               onChange={(e) => setData({ ...data, name: e.target.value })}
-              type="text"
-              className="w-full"
-              placeholder="Nom du status"
+              className="w-full input input-bordered focus:input-primary"
+              placeholder="Nom du statut"
               required
             />
           </div>
           <div className="form-control">
-            <InputLabel htmlFor="description" value="Description max: 255" />
-            <TextInput
+            <InputLabel htmlFor="description" value="Description" />
+            <textarea
               id="description"
               ref={description}
               value={data.description}
               onChange={(e) =>
                 setData({ ...data, description: e.target.value })
               }
-              type="text"
-              className="w-full"
-              placeholder="Description du status"
+              maxLength={255}
+              className="w-full textarea textarea-bordered focus:textarea-primary"
+              placeholder="Description du statut"
             />
           </div>
           <div className="modal-action">

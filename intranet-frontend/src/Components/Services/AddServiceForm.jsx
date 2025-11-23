@@ -1,7 +1,6 @@
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
-import TextInput from "@/Components/Utils/TextInput";
 import { storeService } from "@/api/modules/services";
 import { getUsers } from "@/api/modules/users";
 import toast, { Toaster } from "react-hot-toast";
@@ -20,7 +19,6 @@ export default function AddServiceForm({ onServiceAdded }) {
   const description = useRef();
   const internal_url = useRef();
   const external_url = useRef();
-  const image = useRef();
   const [data, setData] = useState({
     name: "",
     description: "",
@@ -208,21 +206,21 @@ export default function AddServiceForm({ onServiceAdded }) {
               />
 
               <div className="form-control flex-1">
-                <InputLabel htmlFor="name" value="Nom du service*" />
-                <TextInput
+                <InputLabel htmlFor="name" value="Nom du service"/><span className="text-error">*</span>
+                <input
+                  type="text"
                   id="name"
                   ref={name}
                   value={data.name}
                   onChange={(e) => setData({ ...data, name: e.target.value })}
-                  type="text"
-                  className="w-full"
+                  className="w-full input input-bordered focus:input-primary"
                   placeholder="Nom du service"
                   required
                 />
               </div>
             </div>
             <div className="form-control">
-              <InputLabel htmlFor="description" value="Description max: 255" />
+              <InputLabel htmlFor="description" value="Description" />
               <textarea
                 id="description"
                 ref={description}
@@ -230,35 +228,36 @@ export default function AddServiceForm({ onServiceAdded }) {
                 onChange={(e) =>
                   setData({ ...data, description: e.target.value })
                 }
-                className="textarea textarea-bordered w-full"
+                maxLength={255}
+                className="textarea textarea-bordered w-full focus:textarea-primary"
                 placeholder="Description du service"
               />
             </div>
             <div className="form-control">
               <InputLabel htmlFor="internal_url" value="Url interne" />
-              <TextInput
+              <input
+                type="url"
                 id="internal_url"
                 ref={internal_url}
                 value={data.internal_url}
                 onChange={(e) =>
                   setData({ ...data, internal_url: e.target.value })
                 }
-                type="text"
-                className="w-full"
+                className="w-full input input-bordered focus:input-primary"
                 placeholder="Url interne"
               />
             </div>
             <div className="form-control">
               <InputLabel htmlFor="external_url" value="Url externe" />
-              <TextInput
+              <input
+                type="url"
                 id="external_url"
                 ref={external_url}
                 value={data.external_url}
                 onChange={(e) =>
                   setData({ ...data, external_url: e.target.value })
                 }
-                type="text"
-                className="w-full"
+                className="w-full input input-bordered focus:input-primary"
                 placeholder="Url externe"
               />
             </div>
@@ -273,6 +272,7 @@ export default function AddServiceForm({ onServiceAdded }) {
               options={status}
               name="Statut"
               placeholder="Sélectionnez un statut..."
+              isMulti={false}
               selectedOption={selectedStatus}
               setSelectedOption={setSelectedStatus}
             />
