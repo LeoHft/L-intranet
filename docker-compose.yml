@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     container_name: intranet-ssl-init
     volumes:
-      - ./ssl:/ssl
+      - ssl-certs:/ssl
 
 
 
@@ -72,8 +72,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
-      - ./ssl/certificate.crt:/etc/nginx/ssl/certificate.crt:ro
-      - ./ssl/private.key:/etc/nginx/ssl/private.key:ro
+      - ssl-certs:/etc/nginx/ssl:ro
       - ./intranet-backend:/var/www/intranet-backend:ro
       - ./intranet-frontend/dist:/var/www/intranet-frontend/dist:ro
 
@@ -121,4 +120,8 @@ networks:
   intra-net:
     name: intra-net
     driver: bridge
+
+volumes:
+  ssl-certs:
+    name: intranet-ssl-certs
     

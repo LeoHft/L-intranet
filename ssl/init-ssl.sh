@@ -16,7 +16,9 @@ fi
 
 echo 'Génération des certificats SSL manquants...'
 
-cat > ${SSL_DIR}/openssl.conf << 'EOF'
+# Copier le fichier openssl.conf s'il n'existe pas dans le volume
+if [ ! -f ${SSL_DIR}/openssl.conf ]; then
+  cp /openssl.conf ${SSL_DIR}/openssl.conf 2>/dev/null || cat > ${SSL_DIR}/openssl.conf << 'EOF'
 [req]
 default_bits = 2048
 prompt = no
@@ -45,6 +47,7 @@ DNS.4 = intranet.local
 IP.1 = 127.0.0.1
 IP.2 = ::1
 EOF
+fi
 
 openssl genrsa -out ${SSL_DIR}/private.key 2048
 openssl req -new -x509 -key ${SSL_DIR}/private.key -out ${SSL_DIR}/certificate.crt -days 3650 -config ${SSL_DIR}/openssl.conf -extensions v3_req

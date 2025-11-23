@@ -254,6 +254,7 @@ export default function Login() {
                 onClick={(e) => {
                   handleUpdateUserInfo(e);
                 }}
+                disabled={isLoading}
               >
                 {isLoading ? "Modification en cours..." : "Valider"}
               </button>

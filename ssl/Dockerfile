@@ -3,6 +3,7 @@ FROM alpine/openssl
 RUN apk update && apk add dos2unix
 
 COPY init-ssl.sh /init-ssl.sh
+COPY openssl.conf /openssl.conf
 
 RUN dos2unix init-ssl.sh # Converti le fichier de script du format windows à unix
 
