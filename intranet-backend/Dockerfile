@@ -22,10 +22,6 @@ RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/
   && apt-get clean  \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-
-# Installer les dépendances PHP et Node.js
-RUN composer install
-
 # Configurer l'entrypoint
 RUN sed -i 's/\r$//' ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh

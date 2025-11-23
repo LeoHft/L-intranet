@@ -3,6 +3,14 @@ set -e
 
 echo "=== Backend Production Container Starting ==="
 
+# Install composer dependencies if vendor directory doesn't exist
+if [ ! -d "vendor" ]; then
+    echo "Installing Composer dependencies..."
+    composer install --no-dev --optimize-autoloader --no-interaction
+else
+    echo "Vendor directory exists, skipping composer install..."
+fi
+
 echo "Setting permissions for storage and bootstrap/cache..."
 chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/bootstrap
