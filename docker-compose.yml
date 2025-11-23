@@ -56,8 +56,10 @@ services:
     container_name: nginx
     image: nginx:latest
     ports:
-      - "8088:80" # Redirige vers 8443 (http vers https)
-      - "8443:443"
+      - "80:80"     # Port HTTP standard
+      - "443:443"   # Port HTTPS standard
+      - "8088:80"   # Port HTTP alternatif (même service)
+      - "8443:443"  # Port HTTPS alternatif (même service)
     depends_on:
       ssl-init:
         condition: service_completed_successfully
@@ -69,8 +71,11 @@ services:
       - intra-net
     environment:
       - NODE_ENV=${NODE_ENV:-dev}
+      - SERVER_NAME=${SERVER_NAME:-localhost}
+    entrypoint: ["/docker-entrypoint.sh"]
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf.template:ro
+      - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
       - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
       - ssl-certs:/etc/nginx/ssl:ro
       - ./intranet-backend:/var/www/intranet-backend:ro

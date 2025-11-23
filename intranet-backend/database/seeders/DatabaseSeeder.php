@@ -13,11 +13,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(
-            ['email' => 'admin@example.com'],
+        User::insertOrIgnore(
             [
                 'id' => 1,
                 'name' => 'admin',
+                'email' => 'admin@example.com',
                 'password' => bcrypt('password'),
                 'is_admin' => true,
             ]
