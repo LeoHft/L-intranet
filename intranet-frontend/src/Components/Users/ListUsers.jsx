@@ -96,13 +96,15 @@ export default function ListUsers({ refreshTrigger }) {
                 </td>
                 <td className="text-center">{dayjs(user.created_at).format("DD/MM/YYYY HH:mm")}</td>
                 <td className="text-center">{dayjs(user.updated_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="flex gap-2 items-center justify-center">
+                <td>
+                  <div className="flex gap-2 items-center justify-center">
                   <SecondaryButton onClick={() => ModifyUser(user)}>
                     Modifier
                   </SecondaryButton>
                   <DangerButton onClick={() => DeleteUserShow(user)}>
                     Supprimer
                   </DangerButton>
+                  </div>
                 </td>
               </tr>
             ))

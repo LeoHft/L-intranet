@@ -44,7 +44,7 @@ export default function ListServices({ refreshTrigger }) {
   const deleteServiceForm = (e) => {
     e.preventDefault();
     toast.promise(deleteService(selectedService.id), {
-      loading: "Chargement des services ...",
+      loading: "Suppression du service ...",
       success: (response) => {
         setServicesList(
           servicesList.filter((service) => service.id !== selectedService.id)

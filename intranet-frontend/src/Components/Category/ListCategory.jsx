@@ -80,13 +80,15 @@ export default function ListCategory({ refreshTrigger }) {
                 <td className="text-center">{category.description}</td>
                 <td className="text-center">{dayjs(category.created_at).format("DD/MM/YYYY HH:mm")}</td>
                 <td className="text-center">{dayjs(category.updated_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="flex gap-2 justify-center items-center py-1">
+                <td>
+                  <div className="flex gap-2 items-center justify-center">
                   <SecondaryButton onClick={() => ModifyCategory(category)}>
                     Modifier
                   </SecondaryButton>
                   <DangerButton onClick={() => DeleteCategoryShow(category)}>
                     Supprimer
                   </DangerButton>
+                  </div>
                 </td>
               </tr>
             ))

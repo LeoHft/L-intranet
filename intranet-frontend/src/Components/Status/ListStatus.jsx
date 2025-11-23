@@ -80,13 +80,15 @@ export default function ListStatus({ refreshTrigger }) {
                 <td className="text-center">{status.description}</td>
                 <td className="text-center">{dayjs(status.created_at).format("DD/MM/YYYY HH:mm")}</td>
                 <td className="text-center">{dayjs(status.updated_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="flex gap-2 justify-center items-center py-1">
+                <td>
+                  <div className="flex gap-2 items-center justify-center">
                   <SecondaryButton onClick={() => ModifyStatus(status)}>
                     Modifier
                   </SecondaryButton>
                   <DangerButton onClick={() => DeleteStatusShow(status)}>
                     Supprimer
                   </DangerButton>
+                  </div>
                 </td>
               </tr>
             ))
