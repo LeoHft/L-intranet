@@ -8,6 +8,7 @@ import {
 import React, { useState, useEffect } from "react";
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
+import { motion } from "motion/react";
 
 export default function ListShortcuts() {
   const [shortcuts, setShortcuts] = useState([]);
@@ -75,20 +76,49 @@ export default function ListShortcuts() {
       <div className="flex items-center gap-2 pr-2">
         {shortcuts &&
           shortcuts.length > 0 &&
-          shortcuts.map((shortcut) => (
-            <Shortcut
+          shortcuts.map((shortcut, index) => (
+            <motion.div
               key={shortcut.id}
-              id={shortcut.id}
-              url={shortcut.url}
-              icon={shortcut.icon}
-              onDelete={handleDeleteShortcut}
-            />
+              initial={{ opacity: 0, x: 50, scale: 0.8 }}
+              animate={{ 
+                opacity: 1, 
+                x: 0, 
+                scale: 1,
+                transition: {
+                  duration: 0.4,
+                  delay: index * 0.1,
+                  ease: [0.34, 1.56, 0.64, 1]
+                }
+              }}
+              whileHover={{
+                y: -2,
+                scale: 1.02,
+                transition: { duration: 0.2 },
+              }}
+            >
+              <Shortcut
+                id={shortcut.id}
+                url={shortcut.url}
+                icon={shortcut.icon}
+                onDelete={handleDeleteShortcut}
+              />
+            </motion.div>
           ))}
 
         {shortcuts && shortcuts.length < 10 && (
-          <button className="btn btn-circle" onClick={showAddShortcutForm}>
+          <motion.button
+            className="btn btn-circle"
+            onClick={showAddShortcutForm}
+            initial={{ opacity: 0, x: 50, scale: 0.8 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{
+              duration: 0.4,
+              delay: shortcuts.length * 0.1,
+              ease: [0.34, 1.56, 0.64, 1]
+            }}
+          >
             +
-          </button>
+          </motion.button>
         )}
       </div>
 
