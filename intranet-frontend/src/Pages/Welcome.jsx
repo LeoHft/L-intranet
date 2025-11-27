@@ -5,7 +5,6 @@ import React, { useRef, useEffect } from "react";
 
 export default function Welcome() {
   const container = useRef();
-  const sectionRefs = useRef([]);
 
   // Gestion du titre de la page
   useEffect(() => {

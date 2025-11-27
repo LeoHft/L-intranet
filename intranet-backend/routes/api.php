@@ -55,7 +55,7 @@ Route::middleware([JwtMiddleware::class, AdminMiddleware::class])->group(functio
     //Services
     Route::get('getServices', [ServicesController::class, 'getServices']); // Récupère les services
     Route::post('storeService', [ServicesController::class, 'store']); // Enregistre un service 
-    Route::post('updateService/{id}', [ServicesController::class, 'update']); // Modifie un service
+    Route::put('updateService/{id}', [ServicesController::class, 'update']); // Modifie un service
     Route::delete('deleteService/{id}', [ServicesController::class, 'destroy']); // Supprime un service
 
     //Catégories
