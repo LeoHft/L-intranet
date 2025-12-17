@@ -180,7 +180,6 @@ class ServicesController extends Controller
             $service = Services::findOrFail($id);
             $service->categories()->detach();
             $service->users()->detach();
-            $service->categories()->detach();
             $service->delete();
 
             return response()->json([
