@@ -93,19 +93,11 @@ class ServicesController extends Controller
             ]);
 
             if ($service) {
-                if (!empty($validatedData['category_id'])) {
-                    foreach ($validatedData['category_id'] as $categoryId) {
-                        CategoriesServices::create([
-                            'category_id' => $categoryId,
-                            'service_id' => $service->id,
-                        ]);
-                    }
-                }
-                foreach ($validatedData['user_id'] as $userId) {
-                    ServicesAccess::create([
-                        'user_id' => $userId,
-                        'service_id' => $service->id,
-                    ]);
+                if (isset($validatedData['category_id'])) {
+                    $service->categories()->sync($validatedData['category_id']);
+                } 
+                if (isset($validatedData['user_id'])) {
+                    $service->users()->sync($validatedData['user_id']);
                 }
             }
 
@@ -159,26 +151,12 @@ class ServicesController extends Controller
                 'status_id' => $validatedData['status_id'] ?? null,
             ]);
 
-            // Update categories
-            CategoriesServices::where('service_id', $id)->delete();
-            
-            if (!empty($validatedData['category_id'])) {
-                foreach ($validatedData['category_id'] as $categoryId) {
-                    CategoriesServices::create([
-                        'category_id' => $categoryId,
-                        'service_id' => $service->id,
-                    ]);
-                }
-            }
-            
-            // Update users
-            ServicesAccess::where('service_id', $id)->delete();
-            
-            foreach ($validatedData['user_id'] as $userId) {
-                ServicesAccess::create([
-                    'user_id' => $userId,
-                    'service_id' => $service->id,
-                ]);
+            // Update categories and users
+            if (isset($validatedData['category_id'])) {
+                $service->categories()->sync($validatedData['category_id'] ?? []);
+            } 
+            if (isset($validatedData['user_id'])) {
+                $service->users()->sync($validatedData['user_id'] ?? []);
             }
 
             return response()->json([
@@ -200,11 +178,10 @@ class ServicesController extends Controller
     {
         try {
             $service = Services::findOrFail($id);
+            $service->categories()->detach();
+            $service->users()->detach();
+            $service->categories()->detach();
             $service->delete();
-
-            // Delete associated categories
-            CategoriesServices::where('service_id', $id)->delete();
-            ServicesAccess::where('service_id', $id)->delete();
 
             return response()->json([
                 'message' => 'Service supprimé avec succès',

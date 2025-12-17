@@ -17,12 +17,11 @@ export const storeService = async (serviceData) => {
 }
 
 export const editService = async (serviceData, serviceId) => {
-    const response = await apiClient.put(`/updateService/${serviceId}`, serviceData);
+    const response = await apiClient.post(`/updateService/${serviceId}`, serviceData);
     return response.data;
 }
 
 export const deleteService = async (serviceId) => {
-    console.log("Suppression du service en cours ...");
     const response = await apiClient.delete(`/deleteService/${serviceId}`);
     return response.data;
 }
