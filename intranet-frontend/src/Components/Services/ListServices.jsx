@@ -111,7 +111,7 @@ export default function ListServices({ refreshTrigger }) {
           <tr>
             <th className="text-center cursor-pointer" onClick={sortServicesByName}>Nom</th>
             <th className="text-center">Description</th>
-            <th className="text-center cursor-pointer" onClick={sortServicesByInternalUrl}>URL Intern</th>
+            <th className="text-center cursor-pointer" onClick={sortServicesByInternalUrl}>URL Interne</th>
             <th className="text-center" >URL Externe</th>
             <th className="text-center"> Catégorie(s) </th>
             <th className="text-center cursor-pointer" onClick={sortServicesByStatus}>Statut</th>
