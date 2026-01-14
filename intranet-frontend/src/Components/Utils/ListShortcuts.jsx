@@ -13,7 +13,7 @@ import { motion } from "motion/react";
 export default function ListShortcuts() {
   const [shortcuts, setShortcuts] = useState([]);
   const [showAddShortcut, setShowAddShortcut] = useState(false);
-  const [newShortcut, setNewShortcut] = useState({ url: "", icon: "" });
+  const [newShortcut, setNewShortcut] = useState({name: "", url: "", icon: "" });
   const [iconSearch, setIconSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,7 +41,7 @@ export default function ListShortcuts() {
     addShortcut(newShortcut)
       .then((response) => {
         setShortcuts([...shortcuts, response.data]);
-        setNewShortcut({ url: "", icon: "" });
+        setNewShortcut({ name: "", url: "", icon: "" });
         setIsLoading(false);
         setShowAddShortcut(false);
       })
@@ -97,8 +97,7 @@ export default function ListShortcuts() {
               }}
             >
               <Shortcut
-                id={shortcut.id}
-                url={shortcut.url}
+                shortcut={shortcut}
                 icon={shortcut.icon}
                 onDelete={handleDeleteShortcut}
               />
@@ -126,6 +125,20 @@ export default function ListShortcuts() {
         <Modal show={showAddShortcut} onClose={() => setShowAddShortcut(false)}>
           <form onSubmit={handleAddShortcut} className="space-y-4">
             <h1 className="text-lg font-medium">Ajouter un shortcut</h1>
+            <div className="form-control">
+              <InputLabel htmlFor="name" value="Nom du shortcut"/><span className="text-error">*</span>
+              <input
+                type="text"
+                id="name"
+                value={newShortcut.name}
+                onChange={(e) =>
+                  setNewShortcut({ ...newShortcut, name: e.target.value })
+                }
+                className="w-full input input-bordered focus:input-primary"
+                placeholder="Intranet"
+                required
+              />
+            </div>
             <div className="form-control">
               <InputLabel htmlFor="url" value="Lien du shortcut"/><span className="text-error">*</span>
               <input

@@ -13,6 +13,7 @@ export default function ListServices({ refreshTrigger }) {
   const [selectedService, setSelectedService] = useState(null);
   const [showModalModifyService, setShowModalModifyService] = useState(false);
   const [showModalDeleteService, setShowModalDeleteService] = useState(false);
+  const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
     fetchServices();
@@ -58,17 +59,62 @@ export default function ListServices({ refreshTrigger }) {
     });
   };
 
+  const sortServicesByName = () => {
+    if (servicesList.length === 0) return;
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    const sortedServices = [...servicesList].sort((a, b) =>
+      newSortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+    );
+    setServicesList(sortedServices);
+  }
+
+
+  const sortServicesByInternalUrl = () => {
+    if (servicesList.length === 0) return;
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    const sortedServices = [...servicesList].sort((a, b) => {
+      const extractIP = (url) => {
+      if (!url) return '';
+      const match = url.match(/(\d+\.\d+\.\d+\.\d+)/);
+      return match ? match[1] : url;
+      };
+      const ipA = extractIP(a.internal_url);
+      const ipB = extractIP(b.internal_url);
+      const ipToNumber = (ip) => {
+        return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0);
+      };
+      const numA = ipToNumber(ipA);
+      const numB = ipToNumber(ipB);
+      return newSortOrder === "asc" ? numA - numB : numB - numA;
+    });
+    setServicesList(sortedServices);
+  }
+
+  const sortServicesByStatus = () => {
+    if (servicesList.length === 0) return;
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    const sortedServices = [...servicesList].sort((a, b) => {
+      const statusA = a.status?.name || '';
+      const statusB = b.status?.name || '';
+      return newSortOrder === "asc" ? statusA.localeCompare(statusB) : statusB.localeCompare(statusA);
+    });
+    setServicesList(sortedServices);
+  }
+
   return (
     <>
       <table className="table table-zebra w-full">
         <thead>
           <tr>
-            <th className="text-center">Nom</th>
+            <th className="text-center cursor-pointer" onClick={sortServicesByName}>Nom</th>
             <th className="text-center">Description</th>
-            <th className="text-center">URL Intern</th>
-            <th className="text-center">URL Externe</th>
+            <th className="text-center cursor-pointer" onClick={sortServicesByInternalUrl}>URL Intern</th>
+            <th className="text-center" >URL Externe</th>
             <th className="text-center"> Catégorie(s) </th>
-            <th className="text-center">Statut</th>
+            <th className="text-center cursor-pointer" onClick={sortServicesByStatus}>Statut</th>
             <th className="text-center">Utilisateur(s)</th>
             {/* <th>Date d'ajout</th>
                         <th>Date de modification</th> */}

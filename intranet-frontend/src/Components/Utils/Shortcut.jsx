@@ -3,13 +3,13 @@ import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import Modal from "@/Components/Utils/Modal";
 
-export default function Shortcut({ id, url, icon, className = "", onDelete }) {
-  const IconComponent = icon ? Icons[icon] : null;
+export default function Shortcut({ shortcut, className = "", onDelete }) {
+  const IconComponent = shortcut.icon ? Icons[shortcut.icon] : null;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDelete = () => {
     if (onDelete) {
-      onDelete(id);
+      onDelete(shortcut.id);
     }
     setShowDeleteModal(false);
   };
@@ -23,14 +23,14 @@ export default function Shortcut({ id, url, icon, className = "", onDelete }) {
         >
           <Trash2 className="h-2 w-2" />
         </span>
-        <div className="tooltip tooltip-left" data-tip={`${url}`}>
+        <div className="tooltip tooltip-bottom" data-tip={`${shortcut.name ? `${shortcut.name}` : `${shortcut.url}`}`}>
           <button
-            data-tooltip-content={url}
+            data-tooltip-content={shortcut.url}
             onClick={() =>
-              window.open(`${url}`, "_blank", "noopener,noreferrer")
+              window.open(`${shortcut.url}`, "_blank", "noopener,noreferrer")
             }
             className={`btn btn-soft btn-circle hover:btn-primary transition-all duration-200 ${className}`}
-            aria-label={`Ouvrir ${url}`}
+            aria-label={`Ouvrir ${shortcut.url}`}
           >
             {IconComponent && <IconComponent className="h-6 w-6" />}
           </button>
@@ -43,7 +43,7 @@ export default function Shortcut({ id, url, icon, className = "", onDelete }) {
             <h2 className="text-lg font-bold">Supprimer le raccourci</h2>
             <p>
               Êtes-vous sûr de vouloir supprimer ce raccourci vers{" "}
-              <strong>{url}</strong> ?
+              <strong>{shortcut.url}</strong> ?
             </p>
             <div className="flex gap-2 justify-end">
               <button

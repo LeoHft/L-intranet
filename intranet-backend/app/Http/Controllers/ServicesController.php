@@ -1,13 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\CategoriesServices;
 use App\Models\Services;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
-use App\Models\ServicesAccess;
 use App\Models\NumberClickByServiceByUserByDay;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\DB;
@@ -68,7 +65,7 @@ class ServicesController extends Controller
             'description' => 'nullable|string',
             'internal_url' => 'nullable|url',
             'external_url' => 'nullable|url',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|mimes:jpeg,png,jpg,gif,webp,ico|max:2048',
             'status_id' => 'nullable|exists:status,id',
             'category_id' => 'nullable|array',
             'category_id.*' => 'exists:categories,id',
@@ -124,7 +121,7 @@ class ServicesController extends Controller
             'description' => 'nullable|string',
             'internal_url' => 'nullable|url',
             'external_url' => 'nullable|url',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|mimes:jpeg,png,jpg,gif,webp,ico,gif|max:2048',
             'status_id' => 'nullable|exists:status,id',
             'category_id' => 'nullable|array',
             'category_id.*' => 'exists:categories,id',
@@ -250,8 +247,7 @@ class ServicesController extends Controller
             'external_url.url' => "Le format de l'URL externe est invalide.",
 
             // --- Image ---
-            'image.image' => "Le fichier doit être une image.",
-            'image.mimes' => "L'image doit être au format : jpeg, png, jpg, gif ou webp.",
+            'image.mimes' => "L'image doit être au format : jpeg, png, jpg, gif, ico ou webp.",
             'image.max' => "L'image ne doit pas dépasser 2 Mo.", // 2048 KB = 2 MB
 
             // --- Status ---

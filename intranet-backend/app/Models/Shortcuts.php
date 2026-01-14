@@ -9,6 +9,7 @@ class Shortcuts extends Model
     protected $table = 'shortcuts';
 
     protected $fillable = [
+        'name',
         'url',
         'icon',
         'user_id',

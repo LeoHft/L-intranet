@@ -35,6 +35,7 @@ class ShortcutController extends Controller
     public function addShortcut(Request $request)
     {
         $validatedData = $request->validate([
+            'name' => 'required|string|max:100',
             'url' => 'required|string|max:255',
             'icon' => 'required|string|max:255',
         ]);
@@ -113,6 +114,9 @@ class ShortcutController extends Controller
             'icon.required' => 'L\'icône du shortcut est obligatoire.',
             'icon.string' => 'L\'icône du shortcut doit être une chaîne de caractères.',
             'icon.max' => 'L\'icône du shortcut ne doit pas dépasser 255 caractères.',
+            'name.required' => 'Le nom du shortcut est obligatoire.',
+            'name.string' => 'Le nom du shortcut doit être une chaîne de caractères.',
+            'name.max' => 'Le nom du shortcut ne doit pas dépasser 100 caractères.',
         ]; 
     }
 }
