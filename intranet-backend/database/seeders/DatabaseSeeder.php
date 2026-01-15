@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
                 'id' => 1,
                 'name' => 'admin',
                 'email' => 'admin@example.com',
+                'created_at' => now(),
+                'updated_at' => now(),
                 'password' => bcrypt('password'),
                 'is_admin' => true,
             ]

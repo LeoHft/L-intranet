@@ -20,7 +20,7 @@ class UserController extends Controller
      */
     public function getUsers()
     {
-        $users = User::with('services')->get(['id', 'name', 'email', 'created_at', 'updated_at','is_admin']);        
+        $users = User::with('services')->get(['id', 'name', 'email', 'created_at', 'updated_at', 'last_login_at','is_admin']);        
         
         return response()->json([
             'message' => 'Utilisateurs récupérés avec succès',

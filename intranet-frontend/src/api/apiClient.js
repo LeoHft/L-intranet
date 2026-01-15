@@ -26,7 +26,6 @@ apiClient.interceptors.response.use(
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
             console.warn("Session expirée, déconnexion...");
             localStorage.removeItem("auth_token");
-            windows.location.href = "/login";
         }
 
 

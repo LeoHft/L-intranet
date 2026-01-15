@@ -4,6 +4,7 @@ import Modal from "@/Components/Utils/Modal";
 
 import ModifyUserForm from "@/Components/Users/ModifyUserForm";
 import { getUsers, deleteUser } from "@/api/modules/users";
+import { useAuthAttributes } from '@/context/AuthAttributsContext';
 
 import toast, { Toaster } from "react-hot-toast";
 import React, { useState, useEffect } from "react";
@@ -14,6 +15,9 @@ export default function ListUsers({ refreshTrigger }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModalModifyUser, setShowModalModifyUser] = useState(false);
   const [showModalDeleteUser, setShowModalDeleteUser] = useState(false);
+
+  const authContext = useAuthAttributes();
+  const authUser = authContext?.userAttributes;
 
   useEffect(() => {
     fetchUsers();
@@ -68,6 +72,7 @@ export default function ListUsers({ refreshTrigger }) {
             <th className="text-center">Rôle</th>
             <th className="text-center">Date d'ajout</th>
             <th className="text-center">Date de modification</th>
+            <th className="text-center">Dernière connexion</th>
             <th className="text-center">Actions</th>
           </tr>
         </thead>
@@ -95,13 +100,14 @@ export default function ListUsers({ refreshTrigger }) {
                   )}
                 </td>
                 <td className="text-center">{dayjs(user.created_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="text-center">{dayjs(user.updated_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td className="text-center">{user.updated_at ? dayjs(user.updated_at).format("DD/MM/YYYY HH:mm") : "Jamais"}</td>
+                <td className="text-center">{user.last_login_at ? dayjs(user.last_login_at).format("DD/MM/YYYY HH:mm") : "Jamais"}</td>
                 <td>
                   <div className="flex gap-2 items-center justify-center">
-                  <SecondaryButton onClick={() => ModifyUser(user)}>
+                  <SecondaryButton onClick={() => ModifyUser(user)} disabled={user.id === authUser.id}>
                     Modifier
                   </SecondaryButton>
-                  <DangerButton onClick={() => DeleteUserShow(user)}>
+                  <DangerButton onClick={() => DeleteUserShow(user)} disabled={user.id === authUser.id}>
                     Supprimer
                   </DangerButton>
                   </div>
