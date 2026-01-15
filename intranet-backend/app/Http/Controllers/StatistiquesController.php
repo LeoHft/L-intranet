@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Http\Requests\GetStatisticsRequest;
 use Illuminate\Http\JsonResponse;
 use App\Models\NumberClickByServiceByUserByDay;
 use Illuminate\Support\Facades\DB;
@@ -11,15 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class StatistiquesController extends Controller
 {
-    public function getStatByUserByServiceByDate(Request $request): JsonResponse
+    public function getStatByUserByServiceByDate(GetStatisticsRequest $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'serviceId' => 'nullable|array',
-            'userIds' => 'nullable|array',
-            'linkTypes' => 'nullable|array',
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
-        ], $this->validationErrorMessage());
+        $validatedData = $request->validated();
         
         $serviceId = $validatedData['serviceId'] ?? [];
         $userIds = $validatedData['userIds'] ?? [];
@@ -27,7 +20,6 @@ class StatistiquesController extends Controller
         $startDate = $validatedData['startDate'];
         $endDate = $validatedData['endDate'];
 
-        try {
             // Déterminer quelles colonnes sélectionner selon les linkTypes
             $selectFields = [
                 'number_click_by_service_by_user_by_day.service_id',
@@ -93,32 +85,5 @@ class StatistiquesController extends Controller
                 'data' => $results
             ], 200);
             
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de la récupération des statistiques: ' . $e->getMessage());
-            
-            return response()->json([
-                'message' => 'Erreur lors de la récupération des statistiques',
-                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
-            ], 500);
-        }
-    }
-
-    public function validationErrorMessage()
-    {
-        return [
-            // --- Tableaux (IDs & Types) ---
-            'serviceId.array' => 'Le format de la sélection des services est invalide.',
-            'userIds.array' => 'Le format de la sélection des utilisateurs est invalide.',
-            'linkTypes.array' => 'Le format des types de liens est invalide.',
-
-            // --- Date de début ---
-            'startDate.required' => 'La date de début est obligatoire.',
-            'startDate.date' => 'La date de début doit être une date valide.',
-
-            // --- Date de fin ---
-            'endDate.required' => 'La date de fin est obligatoire.',
-            'endDate.date' => 'La date de fin doit être une date valide.',
-            'endDate.after_or_equal' => 'La date de fin doit être ultérieure ou égale à la date de début.',
-        ];
     }
 }

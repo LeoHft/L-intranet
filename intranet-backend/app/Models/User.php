@@ -69,4 +69,9 @@ class User extends Authenticatable implements JWTSubject
             'service_id' // Clé étrangère du modèle associé dans la table pivot
         );
     }
+
+    public function shortcuts()
+    {
+        return $this->hasMany(Shortcuts::class, 'user_id');
+    }
 }

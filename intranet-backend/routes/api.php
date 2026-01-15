@@ -33,7 +33,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
 
     //Services
     Route::get('getUserServices', [ServicesController::class, 'getUserServices']); // Récupère un service
-    Route::post('updateNumberClick/{service_id}', [ServicesController::class, 'updateNumberClick']); // Augmente le nombre de clics sur un service
+    Route::post('updateNumberClick/{service}', [ServicesController::class, 'updateNumberClick']); // Augmente le nombre de clics sur un service
 
     //Catégories
     Route::get('getAllCategory', [CategoryController::class, 'getAllCategory']); // Récupère les catégories
@@ -44,7 +44,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     //Shortcuts
     Route::get('getUserShortcuts', [ShortcutController::class, 'getUserShortcuts']); // Récupère les shortcuts de l'utilisateur connecté
     Route::post('addShortcut', [ShortcutController::class, 'addShortcut']); // Ajoute un shortcut pour l'utilisateur connecté
-    Route::delete('deleteShortcut/{id}', [ShortcutController::class, 'deleteShortcut']); // Supprime un shortcut pour l'utilisateur connecté
+    Route::delete('deleteShortcut/{shortcut}', [ShortcutController::class, 'deleteShortcut']); // Supprime un shortcut pour l'utilisateur connecté
 });
 
 
@@ -55,24 +55,24 @@ Route::middleware([JwtMiddleware::class, AdminMiddleware::class])->group(functio
     //Services
     Route::get('getServices', [ServicesController::class, 'getServices']); // Récupère les services
     Route::post('storeService', [ServicesController::class, 'store']); // Enregistre un service 
-    Route::post('updateService/{id}', [ServicesController::class, 'update']); // Modifie un service
-    Route::delete('deleteService/{id}', [ServicesController::class, 'destroy']); // Supprime un service
+    Route::post('updateService/{service}', [ServicesController::class, 'update']); // Modifie un service
+    Route::delete('deleteService/{service}', [ServicesController::class, 'destroy']); // Supprime un service
 
     //Catégories
     Route::post('storeCategory', [CategoryController::class, 'store']); // Enregistre une catégorie
-    Route::put('updateCategory/{id}', [CategoryController::class, 'update']); // Modifie une catégorie
-    Route::delete('deleteCategory/{id}', [CategoryController::class, 'destroy']); // Supprime une catégorie
+    Route::put('updateCategory/{category}', [CategoryController::class, 'update']); // Modifie une catégorie
+    Route::delete('deleteCategory/{category}', [CategoryController::class, 'destroy']); // Supprime une catégorie
 
     //Status
     Route::post('storeStatus', [StatusController::class, 'store']); // Enregistre un status
-    Route::put('updateStatus/{id}', [StatusController::class, 'update']); // Modifie un status
-    Route::delete('deleteStatus/{id}', [StatusController::class, 'destroy']); // Supprime un status
+    Route::put('updateStatus/{status}', [StatusController::class, 'update']); // Modifie un status
+    Route::delete('deleteStatus/{status}', [StatusController::class, 'destroy']); // Supprime un status
 
     //utilisateurs
     Route::get('getUsers', [UserController::class, 'getUsers']); // Récupère les utilisateurs
     Route::post('storeUser', [UserController::class, 'store']); // Enregistre un utilisateur
-    Route::put('updateUser/{id}', [UserController::class, 'update']); // Modifie un utilisateur
-    Route::delete('deleteUser/{id}', [UserController::class, 'delete']); // Supprime un utilisateur
+    Route::put('updateUser/{user}', [UserController::class, 'update'])->name('users.update'); // Modifie un utilisateur
+    Route::delete('deleteUser/{user}', [UserController::class, 'delete']); // Supprime un utilisateur
 
     //Statistiques
     Route::get('getStatByUserByServiceByDate', [StatistiquesController::class, 'getStatByUserByServiceByDate']); // Récupère les statistiques 'barres' par utilisateur, service et date

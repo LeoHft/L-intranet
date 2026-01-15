@@ -1,122 +1,43 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreShortcutRequest;
 use App\Models\Shortcuts;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ShortcutController extends Controller
 {
-    public function getUserShortcuts()
+    public function getUserShortcuts(): JsonResponse
     {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-        
-
-            $shortcuts = Shortcuts::where('user_id', $user->id)->get();
-
-            return response()->json([
-                'message' => 'Shortcuts récupérés avec succès',
-                'data' => $shortcuts
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de la récupération de tous les shortcuts:' . $e->getMessage());
-            
-            return response()->json([
-                'message' => 'Erreur lors de la récupération des shortcuts de l\'utilisateur',
-                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
-            ], 500);
-        }
+        return response()->json([
+            'message' => 'Shortcuts récupérés avec succès',
+            'data' => auth()->user()->shortcuts
+        ], 200);
     }
 
-    public function addShortcut(Request $request)
+    public function addShortcut(StoreShortcutRequest $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:100',
-            'url' => 'required|string|max:255',
-            'icon' => 'required|string|max:255',
-        ]);
+        $shortcut = auth()->user()->shortcuts()->create($request->validated());
 
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-            
-            if (!$user) {
-                return response()->json([
-                    'message' => 'Non autorisé',
-                    'error' => 'Token invalide ou utilisateur non authentifié'
-                ], 401);
-            }
-
-            $validatedData['user_id'] = $user->id;
-
-            $shortcut = Shortcuts::create($validatedData);
-
-            return response()->json([
-                'message' => 'Shortcut ajouté avec succès',
-                'data' => $shortcut
-            ], 201);
-
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'ajout du shortcut:' . $e->getMessage());
-            
-            return response()->json([
-                'message' => 'Erreur lors de l\'ajout du shortcut',
-                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
-            ], 500);
-        }
+        return response()->json([
+            'message' => 'Shortcut ajouté avec succès',
+            'data' => $shortcut
+        ], 200);
     }
 
-    public function deleteShortcut($id)
+    public function deleteShortcut(Shortcuts $shortcut): JsonResponse
     {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-            
-            if (!$user) {
-                return response()->json([
-                    'message' => 'Non autorisé',
-                    'error' => 'Token invalide ou utilisateur non authentifié'
-                ], 401);
-            }
-
-            $shortcut = Shortcuts::where('id', $id)->where('user_id', $user->id)->first();
-
-            if (!$shortcut) {
-                return response()->json([
-                    'message' => 'Shortcut non trouvé'
-                ], 404);
-            }
-
-            $shortcut->delete();
-
+        if ($shortcut->user_id !== auth()->id()) {
             return response()->json([
-                'message' => 'Shortcut supprimé avec succès'
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de la suppression du shortcut:' . $e->getMessage());
-            
-            return response()->json([
-                'message' => 'Erreur lors de la suppression du shortcut',
-                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
-            ], 500);
+                'message' => 'Vous n\'êtes pas autorisé à supprimer ce shortcut'
+            ], 403);
         }
-    }
 
-    public function validationErrorMessage()
-    {
-        return [
-            'url.required' => 'L\'URL du shortcut est obligatoire.',
-            'url.string' => 'L\'URL du shortcut doit être une chaîne de caractères.',
-            'url.max' => 'L\'URL du shortcut ne doit pas dépasser 255 caractères.',
-            'icon.required' => 'L\'icône du shortcut est obligatoire.',
-            'icon.string' => 'L\'icône du shortcut doit être une chaîne de caractères.',
-            'icon.max' => 'L\'icône du shortcut ne doit pas dépasser 255 caractères.',
-            'name.required' => 'Le nom du shortcut est obligatoire.',
-            'name.string' => 'Le nom du shortcut doit être une chaîne de caractères.',
-            'name.max' => 'Le nom du shortcut ne doit pas dépasser 100 caractères.',
-        ]; 
+        $shortcut->delete();
+
+        return response()->json([
+            'message' => 'Shortcut supprimé avec succès'
+        ], 200);
     }
 }

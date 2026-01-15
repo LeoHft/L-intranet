@@ -21,6 +21,17 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => AdminMiddleware::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
+    ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (Throwable $e, $request) {
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return null;
+            }
+
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Une erreur interne est survenue',
+                    'error' => config('app.debug') ? $e->getMessage() : null
+                ], 500);
+            }
+        });
     })->create();
