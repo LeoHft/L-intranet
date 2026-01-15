@@ -11,7 +11,7 @@ RUN chmod -R 775 /var/www/html/storage && \
 RUN apt-get update \
   && apt-get install -y build-essential libpng-dev libjpeg-dev libonig-dev \
      libxml2-dev libzip-dev pkg-config zip unzip curl gnupg netcat-openbsd \
-     libicu-dev
+     libicu-dev git
 
 # Installation de composer
 RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer \
