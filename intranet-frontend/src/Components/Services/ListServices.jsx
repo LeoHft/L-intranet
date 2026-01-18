@@ -141,22 +141,36 @@ export default function ListServices({ refreshTrigger }) {
                   {service.description}
                 </td>
                 <td className="text-center">
-                  <a
-                    href={service.internal_url}
-                    target="blank"
-                    className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
-                  >
-                    {service.internal_url || "Aucun lien"}
-                  </a>
+                  service.internal_url ? (
+                    <a
+                      href={service.internal_url}
+                      target="blank"
+                      className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
+                    >
+                      {service.internal_url}
+                    </a>
+                  ) : (
+                    <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
+                      Aucun lien
+                    </div>
+                  )
+
                 </td>
                 <td className="text-center">
-                  <a
-                    href={service.external_url}
-                    target="blank"
-                    className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
-                  >
-                    {service.external_url || "Aucun lien"}
-                  </a>
+                  service.external_url ? (
+                    <a
+                      href={service.external_url}
+                      target="blank"
+                      className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
+                    >
+                      {service.external_url}
+                    </a>
+                  ) : (
+                    <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
+                      Aucun lien
+                    </div>
+                  )
+
                 </td>
                 <td className="text-center">
                   {service.categories

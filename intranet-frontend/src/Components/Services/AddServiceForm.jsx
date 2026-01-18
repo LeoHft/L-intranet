@@ -189,7 +189,7 @@ export default function AddServiceForm({ onServiceAdded }) {
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="rounded-full w-full h-full object-cover"
+                      className="rounded-full w-full h-full avatar"
                     />
                   ) : (
                     <Camera size={48} />
