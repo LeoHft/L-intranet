@@ -109,12 +109,19 @@ export default function ListServices({ refreshTrigger }) {
       <table className="table table-zebra w-full">
         <thead>
           <tr>
-            <th className="text-center cursor-pointer" onClick={sortServicesByName}>Nom</th>
+            <th className="text-center cursor-pointer" onClick={sortServicesByName}>Nom<svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            </svg></th>
             <th className="text-center">Description</th>
-            <th className="text-center cursor-pointer" onClick={sortServicesByInternalUrl}>URL Interne</th>
+            <th className="text-center cursor-pointer" onClick={sortServicesByInternalUrl}>URL Interne<svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            </svg> </th>
+
             <th className="text-center" >URL Externe</th>
             <th className="text-center"> Catégorie(s) </th>
-            <th className="text-center cursor-pointer" onClick={sortServicesByStatus}>Statut</th>
+            <th className="text-center cursor-pointer" onClick={sortServicesByStatus}>Statut<svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            </svg></th>
             <th className="text-center">Utilisateur(s)</th>
             {/* <th>Date d'ajout</th>
                         <th>Date de modification</th> */}
@@ -141,36 +148,43 @@ export default function ListServices({ refreshTrigger }) {
                   {service.description}
                 </td>
                 <td className="text-center">
-                  service.internal_url ? (
-                    <a
-                      href={service.internal_url}
-                      target="blank"
-                      className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
+                  {service.internal_url ? (
+                    <span
+                      className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10 cursor-pointer hover:bg-white/30"
+                      onClick={(e) => {
+                      e.preventDefault();
+                      navigator.clipboard.writeText(service.internal_url);
+                      toast.success('URL interne copiée !');
+                      }}
+                      title="Cliquer pour copier"
                     >
                       {service.internal_url}
-                    </a>
+                    </span>
                   ) : (
                     <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
                       Aucun lien
                     </div>
-                  )
+                  )}
 
                 </td>
                 <td className="text-center">
-                  service.external_url ? (
-                    <a
-                      href={service.external_url}
-                      target="blank"
-                      className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
+                  {service.external_url ? (
+                    <span
+                      className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10 cursor-pointer hover:bg-white/30"
+                      onClick={(e) => {
+                      e.preventDefault();
+                      navigator.clipboard.writeText(service.external_url);
+                      toast.success('URL externe copiée !');
+                      }}
+                      title="Cliquer pour copier"
                     >
                       {service.external_url}
-                    </a>
+                    </span>
                   ) : (
                     <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
                       Aucun lien
                     </div>
-                  )
-
+                  )}
                 </td>
                 <td className="text-center">
                   {service.categories
