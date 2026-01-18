@@ -161,9 +161,9 @@ export default function ListServices({ refreshTrigger }) {
                       {service.internal_url}
                     </span>
                   ) : (
-                    <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
+                    <span className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
                       Aucun lien
-                    </div>
+                    </span>
                   )}
 
                 </td>
@@ -181,9 +181,9 @@ export default function ListServices({ refreshTrigger }) {
                       {service.external_url}
                     </span>
                   ) : (
-                    <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
+                    <span className="text-center px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30 text-error">
                       Aucun lien
-                    </div>
+                    </span>
                   )}
                 </td>
                 <td className="text-center">
