@@ -61,48 +61,40 @@ Vous hébergez plusieurs services chez vous (Homelab) ? Vous en avez assez de g�
     ```
 
 3) ```sh
-    sudo chmod +x ./nginx/docker-entrypoint.sh
-    ```
-
-4) ```sh
-    sudo chmod +x ./intranet-backend/entrypoint.sh
-    ```
-
-5) ```sh
     cp ./env/.env.prod .env
     ```
 
-6) ```sh
+4) ```sh
     vi .env 
     ```
-    Et modifiez la variable `SERVER_NAME` et `DB_PASSWORD` tel que noté dans les lignes au dessus `TODO`
+    Et modifiez la variable `SERVER_NAME` et `DB_PASSWORD`. Suivez les instructions `#TODO` pour plus d'explications.
 
-7) ```sh
+5) ```sh
     cp intranet-backend/.env.example ./intranet-backend/.env
     ```
 
-8) ```sh
+6) ```sh
     vi intranet-backend/.env
     ```
-    Et modifiez la variable `APP_URL` et `DB_PASSWORD` par le même password que vous avez noté dans le .env étape `6`
+    Et modifiez la variable `APP_URL` et `DB_PASSWORD`. Suivez les instruction `#TODO` pour plus d'explications.
 
-9) ```sh
+7) ```sh
     cp ./intranet-frontend/.env.example ./intranet-frontend/.env
     ```
 
-10) ```sh
+8) ```sh
     vi ./intranet-frontend/.env
     ```
-    Et modifiez la variable `VITE_API_URL` tel que noté dans la ligne au dessus `TODO`
+    Et modifiez la variable `VITE_API_URL`. Suivez l'instruction `#TODO` pour plus d'explications. 
 
-11) ```sh
+9) ```sh
     docker compose up --build -d
     ```
 
-12) Une fois l'application construite, accédez à l'application par l'IP / nom de domaine que vous avez noté dans le .env de l'étape `6` par exemple `https://192.168.15.12` ou `https://intranet.com` (attention à mettre seulement l'IP / nom de domaine dans l'étpae `6` et non pas l'url entière).
+10) Une fois l'application construite, accédez à l'application par l'IP / nom de domaine que vous avez noté dans le .env de l'étape `4` par exemple `https://192.168.15.12` ou `https://intranet.com` (attention à mettre seulement l'IP / nom de domaine dans l'étpae `4` et non pas l'url entière).
 
-13) Une fois que vous accédez à l'application, connectez vous avec `admin@example.com` et `password`, un formulaire s'ouvrira pour modifier les informations de l'utilisateur admin (nom, mail, mot de passe).
+11) Une fois que vous accédez à l'application, connectez vous avec `admin@example.com` et `password`, un formulaire s'ouvrira pour modifier les informations de l'utilisateur admin (nom, mail, mot de passe).
 
-14) Vous êtes prêt à utiliser l'application.
+12) Vous êtes prêt à utiliser l'application.
 
 
