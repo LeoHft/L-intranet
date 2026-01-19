@@ -181,7 +181,7 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                 <>
                   <div className="relative overflow-hidden">
                     <img
-                      className="w-full h-48 avatar"
+                      className="w-full h-48 object-cover"
                       src={
                         service.image_url ||
                         "storage/images/no-image-available.jpg"
@@ -321,7 +321,7 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                 transition={{ delay: 0.1, duration: 0.2 }}
               >
                 <motion.img
-                  className="w-full h-58 avatar"
+                  className="w-full h-58 object-cover"
                   src={
                     selectedService.image_url ||
                     "storage/images/no-image-available.jpg"

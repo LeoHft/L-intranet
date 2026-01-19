@@ -94,6 +94,7 @@ services:
       - intra-net
     volumes:
       - ./intranet-backend:/var/www/html
+      - ./etc/php/php.ini:/usr/local/etc/php/conf.d/php.ini
 
   intranet-frontend:
     container_name: intranet-frontend

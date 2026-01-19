@@ -86,7 +86,7 @@ export default function NavBar() {
                           className="text-base-content/90 font-medium flex flex-row"
                         >
                           <User className="h-5 w-5 pr-1" />
-                          <p className="capitalize">{user?.name}</p>
+                          <p>{user?.name}</p>
                         </div>
                         <ul
                           tabIndex={0}

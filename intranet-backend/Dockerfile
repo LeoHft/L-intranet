@@ -1,29 +1,35 @@
+FROM composer:latest AS composer_bin
+
 FROM php:8.2-fpm
-# Définir le répertoire de travail
+
 WORKDIR /var/www/html
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpng-dev \
+    libjpeg-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    pkg-config \
+    zip \
+    unzip \
+    curl \
+    gnupg \
+    netcat-openbsd \
+    libicu-dev \
+    git \
+    supervisor \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl mbstring dom gd zip bcmath opcache pdo pdo_mysql \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer_bin /usr/bin/composer /usr/bin/composer
+
+COPY conf/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
 COPY . .
 
-RUN chmod -R 775 /var/www/html/storage && \
-    chmod -R 775 /var/www/html/bootstrap/cache
-
-# Installation des dépendances système et PHP
-RUN apt-get update \
-  && apt-get install -y build-essential libpng-dev libjpeg-dev libonig-dev \
-     libxml2-dev libzip-dev pkg-config zip unzip curl gnupg netcat-openbsd \
-     libicu-dev git
-
-# Installation de composer
-RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer \
-  && docker-php-ext-configure intl \
-  && docker-php-ext-install intl mbstring dom gd zip bcmath opcache pdo \
-  && docker-php-ext-install mysqli pdo_mysql \
-  && apt-get -y autoremove  \
-  && apt-get clean  \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Configurer l'entrypoint
-RUN sed -i 's/\r$//' ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 ENTRYPOINT ["./entrypoint.sh"]

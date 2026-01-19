@@ -68,11 +68,12 @@ class UserController extends Controller
         }
 
         $user = auth()->user();
-        $user->update(['last_login_at' => now()]);
+
 
         $isFirstConnection = is_null($user->last_login_at);
         $token = JWTAuth::claims(['is_admin' => $user->is_admin])->fromUser($user);
-
+        $user->last_login_at = now();
+        $user->save();
         return response()->json([
             'message' => $isFirstConnection ? 'connexion reussie, premiere connexion' : 'Connexion réussie',
             'data' => $token

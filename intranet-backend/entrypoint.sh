@@ -42,5 +42,5 @@ php artisan migrate --seed -n
 echo "Clearing cache..."
 php artisan optimize:clear
 
-echo "Starting PHP-FPM..."
-exec php-fpm
+echo "Starting Supervisor..."
+exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

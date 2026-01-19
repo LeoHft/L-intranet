@@ -71,6 +71,11 @@ class ServicesController extends Controller
 
         $data['image_url'] = $service->image_url;
         if ($request->hasFile('image')) {
+            $oldImagePath = parse_url($service->image_url, PHP_URL_PATH);
+            $oldImagePath = str_replace('/storage/', '', $oldImagePath);
+            if ($oldImagePath !== 'images/no-image-available.jpg' && Storage::disk('public')->exists($oldImagePath)) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
             $data['image_url'] = Storage::url($request->file('image')->store('images', 'public'));
         }
 
