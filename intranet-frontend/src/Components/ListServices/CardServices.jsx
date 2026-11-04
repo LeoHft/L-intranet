@@ -6,10 +6,20 @@ import {
   updateNumberServiceClick,
 } from "@/api/modules/services";
 
-import React, { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import safeUrl from "@/utils/safeUrl";
+
+import { useState, useEffect, useMemo } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import dayjs from "dayjs";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+
+const NO_IMAGE = "/storage/images/no-image-available.jpg";
+
+const NoLink = () => (
+  <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
+    Aucun lien
+  </div>
+);
 
 export default function CardServices({ selectedCategories, selectedStatus, searchQuery }) {
   const authContext = useAuthAttributes();
@@ -19,7 +29,6 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
     return stored === "true"; // Convertir la chaîne en booléen
   });
   const [servicesList, setServicesList] = useState([]);
-  const [filteredServices, setFilteredServices] = useState([]);
   const [showingServiceModal, setShowingServiceModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
 
@@ -36,6 +45,9 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
     });
   }, []);
 
+  // L'interrupteur réseau local est réservé aux administrateurs.
+  const showInternalLinks = user.is_admin && enabled;
+
   // Écouter les changements du switch
   useEffect(() => {
     const handleSwitchChange = (event) => {
@@ -48,36 +60,27 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
     };
   }, []);
 
-  // Effet pour filtrer les services selon les critères sélectionnés
-  useEffect(() => {
+  const filteredServices = useMemo(() => {
     let filtered = servicesList;
 
-    // Filtrage par statut
-    if (selectedStatus && selectedStatus.length > 0) {
+    if (selectedStatus?.length > 0) {
       const statusIds = selectedStatus.map((status) => status.value);
-      filtered = filtered.filter(
-        (service) => service.status_id && statusIds.includes(service.status_id)
-      );
+      filtered = filtered.filter((service) => statusIds.includes(service.status_id));
     }
 
-    // Filtrage par catégories
-    if (selectedCategories && selectedCategories.length > 0) {
+    if (selectedCategories?.length > 0) {
       const categoryIds = selectedCategories.map((cat) => cat.value);
-      filtered = filtered.filter(
-        (service) =>
-          service.categories &&
-          service.categories.some((cat) => categoryIds.includes(cat.id))
-      );
-    }
-
-    if (searchQuery && searchQuery.trim() !== "") {
-      const lowerCaseQuery = searchQuery.toLowerCase();
       filtered = filtered.filter((service) =>
-        service.name.toLowerCase().includes(lowerCaseQuery)
+        service.categories?.some((cat) => categoryIds.includes(cat.id))
       );
     }
 
-    setFilteredServices(filtered);
+    const query = searchQuery?.trim().toLowerCase();
+    if (query) {
+      filtered = filtered.filter((service) => service.name.toLowerCase().includes(query));
+    }
+
+    return filtered;
   }, [servicesList, selectedCategories, selectedStatus, searchQuery]);
 
   const DetailService = (service) => {
@@ -85,34 +88,61 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
     setShowingServiceModal(true);
   };
 
-  const UpdateNumberClick = (service, url) => {
-    if (service && url !== "") {
-      let isInternalUrl = false;
+  // Le comptage ne doit jamais gêner l'ouverture du lien : un échec reste silencieux pour l'utilisateur.
+  const trackClick = (e, service, isInternalUrl) => {
+    e.stopPropagation(); // Ne pas ouvrir le détail du service
+    updateNumberServiceClick(service.id, isInternalUrl).catch((error) => console.error(error.message));
+  };
 
-      // Normalisation des URLs pour comparaison
-      const urlObj = new URL(url);
-      const internalUrlObj = new URL(service.internal_url);
+  // Lien d'une carte de service
+  const cardLink = (service) => {
+    const url = safeUrl(showInternalLinks ? service.internal_url : service.external_url);
+    return url ? (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => trackClick(e, service, showInternalLinks)}
+        className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
+      >
+        {url}
+      </a>
+    ) : (
+      <NoLink />
+    );
+  };
 
-      // Comparaison
-      isInternalUrl =
-        urlObj.origin === internalUrlObj.origin &&
-        urlObj.pathname === internalUrlObj.pathname;
-
-      try {
-        updateNumberServiceClick(service.id, isInternalUrl, user.id);
-      } catch (error) {
-        console.error(
-          "Erreur lors de la mise à jour du nombre de clics :",
-          error
-        );
-        toast.error("Erreur lors de la mise à jour du nombre de clics.");
-        console.error(error.response?.data?.error);
-        throw new Error(
-          error.response?.data?.message ||
-            "Erreur lors de la mise à jour du nombre de clics"
-        );
-      }
-    }
+  // Lien du détail d'un service
+  const detailLink = (service, isInternalUrl) => {
+    const url = safeUrl(isInternalUrl ? service.internal_url : service.external_url);
+    return url ? (
+      <motion.a
+        href={url}
+        onClick={(e) => trackClick(e, service, isInternalUrl)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-center px-3 py-1 rounded-full text-sm transition-all"
+        style={{
+          background: "rgba(255,255,255,0.25)",
+          backdropFilter: "blur(20px) saturate(180%)",
+          WebkitBackdropFilter: "blur(20px) saturate(180%)",
+          border: "1px solid rgba(255,255,255,0.3)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2)",
+        }}
+        whileHover={{
+          scale: 1.05,
+          y: -2,
+          boxShadow: "0 8px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)",
+          transition: { duration: 0.01 },
+        }}
+        whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
+        transition={{ duration: 0.1 }}
+      >
+        {url}
+      </motion.a>
+    ) : (
+      <NoLink />
+    );
   };
 
   const containerVariants = {
@@ -182,14 +212,11 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                   <div className="relative overflow-hidden">
                     <img
                       className="w-full h-48 object-cover"
-                      src={
-                        service.image_url ||
-                        "storage/images/no-image-available.jpg"
-                      }
+                      src={service.image_url || NO_IMAGE}
                       alt={service.name}
                     />
                     <div className="absolute top-2 right-2 space-x-1">
-                      {service.status !== null && (
+                      {service.status && (
                         <span className="text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
                           {service.status.name}
                         </span>
@@ -198,7 +225,7 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                     <div className="absolute top-2 left-2 space-x-1">
                       {Array.isArray(service.categories) &&
                         service.categories.map((category) => (
-                          <span className="text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
+                          <span key={category.id} className="text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
                             {category.name}
                           </span>
                         ))}
@@ -210,46 +237,7 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                         {service.name}
                       </p>
 
-                      <div>
-                        {enabled ? (
-                          service.internal_url ? (
-                            <a
-                              href={service.internal_url}
-                              target="blank"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                UpdateNumberClick(
-                                  service,
-                                  service.internal_url
-                                );
-                              }}
-                              className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
-                            >
-                              {service.internal_url}
-                            </a> // Evite la propagation du click pour ne pas ouvrir le modal
-                          ) : (
-                            <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
-                              Aucun lien
-                            </div>
-                          )
-                        ) : service.external_url ? (
-                          <a
-                            href={service.external_url}
-                            target="blank"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              UpdateNumberClick(service, service.external_url);
-                            }}
-                            className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
-                          >
-                            {service.external_url}
-                          </a> // Evite la propagation du click pour ne pas ouvrir le modal
-                        ) : (
-                          <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
-                            Aucun lien
-                          </div>
-                        )}
-                      </div>
+                      <div>{cardLink(service)}</div>
                     </div>
                   </div>
                 </>
@@ -310,8 +298,6 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                                 inset 0 1px 0 rgba(255,255,255,0.15),
                                 inset 0 -1px 0 rgba(255,255,255,0.05)
                             `,
-                scrollbarWidth: "none" /* Firefox */,
-                msOverflowStyle: "none" /* Internet Explorer 10+ */,
               }}
             >
               <motion.div
@@ -322,13 +308,10 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
               >
                 <motion.img
                   className="w-full h-58 object-cover"
-                  src={
-                    selectedService.image_url ||
-                    "storage/images/no-image-available.jpg"
-                  }
+                  src={selectedService.image_url || NO_IMAGE}
                   alt={selectedService.name}
                 />
-                {selectedService.status !== null && (
+                {selectedService.status && (
                   <motion.span
                     initial={{ opacity: 0, scale: 0.8, x: 20 }}
                     animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -380,14 +363,14 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                       {selectedService.name}
                     </p>
                     <p className="text-base-content/70 text-sm">
-                      Créer le :{" "}
+                      Créé le :{" "}
                       {dayjs(selectedService.created_at).format(
                         "DD/MM/YYYY"
                       )}
                     </p>
                     <p className="text-base-content/70 text-sm">
                       Modifié le :{" "}
-                      {dayjs(selectedService.modified_at).format(
+                      {dayjs(selectedService.updated_at).format(
                         "DD/MM/YYYY"
                       )}
                     </p>
@@ -398,86 +381,8 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1, duration: 0.3 }}
                   >
-                    {selectedService.internal_url && user.is_admin ? (
-                      <motion.a
-                        href={selectedService.internal_url}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          UpdateNumberClick(
-                            selectedService,
-                            selectedService.internal_url
-                          );
-                        }}
-                        target="blank"
-                        className="text-center px-3 py-1 rounded-full text-sm transition-all"
-                        style={{
-                          background: "rgba(255,255,255,0.25)",
-                          backdropFilter: "blur(20px) saturate(180%)",
-                          WebkitBackdropFilter: "blur(20px) saturate(180%)",
-                          border: "1px solid rgba(255,255,255,0.3)",
-                          boxShadow:
-                            "0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2)",
-                        }}
-                        whileHover={{
-                          scale: 1.05,
-                          y: -2,
-                          boxShadow:
-                            "0 8px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)",
-                          transition: { duration: 0.01 },
-                        }}
-                        whileTap={{
-                          scale: 0.95,
-                          transition: { duration: 0.1 },
-                        }}
-                        transition={{ duration: 0.1 }}
-                      >
-                        {selectedService.internal_url}
-                      </motion.a>
-                    ) : user.is_admin ? (
-                      <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
-                        Aucun lien
-                      </div>
-                    ) : null}
-                    {selectedService.external_url ? (
-                      <motion.a
-                        href={selectedService.external_url}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          UpdateNumberClick(
-                            selectedService,
-                            selectedService.external_url
-                          );
-                        }}
-                        target="blank"
-                        className="text-center px-3 py-1 rounded-full text-sm transition-all"
-                        style={{
-                          background: "rgba(255,255,255,0.25)",
-                          backdropFilter: "blur(20px) saturate(180%)",
-                          WebkitBackdropFilter: "blur(20px) saturate(180%)",
-                          border: "1px solid rgba(255,255,255,0.3)",
-                          boxShadow:
-                            "0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2)",
-                        }}
-                        whileHover={{
-                          scale: 1.05,
-                          y: -2,
-                          boxShadow:
-                            "0 8px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)",
-                          transition: { duration: 0.01 },
-                        }}
-                        whileTap={{
-                          scale: 0.95,
-                          transition: { duration: 0.1 },
-                        }}
-                        transition={{ duration: 0.1 }}
-                      >
-                        {selectedService.external_url}
-                      </motion.a>
-                    ) : (
-                      <div className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
-                        Aucun lien
-                      </div>
-                    )}
+                    {user.is_admin && detailLink(selectedService, true)}
+                    {detailLink(selectedService, false)}
                   </motion.div>
                 </div>
                 <motion.div
@@ -496,7 +401,6 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
         </AnimatePresence>
       </Modal>
       </motion.section>
-      <Toaster />
     </>
   );
 }

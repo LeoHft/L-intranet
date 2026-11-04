@@ -1,19 +1,17 @@
 import Layout from "@/Components/Utils/Layout";
 import SearchBar from "@/Components/Utils/SearchBar";
 
-import React, { useRef, useEffect } from "react";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export default function Welcome() {
-  const container = useRef();
-
-  // Gestion du titre de la page
   useEffect(() => {
     document.title = "Bienvenue - Intranet";
   }, []);
 
   return (
     <Layout>
-      <div ref={container} className="container mx-auto px-4 text-center">
+      <div className="container mx-auto px-4 text-center">
         {/* HERO */}
         <div className="hero min-h-[calc(100vh-5rem)]">
           <div className="hero-content text-center">
@@ -23,14 +21,9 @@ export default function Welcome() {
                 Centralisez vos services auto-hébergés, gérez les accès avec
                 finesse.
               </p>
-              <button
-                id="buttonLogin"
-                type="button"
-                onClick={() => (window.location.href = "/login")}
-                className="btn btn-primary btn-lg"
-              >
+              <Link id="buttonLogin" to="/dashboard" className="btn btn-primary btn-lg">
                 Accédez à votre intranet
-              </button>
+              </Link>
               <SearchBar />
             </div>
           </div>

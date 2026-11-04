@@ -1,39 +1,48 @@
-import IntranetLoader from '@/Components/Utils/IntranetLoader';
+import { useAuthAttributes } from "@/context/AuthAttributsContext";
+import "@/App.css";
+import Welcome from "@/Pages/Welcome";
+import Login from "@/Pages/Auth/Login";
+import FirstLogin from "@/Pages/Auth/FirstLogin";
+import ForgotPassword from "@/Pages/Auth/ForgotPassword";
+import Dashboard from "@/Pages/Dashboard";
+import AdminDashboard from "@/Pages/AdminDashboard";
+import Edit from "@/Pages/Profile/Edit";
 
-import { useAuthAttributes } from '@/context/AuthAttributsContext';
-import '@/App.css';
-import Welcome from '@/Pages/Welcome';
-import Login from '@/Pages/Auth/Login';
-import Dashboard from '@/Pages/Dashboard';
-import AdminDashboard from '@/Pages/AdminDashboard';
-import Edit from '@/Pages/Profile/Edit';
-import ForgotPassword from '@/Pages/Auth/ForgotPassword';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
-
-function App() {
-  const [loading, setLoading] = useState(false);
-  const authContext = useAuthAttributes();
-  const user = authContext?.userAttributes;
+function AppRoutes() {
+  const { userAttributes: user } = useAuthAttributes();
   const isAuth = !!user.connected;
-  const isAdmin = !!user.is_admin;
 
-  return loading ? ( <IntranetLoader /> ) : (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={isAuth ? <Welcome /> : <Login />} />
-          <Route path="/login" element={isAuth ? <Dashboard /> : <Login />} />
-          <Route path="/dashboard" element={isAuth ? <Dashboard /> : <Login /> } />
-          <Route path="/adminDashboard" element={isAdmin && isAuth ? <AdminDashboard /> : isAuth ? <Dashboard /> : <Login /> } />
-          <Route path="/profile/edit" element={isAuth ? <Edit /> : <Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-        </Routes>
-      </BrowserRouter>
-    </>
-  )
+  // Le serveur refuse toute autre action tant que le mot de passe provisoire n'est pas changé.
+  if (isAuth && user.must_change_password) {
+    return <FirstLogin />;
+  }
+
+  const authenticated = (page) => (isAuth ? page : <Login />);
+
+  return (
+    <Routes>
+      <Route path="/" element={authenticated(<Welcome />)} />
+      <Route path="/login" element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} />
+      <Route path="/dashboard" element={authenticated(<Dashboard />)} />
+      <Route
+        path="/adminDashboard"
+        element={authenticated(user.is_admin ? <AdminDashboard /> : <Navigate to="/dashboard" replace />)}
+      />
+      <Route path="/profile/edit" element={authenticated(<Edit />)} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+      <Toaster />
+    </BrowserRouter>
+  );
+}

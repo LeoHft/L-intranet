@@ -6,7 +6,7 @@ import Modal from "@/Components/Utils/Modal";
 import { addUser } from "@/api/modules/users";
 
 import { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function AddUserForm({ onUserAdded }) {
   const [showingAddUserModal, setShowingAddUserModal] = useState(false);
@@ -50,6 +50,7 @@ export default function AddUserForm({ onUserAdded }) {
       },
       error: (error) => {
         setIsLoading(false);
+        setErrors(error.errors ?? {});
         return error.message;
       },
     });
@@ -75,11 +76,10 @@ export default function AddUserForm({ onUserAdded }) {
               value={data.name}
               className="w-full input input-bordered focus:input-primary"
               autoComplete="name"
-              isFocused={true}
               onChange={(e) => setData({ ...data, name: e.target.value })}
               required
             />
-            <InputError message={errors.name} className="mt-2" />
+            <InputError message={errors.name?.[0]} className="mt-2" />
           </div>
 
           <div className="form-control">
@@ -95,11 +95,11 @@ export default function AddUserForm({ onUserAdded }) {
               onChange={(e) => setData({ ...data, email: e.target.value })}
               required
             />
-            <InputError message={errors.email} className="mt-2" />
+            <InputError message={errors.email?.[0]} className="mt-2" />
           </div>
 
           <div className="form-control">
-            <InputLabel htmlFor="password" value="Mot de passe"/><span className="text-error">*</span>
+            <InputLabel htmlFor="password" value="Mot de passe provisoire (12 caractères minimum)"/><span className="text-error">*</span>
             <input
               id="password"
               type="password"
@@ -111,7 +111,7 @@ export default function AddUserForm({ onUserAdded }) {
               onChange={(e) => setData({ ...data, password: e.target.value })}
               required
             />
-            <InputError message={errors.password} className="mt-2" />
+            <InputError message={errors.password?.[0]} className="mt-2" />
           </div>
 
           <div className="form-control">
@@ -133,7 +133,7 @@ export default function AddUserForm({ onUserAdded }) {
               required
             />
             <InputError
-              message={errors.password_confirmation}
+              message={errors.password_confirmation?.[0]}
               className="mt-2"
             />
           </div>
@@ -152,7 +152,7 @@ export default function AddUserForm({ onUserAdded }) {
               />
               <span className="label-text ml-2">Administrateur</span>
             </label>
-            <InputError message={errors.is_admin} className="mt-3" />
+            <InputError message={errors.is_admin?.[0]} className="mt-3" />
           </div>
           <div className="modal-action">
             <button
@@ -165,7 +165,6 @@ export default function AddUserForm({ onUserAdded }) {
           </div>
         </form>
       </Modal>
-      <Toaster />
     </section>
   );
 }

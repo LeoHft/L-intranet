@@ -7,8 +7,10 @@ import { getAllServices } from "@/api/modules/services";
 
 import { getBarStatByUserByServiceByDate } from "@/api/modules/statistiques";
 
-import React, { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import useSelectOptions from "@/hooks/useSelectOptions";
+
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import CustomSelect from "@/Components/Utils/Select";
 
 export default function ListStatistiques() {
@@ -28,46 +30,8 @@ export default function ListStatistiques() {
     oneMonthAgo.toISOString().split("T")[0]
   );
   const [endDate, setEndDate] = useState(today.toISOString().split("T")[0]);
-  const [servicesOptions, setServicesOptions] = useState([]);
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    handleUsers();
-    handleServices();
-  }, []);
-
-  const handleUsers = () => {
-    getUsers()
-      .then((response) => {
-        setUsers(
-          response.data.map((users) => ({
-            value: users.id,
-            label: users.name,
-          }))
-        );
-      })
-      .catch((error) => {
-        console.error(
-          "Erreur lors de la récupération des utilisateurs:",
-          error
-        );
-      });
-  };
-
-  const handleServices = () => {
-    try {
-      getAllServices().then((response) => {
-        setServicesOptions(
-          response.data.map((services) => ({
-            value: services.id,
-            label: services.name,
-          }))
-        );
-      });
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
+  const servicesOptions = useSelectOptions(getAllServices);
+  const users = useSelectOptions(getUsers);
 
   const handleExecuteQuery = async () => {
     // Validation des données requises - dates obligatoires seulement
@@ -99,10 +63,6 @@ export default function ListStatistiques() {
         },
         error: (error) => {
           setIsLoading(false);
-          console.error(
-            "Erreur lors de la récupération des statistiques:",
-            error
-          );
           return (
             error.message || "Erreur lors de la récupération des statistiques"
           );

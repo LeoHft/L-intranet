@@ -1,79 +1,67 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\JwtMiddleware;
-use App\Http\Middleware\AdminMiddleware;
-use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\StatusController;
+use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\ShortcutController;
 use App\Http\Controllers\StatistiquesController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
-
-// Login
-Route::post('login', [UserController::class, 'login']);
-
-Route::get('test', function (Request $request) {
-    return response()->json(['message' => 'API is working']);
-});
-
+// Public
+Route::post('login', [UserController::class, 'login'])->middleware('throttle:login');
 Route::get('getCurrentUserInfo', [UserController::class, 'getCurrentUserInfo']);
 
-
-// Pour les users normaux authentifiés
-Route::middleware([JwtMiddleware::class])->group(function () {
-
-    //User
+// Authentifié, y compris lorsque le mot de passe doit encore être changé
+Route::middleware('jwt')->group(function () {
     Route::post('logout', [UserController::class, 'logout']);
-    Route::put('updateCurrentUser', [UserController::class, 'updateCurrentUser']); // Met à jour les informations de l'utilisateur actuel
-    Route::put('updateCurrentUserPassword', [UserController::class, 'updateCurrentUserPassword']); // Met à jour le mot de passe de l'utilisateur actuel
-    Route::put('updateCurrentUserFirstLogin', [UserController::class, 'updateCurrentUserFirstLogin']); // Met à jour les informations de l'utilisateur actuel lors de la première connexion
-
-    //Services
-    Route::get('getUserServices', [ServicesController::class, 'getUserServices']); // Récupère un service
-    Route::post('updateNumberClick/{service}', [ServicesController::class, 'updateNumberClick']); // Augmente le nombre de clics sur un service
-
-    //Catégories
-    Route::get('getAllCategory', [CategoryController::class, 'getAllCategory']); // Récupère les catégories
-
-    //Status
-    Route::get('getAllStatus', [StatusController::class, 'getAllStatus']); // Récupère les status
-
-    //Shortcuts
-    Route::get('getUserShortcuts', [ShortcutController::class, 'getUserShortcuts']); // Récupère les shortcuts de l'utilisateur connecté
-    Route::post('addShortcut', [ShortcutController::class, 'addShortcut']); // Ajoute un shortcut pour l'utilisateur connecté
-    Route::delete('deleteShortcut/{shortcut}', [ShortcutController::class, 'deleteShortcut']); // Supprime un shortcut pour l'utilisateur connecté
+    Route::put('updateCurrentUserFirstLogin', [UserController::class, 'updateCurrentUserFirstLogin'])->middleware('throttle:sensitive');
 });
 
+// Utilisateurs authentifiés
+Route::middleware(['jwt', 'password.changed'])->group(function () {
+    // Profil
+    Route::put('updateCurrentUser', [UserController::class, 'updateCurrentUser']);
+    Route::put('updateCurrentUserPassword', [UserController::class, 'updateCurrentUserPassword'])->middleware('throttle:sensitive');
 
+    // Services
+    Route::get('getUserServices', [ServicesController::class, 'getUserServices']);
+    Route::post('updateNumberClick/{service}', [ServicesController::class, 'updateNumberClick']);
 
-// Pour les admins authentifiés (gestion des services, catégories, status et utilisateurs)
-Route::middleware([JwtMiddleware::class, AdminMiddleware::class])->group(function() {
+    // Catégories et statuts
+    Route::get('getAllCategory', [CategoryController::class, 'getAllCategory']);
+    Route::get('getAllStatus', [StatusController::class, 'getAllStatus']);
 
-    //Services
-    Route::get('getServices', [ServicesController::class, 'getServices']); // Récupère les services
-    Route::post('storeService', [ServicesController::class, 'store']); // Enregistre un service 
-    Route::post('updateService/{service}', [ServicesController::class, 'update']); // Modifie un service
-    Route::delete('deleteService/{service}', [ServicesController::class, 'destroy']); // Supprime un service
+    // Raccourcis
+    Route::get('getUserShortcuts', [ShortcutController::class, 'getUserShortcuts']);
+    Route::post('addShortcut', [ShortcutController::class, 'addShortcut']);
+    Route::delete('deleteShortcut/{shortcut}', [ShortcutController::class, 'deleteShortcut']);
+});
 
-    //Catégories
-    Route::post('storeCategory', [CategoryController::class, 'store']); // Enregistre une catégorie
-    Route::put('updateCategory/{category}', [CategoryController::class, 'update']); // Modifie une catégorie
-    Route::delete('deleteCategory/{category}', [CategoryController::class, 'destroy']); // Supprime une catégorie
+// Administrateurs
+Route::middleware(['jwt', 'password.changed', 'admin'])->group(function () {
+    // Services
+    Route::get('getServices', [ServicesController::class, 'getServices']);
+    Route::post('storeService', [ServicesController::class, 'store']);
+    Route::post('updateService/{service}', [ServicesController::class, 'update']);
+    Route::delete('deleteService/{service}', [ServicesController::class, 'destroy']);
 
-    //Status
-    Route::post('storeStatus', [StatusController::class, 'store']); // Enregistre un status
-    Route::put('updateStatus/{status}', [StatusController::class, 'update']); // Modifie un status
-    Route::delete('deleteStatus/{status}', [StatusController::class, 'destroy']); // Supprime un status
+    // Catégories
+    Route::post('storeCategory', [CategoryController::class, 'store']);
+    Route::put('updateCategory/{category}', [CategoryController::class, 'update']);
+    Route::delete('deleteCategory/{category}', [CategoryController::class, 'destroy']);
 
-    //utilisateurs
-    Route::get('getUsers', [UserController::class, 'getUsers']); // Récupère les utilisateurs
-    Route::post('storeUser', [UserController::class, 'store']); // Enregistre un utilisateur
-    Route::put('updateUser/{user}', [UserController::class, 'update'])->name('users.update'); // Modifie un utilisateur
-    Route::delete('deleteUser/{user}', [UserController::class, 'delete']); // Supprime un utilisateur
+    // Statuts
+    Route::post('storeStatus', [StatusController::class, 'store']);
+    Route::put('updateStatus/{status}', [StatusController::class, 'update']);
+    Route::delete('deleteStatus/{status}', [StatusController::class, 'destroy']);
 
-    //Statistiques
-    Route::get('getStatByUserByServiceByDate', [StatistiquesController::class, 'getStatByUserByServiceByDate']); // Récupère les statistiques 'barres' par utilisateur, service et date
+    // Utilisateurs
+    Route::get('getUsers', [UserController::class, 'getUsers']);
+    Route::post('storeUser', [UserController::class, 'store']);
+    Route::put('updateUser/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('deleteUser/{user}', [UserController::class, 'delete']);
+
+    // Statistiques
+    Route::get('getStatByUserByServiceByDate', [StatistiquesController::class, 'getStatByUserByServiceByDate']);
 });

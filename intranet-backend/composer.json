@@ -1,17 +1,17 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "leohft/l-intranet",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Backend de L'intranet : tableau de bord pour services auto-hébergés.",
     "keywords": [
-        "laravel",
-        "framework"
+        "intranet",
+        "homelab",
+        "self-hosted"
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2|^8.3",
+        "php": "^8.2",
         "laravel/framework": "^12.0",
-        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "tymon/jwt-auth": "^2.2"
     },
@@ -19,7 +19,6 @@
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
-        "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^3.8"
@@ -40,21 +39,6 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
-        ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-        ],
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
-        ],
-        "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"
         ],
         "test": [
             "@php artisan config:clear --ansi",

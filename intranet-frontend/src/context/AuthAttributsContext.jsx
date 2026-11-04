@@ -1,44 +1,58 @@
 import IntranetLoader from "@/Components/Utils/IntranetLoader";
 
+import { AUTH_TOKEN_KEY } from "@/api/apiClient";
 import { getCurrentUserInfo } from "@/api/modules/users";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
-// Création du contexte
 const AuthAttributesContext = createContext(null);
 
 export const AuthAttributesProvider = ({ children }) => {
   const [userAttributes, setUserAttributes] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // Initialisé à true !
   const [hasError, setHasError] = useState(false);
 
-  const FetchUserAttributes = async () => {
-    setHasError(false);
-    setIsLoading(true);
+  // Les rafraîchissements se font en arrière-plan : la page en cours n'est pas démontée.
+  const FetchUserAttributes = useCallback(async () => {
     try {
       const response = await getCurrentUserInfo();
+      if (!response.connected) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+      }
       setUserAttributes(response);
-    } catch (err) {
-      console.error("Erreur lors de la récupération des attributs:", err);
-      setUserAttributes(null);
+      setHasError(false);
+    } catch {
       setHasError(true);
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     FetchUserAttributes();
-  }, []);
+  }, [FetchUserAttributes]);
 
-  if (isLoading) {
+  if (!userAttributes && hasError) {
+    return (
+      <div className="hero min-h-screen">
+        <div className="hero-content text-center">
+          <div className="max-w-md space-y-4">
+            <h1 className="text-2xl font-bold">Serveur injoignable</h1>
+            <p className="opacity-70">
+              L'application démarre peut-être encore. Réessayez dans quelques instants.
+            </p>
+            <button type="button" className="btn btn-primary" onClick={FetchUserAttributes}>
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userAttributes) {
     return <IntranetLoader />;
   }
 
   return (
-    <AuthAttributesContext.Provider
-      value={{ userAttributes, FetchUserAttributes, hasError, isLoading }}
-    >
+    <AuthAttributesContext.Provider value={{ userAttributes, FetchUserAttributes, hasError }}>
       {children}
     </AuthAttributesContext.Provider>
   );

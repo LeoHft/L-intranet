@@ -1,46 +1,25 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-echo "=== Backend Production Container Starting ==="
-
-# Install composer dependencies if vendor directory doesn't exist
-if [ ! -d "vendor" ]; then
-    echo "Installing Composer dependencies..."
-    composer install --no-dev --optimize-autoloader --no-interaction
-else
-    echo "Vendor directory exists, skipping composer install..."
+if [ "${APP_ENV:-production}" != "production" ]; then
+    echo "Installation des dépendances Composer (mode développement)..."
+    composer install --no-interaction
+    touch .env # Vide : la configuration vient de Compose, mais certains outils de test attendent ce fichier.
 fi
 
-echo "Setting permissions for storage and bootstrap/cache..."
-chown -R www-data:www-data /var/www/html/storage
-chown -R www-data:www-data /var/www/html/bootstrap
-chmod -R 775 /var/www/html/storage
-chmod -R 775 /var/www/html/bootstrap/cache
+mkdir -p storage/app/public/images storage/framework/cache/data storage/framework/sessions \
+    storage/framework/views storage/logs bootstrap/cache
 
+# Uniquement les caches de fichiers : "optimize:clear" viderait aussi le cache applicatif, et donc
+# la liste noire des tokens JWT, ce qui rendrait valides les sessions déjà déconnectées.
+php artisan config:clear --no-interaction
+php artisan route:clear --no-interaction
+php artisan view:clear --no-interaction
 
-# Attendre que la base de données soit prête
-echo "Waiting for database connection..."
-until nc -z intranetDB 3306; do
-    echo "Waiting for MariaDB to be ready..."
-    sleep 2
-done
-echo "Database is ready!"
+echo "Application des migrations..."
+php artisan migrate --force --seed --no-interaction
 
-echo "Generating application keys..."
-php artisan key:generate --no-interaction
-php artisan jwt:secret --force
+chown -R www-data:www-data storage bootstrap/cache
+find storage bootstrap/cache -type d -exec chmod 775 {} +
 
-# Créer le lien de stockage
-echo "Creating storage link..."
-php artisan storage:link
-
-# Exécuter les migrations
-echo "Running database migrations..."
-php artisan migrate --seed -n
-
-# Nettoyer le cache
-echo "Clearing cache..."
-php artisan optimize:clear
-
-echo "Starting Supervisor..."
 exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

@@ -5,9 +5,9 @@ import Modal from "@/Components/Utils/Modal";
 import ModifyCategoryForm from "@/Components/Category/ModifyCategoryForm";
 import { getAllCategory, deleteCategory } from "@/api/modules/category";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function ListCategory({ refreshTrigger }) {
   const [categoriesList, setCategoriesList] = useState([]);
@@ -128,7 +128,6 @@ export default function ListCategory({ refreshTrigger }) {
           </div>
         </form>
       </Modal>
-      <Toaster />
     </>
   );
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UpdateUserPasswordRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class UpdateUserPasswordRequest extends FormRequest
     {
         return [
             'current_password' => 'required|string',
-            'new_password' => ['required', 'string', 'min:6', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'new_password' => ['required', 'string', 'confirmed', 'different:current_password', Password::defaults()],
         ];
     }
 
@@ -37,6 +38,7 @@ class UpdateUserPasswordRequest extends FormRequest
             'new_password.string' => 'Le nouveau mot de passe doit être une chaîne de caractères.',
             'new_password.min' => 'Le nouveau mot de passe doit contenir au moins :min caractères.',
             'new_password.confirmed' => 'Les nouveaux mots de passe ne correspondent pas.',
+            'new_password.different' => "Le nouveau mot de passe doit être différent de l'actuel.",
         ];
     }
 }

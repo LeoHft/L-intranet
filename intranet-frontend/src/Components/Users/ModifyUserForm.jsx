@@ -3,29 +3,19 @@ import InputLabel from "@/Components/Utils/InputLabel";
 import InputError from "@/Components/Utils/InputError";
 
 import { updateUser } from "@/api/modules/users";
-import toast, { Toaster } from "react-hot-toast";
-import { useEffect, useState, useRef } from "react";
+import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
 
 export default function ModifyUserForm({ user, onClose, onSuccess }) {
   const [errors, setErrors] = useState({});
-  const name = useRef();
-  const email = useRef();
-  const is_admin = useRef();
   const [data, setData] = useState({
     name: "",
     email: "",
     is_admin: false,
+    password: "",
+    password_confirmation: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-
-  const reset = () => {
-    setData({
-      name: "",
-      email: "",
-      is_admin: false,
-    });
-    setErrors({});
-  };
 
   useEffect(() => {
     if (user) {
@@ -33,6 +23,8 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
         name: user.name || "",
         email: user.email || "",
         is_admin: user.is_admin || false,
+        password: "",
+        password_confirmation: "",
       });
     }
   }, [user]);
@@ -45,7 +37,6 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
       loading: "Modification de l'utilisateur ...",
       success: (response) => {
         setIsLoading(false);
-        reset();
         if (onClose) {
           onClose(); // Ferme le modal dans le parent
         }
@@ -56,10 +47,7 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
       },
       error: (error) => {
         setIsLoading(false);
-        // Gestion des erreurs de validation
-        if (error.response?.data?.errors) {
-          setErrors(error.response.data.errors);
-        }
+        setErrors(error.errors ?? {});
         return error.message;
       },
     });
@@ -79,28 +67,26 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
           <input
             type="text"
             id="name"
-            ref={name}
             value={data.name}
             onChange={(e) => setData({ ...data, name: e.target.value })}
             className="w-full input input-bordered focus:input-primary"
             placeholder="Nom de l'utilisateur"
             required
           />
-          <InputError message={errors.name} className="mt-2" />
+          <InputError message={errors.name?.[0]} className="mt-2" />
         </div>
         <div className="form-control">
           <InputLabel htmlFor="email" value="Email"/><span className="text-error">*</span>
           <input
             type="email"
             id="email"
-            ref={email}
             value={data.email}
             onChange={(e) => setData({ ...data, email: e.target.value })}
             className="w-full input input-bordered focus:input-primary"
             placeholder="Email de l'utilisateur"
             required
           />
-          <InputError message={errors.email} className="mt-2" />
+          <InputError message={errors.email?.[0]} className="mt-2" />
         </div>
         <div className="form-control">
           <label className="label cursor-pointer">
@@ -108,15 +94,44 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
               id="is_admin"
               type="checkbox"
               name="is_admin"
-              ref={is_admin}
               checked={data.is_admin}
               className="checkbox checkbox-primary"
               onChange={(e) => setData({ ...data, is_admin: e.target.checked })}
             />
             <span className="label-text ml-2">Administrateur</span>
           </label>
-          <InputError message={errors.is_admin} className="mt-3" />
+          <InputError message={errors.is_admin?.[0]} className="mt-3" />
         </div>
+        <div className="form-control">
+          <InputLabel htmlFor="password" value="Réinitialiser le mot de passe (facultatif, 12 caractères minimum)" />
+          <input
+            type="password"
+            id="password"
+            value={data.password}
+            onChange={(e) => setData({ ...data, password: e.target.value })}
+            className="w-full input input-bordered focus:input-primary"
+            placeholder="Laisser vide pour ne pas le changer"
+            autoComplete="new-password"
+          />
+          <InputError message={errors.password?.[0]} className="mt-2" />
+        </div>
+        {data.password && (
+          <div className="form-control">
+            <InputLabel htmlFor="password_confirmation" value="Confirmer le mot de passe" />
+            <input
+              type="password"
+              id="password_confirmation"
+              value={data.password_confirmation}
+              onChange={(e) => setData({ ...data, password_confirmation: e.target.value })}
+              className="w-full input input-bordered focus:input-primary"
+              autoComplete="new-password"
+              required
+            />
+            <p className="text-sm opacity-70 mt-2">
+              L'utilisateur sera déconnecté et devra choisir un nouveau mot de passe à sa prochaine connexion.
+            </p>
+          </div>
+        )}
         <div className="modal-action">
           <button
             type="submit"

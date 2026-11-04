@@ -1,10 +1,12 @@
-import * as Icons from "lucide-react";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import Modal from "@/Components/Utils/Modal";
+import { getIcon } from "@/utils/icons";
+import safeUrl from "@/utils/safeUrl";
 
 export default function Shortcut({ shortcut, className = "", onDelete }) {
-  const IconComponent = shortcut.icon ? Icons[shortcut.icon] : null;
+  const IconComponent = getIcon(shortcut.icon);
+  const url = safeUrl(shortcut.url);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDelete = () => {
@@ -18,17 +20,15 @@ export default function Shortcut({ shortcut, className = "", onDelete }) {
     <>
       <div className="indicator">
         <span
-          className="indicator-item badge badge badge-xs badge-ghost cursor-pointer hover:badge badge-error"
+          className="indicator-item badge badge-xs badge-error cursor-pointer"
           onClick={() => setShowDeleteModal(true)}
         >
           <Trash2 className="h-2 w-2" />
         </span>
         <div className="tooltip tooltip-bottom" data-tip={`${shortcut.name ? `${shortcut.name}` : `${shortcut.url}`}`}>
           <button
-            data-tooltip-content={shortcut.url}
-            onClick={() =>
-              window.open(`${shortcut.url}`, "_blank", "noopener,noreferrer")
-            }
+            disabled={!url}
+            onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
             className={`btn btn-soft btn-circle hover:btn-primary transition-all duration-200 ${className}`}
             aria-label={`Ouvrir ${shortcut.url}`}
           >

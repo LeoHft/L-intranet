@@ -1,37 +1,47 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\EnsurePasswordChanged;
+use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\JwtMiddleware;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->group('jwt', [
-            JwtMiddleware::class,
-        ]);
+        $middleware->throttleApi();
         $middleware->alias([
+            'jwt' => JwtMiddleware::class,
             'admin' => AdminMiddleware::class,
+            'password.changed' => EnsurePasswordChanged::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (Throwable $e, $request) {
-            if ($e instanceof \Illuminate\Validation\ValidationException) {
+    ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->shouldRenderJsonWhen(fn (Request $request) => $request->is('api/*'));
+
+        // Conserve les vrais codes HTTP (403, 404, 429...) et évite d'exposer les noms de modèles.
+        $exceptions->render(function (HttpExceptionInterface $e, Request $request) {
+            if (! $request->is('api/*')) {
                 return null;
             }
 
-            if ($request->is('api/*')) {
-                return response()->json([
-                    'message' => 'Une erreur interne est survenue',
-                    'error' => config('app.debug') ? $e->getMessage() : null
-                ], 500);
-            }
+            $message = match ($e->getStatusCode()) {
+                403 => $e->getMessage() ?: 'Accès non autorisé.',
+                404 => 'Ressource introuvable.',
+                405 => 'Méthode non autorisée.',
+                429 => 'Trop de tentatives. Réessayez dans quelques instants.',
+                default => null,
+            };
+
+            return $message
+                ? response()->json(['message' => $message], $e->getStatusCode(), $e->getHeaders())
+                : null;
         });
     })->create();

@@ -23,14 +23,12 @@ class UpdateClickRequest extends FormRequest
     {
         return [
             'isInternalUrl' => 'required|boolean',
-            'userId' => 'nullable|exists:users,id',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'userId.exists' => "L'utilisateur spécifié n'existe pas.",
             'isInternalUrl.required' => "Le type d'URL (interne/externe) est requis.",
         ];
     }

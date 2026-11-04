@@ -5,9 +5,9 @@ import Modal from "@/Components/Utils/Modal";
 import ModifyStatusForm from "@/Components/Status/ModifyStatusForm";
 import { getAllStatus, deleteStatus } from "@/api/modules/status";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export default function ListStatus({ refreshTrigger }) {
   const [StatusList, setStatusList] = useState([]);
@@ -131,7 +131,6 @@ export default function ListStatus({ refreshTrigger }) {
           </div>
         </form>
       </Modal>
-      <Toaster />
     </>
   );
 }

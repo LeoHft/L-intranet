@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isAutoFocus, setIsAutoFocus] = useState(
-    window.location.pathname === "/"
-  );
+  const isAutoFocus = window.location.pathname === "/";
 
   // Gestion de la recherche
   const handleSearch = (query = searchQuery) => {

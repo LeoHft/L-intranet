@@ -2,11 +2,11 @@ import SecondaryButton from "@/Components/Utils/SecondaryButton";
 import DangerButton from "@/Components/Utils/DangerButton";
 import Modal from "@/Components/Utils/Modal";
 
-import ModifyServiceForm from "@/Components/Services/ModifyServiceForm";
+import ServiceFormModal from "@/Components/Services/ServiceFormModal";
 import { getAllServices, deleteService } from "@/api/modules/services";
 
-import React, { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 export default function ListServices({ refreshTrigger }) {
   const [servicesList, setServicesList] = useState([]);
@@ -75,19 +75,17 @@ export default function ListServices({ refreshTrigger }) {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
     const sortedServices = [...servicesList].sort((a, b) => {
-      const extractIP = (url) => {
-      if (!url) return '';
-      const match = url.match(/(\d+\.\d+\.\d+\.\d+)/);
-      return match ? match[1] : url;
+      // Tri numérique sur les IP. Les noms d'hôtes (http://nas) passent après, par ordre alphabétique.
+      const ipToNumber = (url) => {
+        const match = url?.match(/\d+\.\d+\.\d+\.\d+/);
+        return match ? match[0].split('.').reduce((acc, octet) => acc * 256 + Number(octet), 0) : Infinity;
       };
-      const ipA = extractIP(a.internal_url);
-      const ipB = extractIP(b.internal_url);
-      const ipToNumber = (ip) => {
-        return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0);
-      };
-      const numA = ipToNumber(ipA);
-      const numB = ipToNumber(ipB);
-      return newSortOrder === "asc" ? numA - numB : numB - numA;
+      const numA = ipToNumber(a.internal_url);
+      const numB = ipToNumber(b.internal_url);
+      const order = numA === numB
+        ? (a.internal_url ?? '').localeCompare(b.internal_url ?? '')
+        : numA < numB ? -1 : 1;
+      return newSortOrder === "asc" ? order : -order;
     });
     setServicesList(sortedServices);
   }
@@ -153,7 +151,7 @@ export default function ListServices({ refreshTrigger }) {
                       className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10 cursor-pointer hover:bg-white/30"
                       onClick={(e) => {
                       e.preventDefault();
-                      navigator.clipboard.writeText(service.internal_url);
+                      navigator.clipboard?.writeText(service.internal_url);
                       toast.success('URL interne copiée !');
                       }}
                       title="Cliquer pour copier"
@@ -173,7 +171,7 @@ export default function ListServices({ refreshTrigger }) {
                       className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10 cursor-pointer hover:bg-white/30"
                       onClick={(e) => {
                       e.preventDefault();
-                      navigator.clipboard.writeText(service.external_url);
+                      navigator.clipboard?.writeText(service.external_url);
                       toast.success('URL externe copiée !');
                       }}
                       title="Cliquer pour copier"
@@ -244,7 +242,7 @@ export default function ListServices({ refreshTrigger }) {
       </table>
 
       {showModalModifyService && (
-        <ModifyServiceForm
+        <ServiceFormModal
           service={selectedService}
           onClose={() => setShowModalModifyService(false)}
           onSuccess={() => fetchServices()}

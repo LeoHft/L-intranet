@@ -8,9 +8,7 @@ export default function DangerButton({
     <button
       {...props}
       className={
-        `btn btn-error btn-sm uppercase tracking-widest ${
-          disabled && "btn-disabled"
-        } ` + className
+        `btn btn-error btn-sm uppercase tracking-widest ${disabled ? "btn-disabled" : ""} ` + className
       }
       disabled={disabled}
     >

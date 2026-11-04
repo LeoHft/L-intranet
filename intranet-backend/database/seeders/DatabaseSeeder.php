@@ -2,97 +2,51 @@
 
 namespace Database\Seeders;
 
+use App\Models\Categories;
+use App\Models\Services;
+use App\Models\Status;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Exécuté à chaque démarrage du conteneur, mais n'agit que sur une base vide :
+     * les éléments supprimés par l'administrateur ne doivent jamais réapparaître.
      */
     public function run(): void
     {
-        User::insertOrIgnore(
-            [
-                'id' => 1,
-                'name' => 'admin',
-                'email' => 'admin@example.com',
-                'created_at' => now(),
-                'updated_at' => now(),
-                'password' => bcrypt('password'),
-                'is_admin' => true,
-            ]
-        );
-
-        DB::table('categories')->insertOrIgnore([
-            'id' => 1,
-            'name' => 'Multimédia',
-            'description' => "Tout ce qui est multimédia",
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        DB::table('status')->insertOrIgnore([
-            [
-                'id' => 1,
-                'name' => 'UP',
-                'description' => 'Le service est accessible',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => 2,
-                'name' => 'DOWN',
-                'description' => 'Le service est inaccessible',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
-
-        DB::table('services')->insertOrIgnore([
-            [
-            'id' => 1,
-            'name' => 'test service',
-            'description' => 'test service description',
-            'internal_url' => 'http://localhost:8000',
-            'external_url' => 'https://testservice.com',
-            'image_url' => 'http://localhost:8088/storage/images/no-image-available.jpg',
-            'status_id' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-            ]
-        ]);
-
-        // On vérifie si la relation service-user existe déjà
-        $serviceAccessExists = DB::table('services_access')
-            ->where('user_id', 1)
-            ->where('service_id', 1)
-            ->exists();
-
-        if (!$serviceAccessExists) {
-            DB::table('services_access')->insert([
-                'user_id' => 1,
-                'service_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        if (User::exists()) {
+            return;
         }
 
-        // On vérifie si la relation service-catégorie existe déjà
-        $categoryServiceExists = DB::table('categories_services')
-            ->where('service_id', 1)
-            ->where('category_id', 1)
-            ->exists();
+        $email = config('intranet.admin_email');
+        $configuredPassword = config('intranet.admin_password');
+        $password = $configuredPassword ?: Str::password(20, symbols: false);
 
-        if (!$categoryServiceExists) {
-            DB::table('categories_services')->insert([
-                'service_id' => 1,
-                'category_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        $admin = new User(['name' => 'admin', 'email' => $email, 'password' => $password, 'is_admin' => true]);
+        $admin->must_change_password = true;
+        $admin->save();
+
+        if (! $configuredPassword) {
+            $this->command?->warn("Compte administrateur créé : {$email} / {$password}");
         }
 
+        $category = Categories::create(['name' => 'Multimédia', 'description' => 'Tout ce qui est multimédia']);
+
+        $up = Status::create(['name' => 'UP', 'description' => 'Le service est accessible']);
+        Status::create(['name' => 'DOWN', 'description' => 'Le service est inaccessible']);
+
+        $service = Services::create([
+            'name' => 'Service exemple',
+            'description' => "Un service d'exemple, à modifier ou à supprimer depuis l'administration.",
+            'internal_url' => 'http://192.168.1.10:8080',
+            'external_url' => 'https://example.com',
+            'image_url' => Services::DEFAULT_IMAGE,
+            'status_id' => $up->id,
+        ]);
+        $service->categories()->attach($category);
+        $service->users()->attach($admin);
     }
 }

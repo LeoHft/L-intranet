@@ -14,6 +14,7 @@ export default function NavLink({
         (active
           ? "tab-active text-base-content"
           : "text-base-content/70 hover:text-base-content") +
+        " " +
         className
       }
     >

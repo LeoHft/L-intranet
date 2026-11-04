@@ -1,20 +1,20 @@
-# Multi-stage build pour React
-FROM node:22-alpine
-
+FROM node:22-alpine AS deps
 WORKDIR /var/www/intranet-frontend
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Copier les fichiers de configuration pour les dépendances
-COPY package*.json ./
-
-# Installation des dépendances
-RUN npm install
-
-# Copier le reste des fichiers
+# Serveur Vite avec rechargement à chaud (docker-compose.dev.yml)
+FROM deps AS dev
 COPY . .
-
-# Variable d'environnement par défaut
-ARG NODE_ENV=dev
-ENV NODE_ENV=${NODE_ENV}
-
-# Le CMD sera surchargé par docker-compose, mais défini par défaut
 CMD ["npm", "run", "dev"]
+
+FROM deps AS build
+COPY . .
+RUN npm run build
+
+# Production : nginx embarque le frontend compilé.
+FROM nginx:stable-alpine AS prod
+COPY --from=build /var/www/intranet-frontend/dist /usr/share/nginx/html
+
+# Développement : nginx relaie vers le serveur Vite.
+FROM nginx:stable-alpine AS nginx-dev

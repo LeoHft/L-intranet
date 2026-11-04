@@ -19,7 +19,6 @@ import ListStatistiques from "@/Components/Statistiques/ListStatistiques";
 import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("Servicessettings"); // Set default tab to Services settings
   const [refreshTrigger, setRefreshTrigger] = useState(false);
 
   useEffect(() => {
@@ -30,39 +29,36 @@ export default function AdminDashboard() {
 
   return (
     <Layout>
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-8"
-      >
+      {/* Ouvre l'onglet Services par défaut */}
+      <Tabs defaultIndex={1} className="space-y-8">
         <TabsList>
-          <TabsTrigger value="overview">Statistiques</TabsTrigger>
-          <TabsTrigger value="Servicessettings">Services</TabsTrigger>
-          <TabsTrigger value="CategoriesSettings">Catégories</TabsTrigger>
-          <TabsTrigger value="StatusSettings">Statuts</TabsTrigger>
-          <TabsTrigger value="users">Utilisateurs</TabsTrigger>
+          <TabsTrigger>Statistiques</TabsTrigger>
+          <TabsTrigger>Services</TabsTrigger>
+          <TabsTrigger>Catégories</TabsTrigger>
+          <TabsTrigger>Statuts</TabsTrigger>
+          <TabsTrigger>Utilisateurs</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-8">
+        <TabsContent className="space-y-8">
           <ListStatistiques />
         </TabsContent>
 
-        <TabsContent value="Servicessettings" className="space-y-8">
+        <TabsContent className="space-y-8">
           <AddServiceForm onServiceAdded={triggerRefresh} />
           <ListServices refreshTrigger={refreshTrigger} />
         </TabsContent>
 
-        <TabsContent value="CategoriesSettings" className="space-y-8">
+        <TabsContent className="space-y-8">
           <AddCategoryForm onCategoryAdded={triggerRefresh} />
           <ListCategory refreshTrigger={refreshTrigger} />
         </TabsContent>
 
-        <TabsContent value="StatusSettings" className="space-y-8">
+        <TabsContent className="space-y-8">
           <AddStatusForm onStatusAdded={triggerRefresh} />
           <ListStatus refreshTrigger={refreshTrigger} />
         </TabsContent>
 
-        <TabsContent value="users" className="space-y-8">
+        <TabsContent className="space-y-8">
           <AddUserForm onUserAdded={triggerRefresh} />
           <ListUsers refreshTrigger={refreshTrigger} />
         </TabsContent>

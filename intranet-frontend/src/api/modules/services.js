@@ -1,5 +1,8 @@
 import { apiClient } from '@/api/apiClient';
 
+// Les images peuvent peser jusqu'à 32 Mo.
+const UPLOAD_OPTIONS = { timeout: 120000 };
+
 
 export const getAllServices = async () => {
     const response = await apiClient.get('/getServices');
@@ -12,12 +15,12 @@ export const getUserServices = async () => {
 }
 
 export const storeService = async (serviceData) => {
-    const response = await apiClient.post('/storeService', serviceData);
+    const response = await apiClient.post('/storeService', serviceData, UPLOAD_OPTIONS);
     return response.data;
 }
 
 export const editService = async (serviceData, serviceId) => {
-    const response = await apiClient.post(`/updateService/${serviceId}`, serviceData);
+    const response = await apiClient.post(`/updateService/${serviceId}`, serviceData, UPLOAD_OPTIONS);
     return response.data;
 }
 
@@ -26,10 +29,7 @@ export const deleteService = async (serviceId) => {
     return response.data;
 }
 
-export const updateNumberServiceClick = async (service_id, isInternalUrl, userId) => {
-    const response = await apiClient.post(`/updateNumberClick/${service_id}`, { 
-        isInternalUrl, 
-        userId 
-    });
+export const updateNumberServiceClick = async (serviceId, isInternalUrl) => {
+    const response = await apiClient.post(`/updateNumberClick/${serviceId}`, { isInternalUrl });
     return response.data;
 }

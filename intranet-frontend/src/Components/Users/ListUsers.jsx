@@ -6,8 +6,8 @@ import ModifyUserForm from "@/Components/Users/ModifyUserForm";
 import { getUsers, deleteUser } from "@/api/modules/users";
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
 
-import toast, { Toaster } from "react-hot-toast";
-import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 
 export default function ListUsers({ refreshTrigger }) {
@@ -116,7 +116,7 @@ export default function ListUsers({ refreshTrigger }) {
             ))
           ) : (
             <tr>
-              <td colSpan="7" className="text-center opacity-70 py-4">
+              <td colSpan="8" className="text-center opacity-70 py-4">
                 Aucun utilisateur trouvé.
               </td>
             </tr>
@@ -150,7 +150,6 @@ export default function ListUsers({ refreshTrigger }) {
           </div>
         </form>
       </Modal>
-      <Toaster />
     </>
   );
 }

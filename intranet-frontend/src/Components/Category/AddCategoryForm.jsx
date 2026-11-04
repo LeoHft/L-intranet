@@ -4,14 +4,12 @@ import InputLabel from "@/Components/Utils/InputLabel";
 
 import { storeCategory } from "@/api/modules/category";
 
-import { useState, useRef } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function AddCategoryForm({ onCategoryAdded }) {
   const [showingAddCategoryModal, setShowingAddCategoryModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const name = useRef();
-  const description = useRef();
   const [data, setData] = useState({
     name: "",
     description: "",
@@ -73,7 +71,6 @@ export default function AddCategoryForm({ onCategoryAdded }) {
             <input
               type="text"
               id="name"
-              ref={name}
               value={data.name}
               onChange={(e) => setData({ ...data, name: e.target.value })}
               className="w-full input input-bordered focus:input-primary"
@@ -85,7 +82,6 @@ export default function AddCategoryForm({ onCategoryAdded }) {
             <InputLabel htmlFor="description" value="Description" />
             <textarea
               id="description"
-              ref={description}
               value={data.description}
               onChange={(e) =>
                 setData({ ...data, description: e.target.value })
@@ -106,7 +102,6 @@ export default function AddCategoryForm({ onCategoryAdded }) {
           </div>
         </form>
       </Modal>
-      <Toaster />
     </section>
   );
 }

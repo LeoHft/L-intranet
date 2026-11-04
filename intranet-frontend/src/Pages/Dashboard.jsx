@@ -45,7 +45,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="w-full hidden md:block">
+          <div className={`w-full md:block ${showingFilters ? "block" : "hidden"}`}>
             <FilterServices
               selectedCategories={selectedCategories}
               setSelectedCategories={setSelectedCategories}

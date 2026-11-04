@@ -3,12 +3,10 @@ import InputLabel from "@/Components/Utils/InputLabel";
 
 import { updateStatus } from "@/api/modules/status";
 
-import { useEffect, useState, useRef } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function ModifyStatusForm({ status, onClose, onSuccess }) {
-  const name = useRef();
-  const description = useRef();
   const [data, setData] = useState({
     name: "",
     description: "",
@@ -69,7 +67,6 @@ export default function ModifyStatusForm({ status, onClose, onSuccess }) {
           <input
             type="text"
             id="name"
-            ref={name}
             value={data.name}
             onChange={(e) => setData({ ...data, name: e.target.value })}
             className="w-full input input-bordered focus:input-primary"
@@ -81,7 +78,6 @@ export default function ModifyStatusForm({ status, onClose, onSuccess }) {
           <InputLabel htmlFor="description" value="Description" />
           <textarea
             id="description"
-            ref={description}
             value={data.description}
             maxLength={255}
             onChange={(e) => setData({ ...data, description: e.target.value })}

@@ -1,8 +1,7 @@
 import { getAllStatus } from "@/api/modules/status";
 import { getAllCategory } from "@/api/modules/category";
 
-import React, { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import useSelectOptions from "@/hooks/useSelectOptions";
 import CustomSelect from "@/Components/Utils/Select";
 import InputLabel from "@/Components/Utils/InputLabel";
 
@@ -14,42 +13,8 @@ export default function FilterServices({
   searchQuery,
   setSearchQuery,
 }) {
-  const [categories, setCategories] = useState([]);
-  const [status, setStatus] = useState([]);
-
-  useEffect(() => {
-    handleStatus();
-    handleCategories();
-  }, []);
-
-  const handleStatus = () => {
-    try {
-      getAllStatus().then((response) => {
-        setStatus(
-          response.data.map((status) => ({
-            value: status.id,
-            label: status.name,
-          }))
-        );
-      });
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
-  const handleCategories = () => {
-    try {
-      getAllCategory().then((response) => {
-        setCategories(
-          response.data.map((category) => ({
-            value: category.id,
-            label: category.name,
-          }))
-        );
-      });
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
+  const categories = useSelectOptions(getAllCategory);
+  const status = useSelectOptions(getAllStatus);
 
   return (
     <>

@@ -10,9 +10,7 @@ export default function SecondaryButton({
       {...props}
       type={type}
       className={
-        `btn btn-outline btn-sm uppercase tracking-widest ${
-          disabled && "btn-disabled"
-        } ` + className
+        `btn btn-outline btn-sm uppercase tracking-widest ${disabled ? "btn-disabled" : ""} ` + className
       }
       disabled={disabled}
     >

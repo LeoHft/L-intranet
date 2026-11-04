@@ -23,14 +23,14 @@ class StoreServiceRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'internal_url' => 'nullable|url',
-            'external_url' => 'nullable|url',
-            'image' => 'nullable|mimes:jpeg,png,jpg,gif,webp,ico,gif|max:32768', // Max 32MB
+            'description' => 'nullable|string|max:255',
+            'internal_url' => 'nullable|url:http,https|max:255',
+            'external_url' => 'nullable|url:http,https|max:255',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,ico|max:32768', // Max 32 Mo (SVG exclu : risque de XSS)
             'status_id' => 'nullable|exists:status,id',
             'category_id' => 'nullable|array',
             'category_id.*' => 'exists:categories,id',
-            'user_id' => 'required|array',
+            'user_id' => 'required|array|min:1',
             'user_id.*' => 'exists:users,id',
         ];
     }
@@ -45,10 +45,13 @@ class StoreServiceRequest extends FormRequest
 
             // --- Description ---
             'description.string' => 'La description doit être une chaîne de caractères.',
+            'description.max' => 'La description ne doit pas dépasser 255 caractères.',
 
             // --- URLs ---
-            'internal_url.url' => "Le format de l'URL interne est invalide.",
-            'external_url.url' => "Le format de l'URL externe est invalide.",
+            'internal_url.url' => "L'URL interne doit être une adresse http:// ou https:// valide.",
+            'internal_url.max' => "L'URL interne ne doit pas dépasser 255 caractères.",
+            'external_url.url' => "L'URL externe doit être une adresse http:// ou https:// valide.",
+            'external_url.max' => "L'URL externe ne doit pas dépasser 255 caractères.",
 
             // --- Image ---
             'image.mimes' => "L'image doit être au format : jpeg, png, jpg, gif, ico ou webp.",
@@ -63,6 +66,7 @@ class StoreServiceRequest extends FormRequest
 
             // --- Users ---
             'user_id.required' => "Au moins un utilisateur doit être assigné au service.",
+            'user_id.min' => "Au moins un utilisateur doit être assigné au service.",
             'user_id.array' => "Le format de la sélection des utilisateurs est invalide.",
             'user_id.*.exists' => "Un des utilisateurs sélectionnés est invalide ou n'existe pas.",
         ];

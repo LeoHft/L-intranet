@@ -23,8 +23,11 @@ class GetStatisticsRequest extends FormRequest
     {
         return [
             'serviceId' => 'nullable|array',
+            'serviceId.*' => 'integer',
             'userIds' => 'nullable|array',
+            'userIds.*' => 'integer',
             'linkTypes' => 'nullable|array',
+            'linkTypes.*' => 'in:internal,external',
             'startDate' => 'required|date',
             'endDate' => 'required|date|after_or_equal:startDate',
         ];

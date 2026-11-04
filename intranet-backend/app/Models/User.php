@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -14,21 +14,7 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected $fillable = [
         'name',
         'email',
@@ -36,41 +22,53 @@ class User extends Authenticatable implements JWTSubject
         'is_admin',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected $hidden = [
         'password',
         'remember_token',
+        'token_version',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    /** @return array<string, string> */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'must_change_password' => 'boolean',
+            'token_version' => 'integer',
         ];
     }
 
-
-    public function services(): BelongsToMany 
+    public function getJWTIdentifier()
     {
-        return $this->belongsToMany(
-            Services::class, // Modèle associé
-            'services_access', // Nom de la table pivot
-            'user_id', // Clé étrangère du modèle actuel dans la table pivot
-            'service_id' // Clé étrangère du modèle associé dans la table pivot
-        );
+        return $this->getKey();
     }
 
-    public function shortcuts()
+    /** "tv" permet de révoquer tous les tokens d'un utilisateur lors d'un changement de mot de passe. */
+    public function getJWTCustomClaims()
+    {
+        return ['tv' => (int) $this->token_version];
+    }
+
+    /** Change le mot de passe et invalide tous les tokens déjà émis pour cet utilisateur. */
+    public function resetPassword(string $password, bool $mustChange = false): void
+    {
+        $this->forceFill([
+            'password' => $password,
+            'must_change_password' => $mustChange,
+            'token_version' => (int) $this->token_version + 1,
+        ])->save();
+    }
+
+    public function services(): BelongsToMany
+    {
+        return $this->belongsToMany(Services::class, 'services_access', 'user_id', 'service_id');
+    }
+
+    public function shortcuts(): HasMany
     {
         return $this->hasMany(Shortcuts::class, 'user_id');
     }

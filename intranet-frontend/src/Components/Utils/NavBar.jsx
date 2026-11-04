@@ -6,7 +6,7 @@ import { useAuthAttributes } from "@/context/AuthAttributsContext";
 import { logout } from "@/api/modules/users";
 import { HouseWifi, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useState } from "react";
 import IntranetLoader from "./IntranetLoader";
 
@@ -25,17 +25,13 @@ export default function NavBar() {
       loading: "Déconnexion en cours...",
       success: (response) => {
         setIsLoading(false);
-        if (authContext?.FetchUserAttributes) {
-          authContext.FetchUserAttributes();
-        }
+        authContext.FetchUserAttributes();
         navigate("/login");
         return response.message;
       },
       error: (error) => {
         setIsLoading(false);
-        if (authContext?.FetchUserAttributes) {
-          authContext.FetchUserAttributes();
-        }
+        authContext.FetchUserAttributes();
         navigate("/login");
         return error.message;
       },

@@ -1,58 +1,47 @@
 #!/bin/sh
-set -e
+# Génère un certificat auto-signé couvrant SERVER_NAME.
+# Un certificat que vous avez déposé vous-même dans ssl/certs/ n'est jamais remplacé.
+set -eu
 
-SSL_DIR="/ssl"
+CERT=/ssl/certificate.crt
+KEY=/ssl/private.key
+MARKER=/ssl/.self-signed-for
+NAMES="${SERVER_NAME:-localhost}"
 
-echo 'Vérification des certificats SSL...'
-mkdir -p ${SSL_DIR}
-chmod 755 ${SSL_DIR}
-
-if [ -f ${SSL_DIR}/certificate.crt ] && [ -f ${SSL_DIR}/private.key ]; then
-  echo 'Certificats SSL trouvés!'
-  # Vérifier les permissions
-  chmod 644 ${SSL_DIR}/certificate.crt ${SSL_DIR}/private.key
-  exit 0
+if [ -f "$CERT" ] && [ -f "$KEY" ]; then
+    if [ ! -f "$MARKER" ]; then
+        echo "Certificat personnel détecté : conservé."
+        exit 0
+    fi
+    if [ "$(cat "$MARKER")" = "$NAMES" ]; then
+        echo "Certificat auto-signé à jour."
+        exit 0
+    fi
+    echo "SERVER_NAME a changé : régénération du certificat auto-signé."
 fi
 
-echo 'Génération des certificats SSL manquants...'
+SAN="DNS:localhost,IP:127.0.0.1,IP:::1"
+FIRST=""
+for name in $NAMES; do
+    [ -n "$FIRST" ] || FIRST="$name"
+    case "$name" in
+        localhost | 127.0.0.1 | ::1) ;;
+        *:*) SAN="$SAN,IP:$name" ;;
+        *[!0-9.]*) SAN="$SAN,DNS:$name" ;;
+        *) SAN="$SAN,IP:$name" ;;
+    esac
+done
 
-# Copier le fichier openssl.conf s'il n'existe pas dans le volume
-if [ ! -f ${SSL_DIR}/openssl.conf ]; then
-  cp /openssl.conf ${SSL_DIR}/openssl.conf 2>/dev/null || cat > ${SSL_DIR}/openssl.conf << 'EOF'
-[req]
-default_bits = 2048
-prompt = no
-default_md = sha256
-distinguished_name = dn
-req_extensions = v3_req
+openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 3650 \
+    -keyout "$KEY" -out "$CERT" \
+    -subj "/O=L'intranet/CN=$FIRST" \
+    -addext "subjectAltName=$SAN" \
+    -addext "basicConstraints=critical,CA:FALSE" \
+    -addext "keyUsage=critical,digitalSignature,keyEncipherment" \
+    -addext "extendedKeyUsage=serverAuth"
 
-[dn]
-C=FR
-ST=Grand Est
-L=Strasbourg
-O=intranet
-OU=IT Department
-CN=localhost
+chmod 600 "$KEY"
+chmod 644 "$CERT"
+printf '%s' "$NAMES" > "$MARKER"
 
-[v3_req]
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-subjectAltName = @alt_names
-
-[alt_names]
-DNS.1 = localhost
-DNS.2 = www.localhost
-DNS.3 = 127.0.0.1
-DNS.4 = intranet.local
-IP.1 = 127.0.0.1
-IP.2 = ::1
-EOF
-fi
-
-openssl genrsa -out ${SSL_DIR}/private.key 2048
-openssl req -new -x509 -key ${SSL_DIR}/private.key -out ${SSL_DIR}/certificate.crt -days 3650 -config ${SSL_DIR}/openssl.conf -extensions v3_req
-
-chmod 644 ${SSL_DIR}/private.key
-chmod 644 ${SSL_DIR}/certificate.crt
-
-echo 'Certificats générés dans ${SSL_DIR}!'
+echo "Certificat auto-signé généré pour : $NAMES"

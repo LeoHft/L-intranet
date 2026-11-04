@@ -69,21 +69,10 @@ export default function Modal({
           leaveFrom="opacity-100 translate-y-0 sm:scale-100"
           leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
         >
-          <DialogPanel
-            className={`${modalClass} overflow-hidden`}
-            style={{
-              scrollbarWidth: "none" /* Firefox */,
-              msOverflowStyle: "none" /* Internet Explorer 10+ */,
-            }}
-          >
-            <style jsx>
-              {`
-                .modal-box::-webkit-scrollbar {
-                  display: none; /* Safari and Chrome */
-                }
-              `}
-            </style>
+          <DialogPanel className={`${modalClass} overflow-hidden`}>
             <button
+              type="button"
+              aria-label="Fermer"
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
               onClick={close}
             >

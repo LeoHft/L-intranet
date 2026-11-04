@@ -51,9 +51,9 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
     updateColors();
   }, []);
 
-  const { chartData, serviceNames, serviceStats } = useMemo(() => {
+  const { chartData, serviceNames } = useMemo(() => {
     if (!statisticsData || statisticsData.length === 0) {
-      return { chartData: [], serviceNames: [], serviceStats: [] };
+      return { chartData: [], serviceNames: [] };
     }
 
     const datesSet = new Set(statisticsData.map((item) => item.click_date));
@@ -86,7 +86,7 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
       return entry;
     });
 
-    return { chartData, serviceNames, serviceStats };
+    return { chartData, serviceNames };
   }, [statisticsData]);
 
   useEffect(() => {
@@ -288,7 +288,7 @@ export default function ByServicesStackAreaStatistiques({ statisticsData }) {
                   
                   <Legend content={<CustomLegend />} />
 
-                  {displayedServices.slice().reverse().map((service, idx) => {
+                  {displayedServices.slice().reverse().map((service) => {
                     const originalIndex = serviceNames.indexOf(service);
                     // On récupère l'objet couleur correspondant
                     const colorObj = colors[originalIndex % colors.length] || { stroke: '#000' };

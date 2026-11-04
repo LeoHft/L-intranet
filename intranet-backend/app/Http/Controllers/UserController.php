@@ -2,186 +2,171 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Http\Controllers\Controller;
+use App\Http\Middleware\JwtMiddleware;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserFirstLoginRequest;
 use App\Http\Requests\UpdateUserPasswordRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserController extends Controller
 {
-    /**
-     * Récupérer tous les utilisateurs (admin seulement)
-     */
-    public function getUsers()
+    public function getUsers(): JsonResponse
     {
-        $users = User::with('services')->get(['id', 'name', 'email', 'created_at', 'updated_at', 'last_login_at','is_admin']);        
-        
+        $users = User::with('services')->get(['id', 'name', 'email', 'created_at', 'updated_at', 'last_login_at', 'is_admin']);
+
         return response()->json([
             'message' => 'Utilisateurs récupérés avec succès',
-            'data' => $users
-        ], 200);
-    }
-
-    /**
-     * Récupérer les informations de l'utilisateur connecté
-     */
-    public function getCurrentUserInfo()
-    {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-            
-            if (!$user) {
-                return response()->json(['connected' => false]);
-            }
-
-            return response()->json([
-                'message' => 'Informations de l\'utilisateur récupérées avec succès',
-                'connected' => true,
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'is_admin' => $user->is_admin,
-            ]);
-            
-        } catch (JWTException $e) {
-            return response()->json([
-                'connected' => false,
-                'message' => 'Erreur lors de la récupération des informations de l\'utilisateur',
-                'error' => config('app.debug') ? $e->getMessage() : 'Une erreur interne est survenue'
+            'data' => $users,
         ]);
-        }
     }
 
+    public function getCurrentUserInfo(): JsonResponse
+    {
+        $user = JwtMiddleware::resolveUser();
 
-    public function login(LoginRequest $request)
+        if (! $user) {
+            return response()->json(['connected' => false]);
+        }
+
+        return response()->json([
+            'message' => "Informations de l'utilisateur récupérées avec succès",
+            'connected' => true,
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'is_admin' => $user->is_admin,
+            'must_change_password' => $user->must_change_password,
+        ]);
+    }
+
+    public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
+        $user = User::firstWhere('email', $credentials['email']);
 
-        if (! $token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Identifiants invalides'], 401);
+        if (! $user) {
+            // Même durée de traitement qu'un compte existant : évite l'énumération des e-mails.
+            Hash::make($credentials['password']);
         }
 
-        $user = auth()->user();
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+            return response()->json(['message' => 'Identifiants invalides'], 401);
+        }
 
-
-        $isFirstConnection = is_null($user->last_login_at);
-        $token = JWTAuth::claims(['is_admin' => $user->is_admin])->fromUser($user);
         $user->last_login_at = now();
         $user->save();
+
         return response()->json([
-            'message' => $isFirstConnection ? 'connexion reussie, premiere connexion' : 'Connexion réussie',
-            'data' => $token
-        ], 200);
+            'message' => 'Connexion réussie',
+            'data' => JWTAuth::fromUser($user),
+            'must_change_password' => $user->must_change_password,
+        ]);
     }
-    
 
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
-
-        $user = User::create($validatedData);
+        $user = new User($request->validated());
+        $user->must_change_password = true; // Le mot de passe choisi par l'administrateur est provisoire.
+        $user->save();
 
         return response()->json([
             'message' => 'Utilisateur créé avec succès',
-            'data' => $user->makeHidden('password')
+            'data' => $user,
         ], 201);
     }
 
-
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $validatedData = $request->validated();
+        $data = $request->validated();
 
-        $user->update($validatedData);
+        if ($user->is($request->user()) && ! $data['is_admin']) {
+            return response()->json(['message' => 'Vous ne pouvez pas retirer vos propres droits administrateur.'], 422);
+        }
+
+        $password = $data['password'] ?? null;
+        unset($data['password']);
+
+        $user->update($data);
+
+        if ($password) {
+            $user->resetPassword($password, mustChange: true);
+        }
 
         return response()->json([
             'message' => 'Utilisateur modifié avec succès',
-            'data' => $user->fresh()
-        ], 200);
+            'data' => $user->fresh(),
+        ]);
     }
 
-    public function updateCurrentUserFirstLogin(UpdateUserFirstLoginRequest $request)
+    public function updateCurrentUserFirstLogin(UpdateUserFirstLoginRequest $request): JsonResponse
     {
-        $user = auth()->user();
-        
-        $validatedData = $request->validated();
+        $user = $request->user();
 
-        $validatedData['password'] = Hash::make($validatedData['password']);
-        
-        $user->update($validatedData);
-
-        return response()->json([
-            'message' => 'Informations de l\'utilisateur mises à jour avec succès',
-            'data' => $user
-        ], 200);
-    }
-
-
-    public function updateCurrentUser(UpdateUserRequest $request)
-    {
-        $validatedData = $request->validated();
-
-        $user = auth()->user();
-
-        $user->update($validatedData);
-
-        return response()->json([
-            'message' => 'Informations de l\'utilisateur mises à jour avec succès',
-            'data' => $user
-        ], 200);
-    }
-
-
-    public function updateCurrentUserPassword(UpdateUserPasswordRequest $request)
-    {
-        $validatedData = $request->validated();
-
-        $user = auth()->user();
-
-        if (!Hash::check($validatedData['current_password'], $user->password)) {
-            return response()->json(['error' => 'Le mot de passe actuel est incorrect'], 400);
+        // Sans cette garde, ce formulaire permettrait de changer le mot de passe sans fournir l'actuel.
+        if (! $user->must_change_password) {
+            return response()->json(['message' => 'Votre compte est déjà configuré.'], 403);
         }
 
-        $user->password = Hash::make($validatedData['new_password']);
-        $user->save();
+        $data = $request->validated();
+
+        $user->update(['name' => $data['name'], 'email' => $data['email']]);
+        $user->resetPassword($data['password']);
+
         return response()->json([
-            'message' => 'Mot de passe mis à jour avec succès'
-        ], 200);
+            'message' => 'Informations de votre compte mises à jour avec succès',
+            'data' => JWTAuth::fromUser($user),
+        ]);
     }
 
-    
-    public function delete(User $user)
+    public function updateCurrentUser(UpdateUserRequest $request): JsonResponse
     {
+        $user = $request->user();
+        $user->update($request->validated());
+
+        return response()->json([
+            'message' => "Informations de l'utilisateur mises à jour avec succès",
+            'data' => $user,
+        ]);
+    }
+
+    public function updateCurrentUserPassword(UpdateUserPasswordRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $user = $request->user();
+
+        if (! Hash::check($data['current_password'], $user->password)) {
+            return response()->json(['message' => 'Le mot de passe actuel est incorrect'], 422);
+        }
+
+        $user->resetPassword($data['new_password']);
+
+        return response()->json([
+            'message' => 'Mot de passe mis à jour avec succès',
+            'data' => JWTAuth::fromUser($user), // Les anciens tokens viennent d'être révoqués.
+        ]);
+    }
+
+    public function delete(Request $request, User $user): JsonResponse
+    {
+        if ($user->is($request->user())) {
+            return response()->json(['message' => 'Vous ne pouvez pas supprimer votre propre compte.'], 422);
+        }
+
         $user->delete();
 
-        return response()->json([
-            'message' => 'Utilisateur supprimé avec succès',
-        ], 200);
+        return response()->json(['message' => 'Utilisateur supprimé avec succès']);
     }
 
-
-    public function logout()
+    public function logout(): JsonResponse
     {
-        // Récupérer le token depuis l'en-tête Authorization
-        $token = JWTAuth::parseToken();
-        
-        if (!$token) {
-            return response()->json([
-                'message' => 'Token non fourni'
-            ], 401);
-        }
+        JWTAuth::invalidate();
 
-        // Invalider le token
-        JWTAuth::invalidate($token);
-
-        return response()->json([
-            'message' => 'Déconnexion réussie'
-        ], 200);
+        return response()->json(['message' => 'Déconnexion réussie']);
     }
 }

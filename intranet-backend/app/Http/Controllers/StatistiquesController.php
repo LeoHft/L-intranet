@@ -3,87 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GetStatisticsRequest;
-use Illuminate\Http\JsonResponse;
 use App\Models\NumberClickByServiceByUserByDay;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-
 
 class StatistiquesController extends Controller
 {
     public function getStatByUserByServiceByDate(GetStatisticsRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
-        
-        $serviceId = $validatedData['serviceId'] ?? [];
-        $userIds = $validatedData['userIds'] ?? [];
-        $linkTypes = $validatedData['linkTypes'] ?? [];
-        $startDate = $validatedData['startDate'];
-        $endDate = $validatedData['endDate'];
+        $filters = $request->validated();
+        $linkTypes = $filters['linkTypes'] ?? [];
+        $includeInternal = empty($linkTypes) || in_array('internal', $linkTypes, true);
+        $includeExternal = empty($linkTypes) || in_array('external', $linkTypes, true);
+        $clicks = 'number_click_by_service_by_user_by_day';
 
-            // Déterminer quelles colonnes sélectionner selon les linkTypes
-            $selectFields = [
-                'number_click_by_service_by_user_by_day.service_id',
-                'number_click_by_service_by_user_by_day.user_id',
-                'number_click_by_service_by_user_by_day.click_date',
+        $results = NumberClickByServiceByUserByDay::query()
+            ->select([
+                "$clicks.service_id",
+                "$clicks.user_id",
+                "$clicks.click_date",
                 'users.name as user_name',
-                'services.name as service_name'
-            ];
+                'services.name as service_name',
+                // Un type de lien non demandé vaut 0, pour que le frontend reçoive toujours les deux colonnes.
+                DB::raw($includeInternal ? "SUM($clicks.internal_url_click) as internal_url_click" : '0 as internal_url_click'),
+                DB::raw($includeExternal ? "SUM($clicks.external_url_click) as external_url_click" : '0 as external_url_click'),
+            ])
+            ->leftJoin('users', "$clicks.user_id", '=', 'users.id')
+            ->leftJoin('services', "$clicks.service_id", '=', 'services.id')
+            ->whereBetween("$clicks.click_date", [$filters['startDate'], $filters['endDate']])
+            ->when(! empty($filters['serviceId']), fn ($query) => $query->whereIn("$clicks.service_id", $filters['serviceId']))
+            ->when(! empty($filters['userIds']), fn ($query) => $query->whereIn("$clicks.user_id", $filters['userIds']))
+            ->when(! ($includeInternal && $includeExternal), fn ($query) => $query->where(
+                $includeInternal ? "$clicks.internal_url_click" : "$clicks.external_url_click", '>', 0
+            ))
+            ->groupBy("$clicks.service_id", "$clicks.user_id", "$clicks.click_date", 'users.name', 'services.name')
+            ->get();
 
-            $includeInternal = empty($linkTypes) || in_array('internal', $linkTypes);
-            $includeExternal = empty($linkTypes) || in_array('external', $linkTypes);
-
-            if ($includeInternal) {
-                $selectFields[] = DB::raw('SUM(number_click_by_service_by_user_by_day.internal_url_click) as internal_url_click');
-            }
-
-            if ($includeExternal) {
-                $selectFields[] = DB::raw('SUM(number_click_by_service_by_user_by_day.external_url_click) as external_url_click');
-            }
-
-            $query = NumberClickByServiceByUserByDay::query()
-                ->select($selectFields)
-                ->leftJoin('users', 'number_click_by_service_by_user_by_day.user_id', '=', 'users.id')
-                ->leftJoin('services', 'number_click_by_service_by_user_by_day.service_id', '=', 'services.id')
-                ->whereBetween('number_click_by_service_by_user_by_day.click_date', [$startDate, $endDate]);
-
-            
-            if (!empty($serviceId)) {
-                $query->whereIn('number_click_by_service_by_user_by_day.service_id', $serviceId);
-            }
-
-            if (!empty($userIds)) {
-                $query->whereIn('number_click_by_service_by_user_by_day.user_id', $userIds);
-            }
-
-            
-            if (!empty($linkTypes)) {
-                if ($includeInternal && !$includeExternal) {
-                    // Seulement internal : filtrer les lignes avec clics internes > 0
-                    $query->where('number_click_by_service_by_user_by_day.internal_url_click', '>', 0);
-                } elseif ($includeExternal && !$includeInternal) {
-                    // Seulement external : filtrer les lignes avec clics externes > 0
-                    $query->where('number_click_by_service_by_user_by_day.external_url_click', '>', 0);
-                } elseif ($includeInternal && $includeExternal) {
-                    // Les deux : au moins un des deux types doit avoir des clics
-                    $query->where(function($q) {
-                        $q->where('number_click_by_service_by_user_by_day.internal_url_click', '>', 0)
-                        ->orWhere('number_click_by_service_by_user_by_day.external_url_click', '>', 0);
-                    });
-                }
-            }
-
-            $results = $query->groupBy(
-                'number_click_by_service_by_user_by_day.service_id',
-                'number_click_by_service_by_user_by_day.user_id',
-                'number_click_by_service_by_user_by_day.click_date',
-                'users.name',
-                'services.name'
-            )->get();
-
-            return response()->json([
-                'message' => 'Statistiques récupérées avec succès',
-                'data' => $results
-            ], 200);
-            
+        return response()->json([
+            'message' => 'Statistiques récupérées avec succès',
+            'data' => $results,
+        ]);
     }
 }

@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
+// Le serveur de développement est atteint à travers nginx (voir docker-compose.dev.yml).
+const serverNames = (process.env.SERVER_NAME || 'localhost').split(/\s+/).filter(Boolean)
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -17,18 +20,14 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    strictPort: true,
+    allowedHosts: serverNames,
     watch: {
       usePolling: true,
     },
-    cors: true,
     hmr: {
       protocol: 'wss',
-      host: 'localhost',
-      clientPort: 8443,
+      clientPort: Number(process.env.HTTPS_PORT || 443),
     },
-  },
-  preview: {
-    host: '0.0.0.0',
-    port: 5173,
   },
 })

@@ -1,14 +1,15 @@
-import * as Icons from "lucide-react";
 import Shortcut from "@/Components/Utils/Shortcut";
 import {
   getUserShortcuts,
   addShortcut,
   deleteShortcut,
 } from "@/api/modules/shortcut";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
 import { motion } from "motion/react";
+import { getIcon, iconNames } from "@/utils/icons";
 
 export default function ListShortcuts() {
   const [shortcuts, setShortcuts] = useState([]);
@@ -26,9 +27,7 @@ export default function ListShortcuts() {
       .then((response) => {
         setShortcuts(response.data);
       })
-      .catch((error) => {
-        console.error("Erreur lors de la récupération des shortcuts:", error);
-      });
+      .catch((error) => toast.error(error.message));
   };
 
   const showAddShortcutForm = () => {
@@ -46,7 +45,7 @@ export default function ListShortcuts() {
         setShowAddShortcut(false);
       })
       .catch((error) => {
-        console.error("Erreur lors de l'ajout du shortcut:", error);
+        toast.error(error.message);
         setIsLoading(false);
       });
   };
@@ -56,18 +55,11 @@ export default function ListShortcuts() {
       .then(() => {
         setShortcuts(shortcuts.filter((shortcut) => shortcut.id !== id));
       })
-      .catch((error) => {
-        console.error("Erreur lors de la suppression du shortcut:", error);
-      });
+      .catch((error) => toast.error(error.message));
   };
 
-  // Récupérer toutes les icônes disponibles
-  const availableIcons = Object.keys(Icons).filter(
-    (key) => key !== "createLucideIcon" && key !== "default"
-  );
-
   // Filtrer les icônes selon la recherche
-  const filteredIcons = availableIcons.filter((iconName) =>
+  const filteredIcons = iconNames.filter((iconName) =>
     iconName.toLowerCase().includes(iconSearch.toLowerCase())
   );
 
@@ -165,7 +157,7 @@ export default function ListShortcuts() {
               />
               <div className="grid grid-cols-6 gap-2 max-h-60 overflow-y-auto border rounded p-2">
                 {filteredIcons.slice(0, 48).map((iconName) => {
-                  const IconComponent = Icons[iconName];
+                  const IconComponent = getIcon(iconName);
                   return (
                     <button
                       key={iconName}

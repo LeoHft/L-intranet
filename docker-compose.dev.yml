@@ -1,0 +1,52 @@
+# Surcharge de développement, activée par "./setup.sh --dev" (COMPOSE_FILE dans .env).
+# Code monté depuis l'hôte, rechargement à chaud, phpMyAdmin. Ne pas exposer sur un réseau :
+# les ports d'administration sont volontairement limités à 127.0.0.1.
+
+services:
+  intranetDB:
+    ports:
+      - "127.0.0.1:${DB_PORT:-3307}:3306"
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PMA_PORT:-8080}:80"
+    environment:
+      PMA_HOST: intranetDB
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+    depends_on:
+      - intranetDB
+    networks:
+      - intranet
+
+  intranet-backend:
+    build:
+      target: dev
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      LOG_LEVEL: debug
+    volumes:
+      - ./intranet-backend:/var/www/html
+
+  intranet-frontend:
+    build:
+      context: ./intranet-frontend
+      target: dev
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      HTTPS_PORT: ${HTTPS_PORT:-443}
+    volumes:
+      - ./intranet-frontend:/var/www/intranet-frontend
+      - /var/www/intranet-frontend/node_modules
+    networks:
+      - intranet
+
+  nginx:
+    build:
+      target: nginx-dev
+    environment:
+      NGINX_MODE: dev

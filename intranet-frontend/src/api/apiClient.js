@@ -1,40 +1,45 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+export const AUTH_TOKEN_KEY = "auth_token";
 
+// Le frontend et l'API sont servis sur la même origine par nginx.
 export const apiClient = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 5000,
+  baseURL: "/api",
+  timeout: 30000,
 });
 
-apiClient.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("auth_token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+const getErrorMessage = (error) => {
+  const { response } = error;
+  if (!response) {
+    return "Le serveur est injoignable. Réessayez dans quelques instants.";
+  }
+  if (response.status >= 500) {
+    return "Le serveur a rencontré une erreur. Réessayez dans quelques instants.";
+  }
+  const firstValidationError = response.data?.errors && Object.values(response.data.errors)[0]?.[0];
+  return firstValidationError || response.data?.message || response.data?.error || "Une erreur inattendue est survenue.";
+};
 
 apiClient.interceptors.response.use(
-    (response) => {
-        return response;
-    },
-    (error) => {
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-            console.warn("Session expirée, déconnexion...");
-            localStorage.removeItem("auth_token");
-        }
-
-
-        const errorMessage = 
-            error.response?.data?.message || 
-            error.response?.data?.error || 
-            "Une erreur inattendue est survenue.";
-
-        console.error("Erreur API:", errorMessage);
-        return Promise.reject(new Error(errorMessage));
+  (response) => response,
+  (error) => {
+    // Session expirée ou révoquée. Le 401 de /login signale seulement de mauvais identifiants.
+    if (error.response?.status === 401 && error.config?.url !== "/login" && localStorage.getItem(AUTH_TOKEN_KEY)) {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      window.location.assign("/login");
     }
+
+    const apiError = new Error(getErrorMessage(error));
+    apiError.status = error.response?.status;
+    apiError.errors = error.response?.data?.errors ?? {}; // Erreurs de validation, par champ
+    return Promise.reject(apiError);
+  }
 );

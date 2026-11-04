@@ -49,52 +49,105 @@ Vous hébergez plusieurs services chez vous (Homelab) ? Vous en avez assez de g�
 
 ---
 
-## 🛠️ Installation & Configuration étape par étape
-/!\ Vous avez besoin de docker compose installé.
+## 🛠️ Installation
 
-1) ```sh 
-    git clone https://github.com/LeoHft/L-intranet.git
-    ```
+Il vous faut [Docker](https://docs.docker.com/get-docker/) avec Docker Compose. Sous Windows, lancez les commandes depuis WSL ou Git Bash.
 
-2) ```sh
-    cd ./L-intranet/
-    ```
+```sh
+git clone https://github.com/LeoHft/L-intranet.git
+cd L-intranet
+./setup.sh
+```
 
-3) ```sh
-    cp ./env/.env.prod .env
-    ```
+Le script vous demande l'adresse de l'intranet et un e-mail d'administrateur, génère tous les secrets, puis démarre l'application. À la fin, il affiche l'adresse à ouvrir et un mot de passe provisoire.
 
-4) ```sh
-    vi .env 
-    ```
-    Et modifiez la variable `SERVER_NAME` et `DB_PASSWORD`. Suivez les instructions `#TODO` pour plus d'explications.
+À la première connexion, l'application vous demande de choisir votre propre mot de passe (12 caractères minimum). Votre navigateur affichera un avertissement, car le certificat est auto-signé : acceptez-le, ou [utilisez votre propre certificat](#utiliser-votre-propre-certificat).
 
-5) ```sh
-    cp intranet-backend/.env.example ./intranet-backend/.env
-    ```
+Pour une installation sans question :
 
-6) ```sh
-    vi intranet-backend/.env
-    ```
-    Et modifiez la variable `APP_URL` et `DB_PASSWORD`. Suivez les instruction `#TODO` pour plus d'explications.
+```sh
+SERVER_NAME=192.168.1.20 ADMIN_EMAIL=moi@example.com ./setup.sh -y
+```
 
-7) ```sh
-    cp ./intranet-frontend/.env.example ./intranet-frontend/.env
-    ```
+Si les ports 80 ou 443 sont déjà pris, ajoutez par exemple `HTTP_PORT=8088 HTTPS_PORT=8443` devant la commande.
 
-8) ```sh
-    vi ./intranet-frontend/.env
-    ```
-    Et modifiez la variable `VITE_API_URL`. Suivez l'instruction `#TODO` pour plus d'explications. 
+---
 
-9) ```sh
-    docker compose up --build -d
-    ```
+## Configuration
 
-10) Une fois l'application construite, accédez à l'application par l'IP / nom de domaine que vous avez noté dans le .env de l'étape `4` par exemple `https://192.168.15.12` ou `https://intranet.com` (attention à mettre seulement l'IP / nom de domaine dans l'étpae `4` et non pas l'url entière).
+Toute la configuration tient dans le fichier `.env` à la racine, généré par `setup.sh`. Ne le partagez pas : il contient vos secrets. Après une modification, appliquez-la avec `docker compose up -d`.
 
-11) Une fois que vous accédez à l'application, connectez vous avec `admin@example.com` et `password`, un formulaire s'ouvrira pour modifier les informations de l'utilisateur admin (nom, mail, mot de passe).
+| Variable | Rôle |
+| --- | --- |
+| `SERVER_NAME` | IP ou nom de domaine, sans `https://`. Plusieurs valeurs possibles, séparées par des espaces et entre guillemets. |
+| `HTTP_PORT`, `HTTPS_PORT` | Ports exposés sur la machine hôte. |
+| `JWT_TTL` | Durée d'une session, en minutes (2 semaines si absent). |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Compte créé au tout premier démarrage. Ce mot de passe ne sert plus après la première connexion. |
 
-12) Vous êtes prêt à utiliser l'application.
+### Utiliser votre propre certificat
 
+Déposez `certificate.crt` et `private.key` dans `ssl/certs/`, supprimez `ssl/certs/.self-signed-for`, puis lancez `docker compose restart nginx`. Votre certificat ne sera jamais remplacé.
 
+Le certificat auto-signé est régénéré automatiquement si `SERVER_NAME` change.
+
+---
+
+## Utilisation au quotidien
+
+| Besoin | Commande |
+| --- | --- |
+| Voir les journaux | `docker compose logs -f` |
+| Arrêter | `docker compose down` |
+| Mettre à jour | `git pull && docker compose up -d --build` |
+| Réinitialiser un mot de passe perdu | `docker compose exec intranet-backend php artisan intranet:reset-password moi@example.com` |
+
+Un administrateur peut aussi réinitialiser le mot de passe d'un utilisateur depuis l'onglet **Utilisateurs**.
+
+**À sauvegarder :** le fichier `.env`, le dossier `intranetDB_data/` (la base de données) et `intranet-backend/storage/app/public/` (les images).
+
+---
+
+## Mettre à jour une ancienne installation
+
+Si votre installation utilise encore `env/.env.prod` et plusieurs fichiers `.env`, lancez :
+
+```sh
+git pull
+./setup.sh
+```
+
+Le script sauvegarde votre ancien `.env`, reprend vos réglages et conserve vos données. Les fichiers `intranet-backend/.env` et `intranet-frontend/.env` ne servent plus et peuvent être supprimés. La migration oblige l'administrateur par défaut à changer son mot de passe s'il utilisait encore `password`, ainsi que les comptes jamais utilisés.
+
+Votre base continue alors à utiliser le compte `root`, avec le mot de passe de l'ancien fichier. **Si c'était le mot de passe par défaut du dépôt, changez-le.** Pour passer à un compte dédié, ouvrez une console avec `docker compose exec intranetDB mariadb -uroot -p`, puis exécutez :
+
+```sql
+CREATE USER 'intranet'@'%' IDENTIFIED BY 'mot-de-passe-applicatif';
+GRANT ALL PRIVILEGES ON intranet.* TO 'intranet'@'%';
+ALTER USER 'root'@'%' IDENTIFIED BY 'nouveau-mot-de-passe-root';
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'nouveau-mot-de-passe-root';
+```
+
+Reportez ensuite ces valeurs dans `.env` (`DB_USERNAME=intranet`, `DB_PASSWORD`, `DB_ROOT_PASSWORD`) et lancez `docker compose up -d`.
+
+---
+
+## Développement
+
+```sh
+./setup.sh --dev
+```
+
+Ce mode monte le code depuis votre machine, active le rechargement à chaud de Vite et ajoute phpMyAdmin sur <http://127.0.0.1:8080> et la base sur `127.0.0.1:3307`. Ne l'utilisez pas en production : phpMyAdmin s'y connecte automatiquement en root. `./setup.sh --prod` revient au mode production.
+
+```sh
+docker compose exec intranet-backend php artisan test    # Tests du backend
+docker compose exec intranet-frontend npm run lint       # Lint du frontend
+```
+
+---
+
+## Sécurité
+
+- **Exposition :** seuls les ports 80 et 443 sont ouverts en production. Pour un accès depuis Internet, préférez un VPN, ou placez l'intranet derrière un reverse proxy avec un vrai certificat.
+- **Comptes :** les mots de passe provisoires doivent être changés avant tout accès. Changer un mot de passe déconnecte toutes les sessions du compte. Les tentatives de connexion sont limitées à 5 par minute.
+- **Recherche :** la barre de recherche de l'interface envoie vos requêtes à Google.

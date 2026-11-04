@@ -1,29 +1,30 @@
 import InputLabel from "@/Components/Utils/InputLabel";
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
-import { useAuthAttributes } from "@/context/AuthAttributsContext";
+import InputError from "@/Components/Utils/InputError";
+import { AUTH_TOKEN_KEY } from "@/api/apiClient";
 import { updateCurrentUserPassword } from "@/api/modules/users";
 
-import { useRef, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function UpdatePasswordForm() {
-  const authContext = useAuthAttributes();
-  const passwordInput = useRef();
-  const currentPasswordInput = useRef();
-
-  const [data, setData] = useState({
+  const emptyForm = {
     current_password: "",
     new_password: "",
     new_password_confirmation: "",
-  });
+  };
+  const [data, setData] = useState(emptyForm);
+  const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
 
   const updatePassword = async (e) => {
     e.preventDefault();
+    setErrors({});
     setProcessing(true);
 
     const handleSuccess = (response) => {
-      authContext.FetchUserAttributes(); // Met à jour les attributs de l'utilisateur dans le contexte
+      localStorage.setItem(AUTH_TOKEN_KEY, response.data); // Les anciens tokens sont révoqués.
+      setData(emptyForm);
       setProcessing(false);
       return response.message;
     };
@@ -33,6 +34,7 @@ export default function UpdatePasswordForm() {
       success: handleSuccess,
       error: (error) => {
         setProcessing(false);
+        setErrors(error.errors ?? {});
         return error.message;
       },
     });
@@ -57,7 +59,6 @@ export default function UpdatePasswordForm() {
             />
             <input
               id="current_password"
-              ref={currentPasswordInput}
               value={data.current_password}
               onChange={(e) =>
                 setData({ ...data, current_password: e.target.value })
@@ -66,13 +67,13 @@ export default function UpdatePasswordForm() {
               className="w-full input input-bordered focus:input-primary"
               autoComplete="current-password"
             />
+            <InputError message={errors.current_password?.[0]} className="mt-2" />
           </div>
 
           <div className="form-control">
-            <InputLabel htmlFor="password" value="Nouveau mot de passe" />
+            <InputLabel htmlFor="password" value="Nouveau mot de passe (12 caractères minimum)" />
             <input
               id="password"
-              ref={passwordInput}
               value={data.new_password}
               onChange={(e) =>
                 setData({ ...data, new_password: e.target.value })
@@ -81,6 +82,7 @@ export default function UpdatePasswordForm() {
               className="w-full input input-bordered focus:input-primary"
               autoComplete="new-password"
             />
+            <InputError message={errors.new_password?.[0]} className="mt-2" />
           </div>
 
           <div className="form-control">
@@ -105,7 +107,6 @@ export default function UpdatePasswordForm() {
           </div>
         </form>
       </div>
-      <Toaster />
     </section>
   );
 }

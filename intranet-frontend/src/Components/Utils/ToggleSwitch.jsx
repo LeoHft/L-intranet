@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { HouseWifi } from "lucide-react";
 
 export default function ToggleSwitch() {

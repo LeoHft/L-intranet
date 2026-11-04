@@ -1,4 +1,4 @@
-import { apiClient } from '@/api/apiClient';
+import { apiClient, AUTH_TOKEN_KEY } from '@/api/apiClient';
 
 
 export const getCurrentUserInfo = async () => {
@@ -47,11 +47,10 @@ export const deleteUser = async (userId) => {
 }
 
 export const logout = async () => {
-  console.log("Déconnexion en cours ...");
   try {
     const response = await apiClient.post('/logout');
     return response.data;
   } finally {
-    localStorage.removeItem("auth_token");
+    localStorage.removeItem(AUTH_TOKEN_KEY);
   }
 };

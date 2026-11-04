@@ -3,13 +3,13 @@ node_modules
 .git
 .gitignore
 .env
-.env.example
-README.md
+.env.*
 *.log
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
+storage/app/public/*
 bootstrap/cache/*
 public/storage
 .DS_Store

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion"; // Note: assurez-vous d'utiliser 'framer-motion' ou 'motion/react' selon votre version
+import { motion } from "motion/react";
 import { useEffect } from "react";
 
 export default function IntranetLoader() {

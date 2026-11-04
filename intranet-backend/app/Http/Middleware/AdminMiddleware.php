@@ -8,18 +8,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->is_admin) {
-            return $next($request);
-
+        if (! $request->user()?->is_admin) {
+            return response()->json(['message' => 'Accès réservé aux administrateurs.'], 403);
         }
 
-        abort(403, 'Accès non autorisé, sorry bro.');
+        return $next($request);
     }
 }

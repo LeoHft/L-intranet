@@ -5,7 +5,7 @@ import ThemeSettings from "@/Components/Utils/ThemeSettings";
 
 import { useEffect } from "react";
 
-export default function Edit({ mustVerifyEmail, status }) {
+export default function Edit() {
   useEffect(() => {
     document.title = "Profil - Intranet";
   }, []);
@@ -20,11 +20,7 @@ export default function Edit({ mustVerifyEmail, status }) {
             <ThemeSettings />
           </div>
           <div>
-            <UpdateProfileInformationForm
-              mustVerifyEmail={mustVerifyEmail}
-              status={status}
-              className="max-w-xl"
-            />
+            <UpdateProfileInformationForm />
           </div>
 
           <div>

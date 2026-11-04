@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class StoreUserRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'is_admin' => 'required|boolean',
         ];
     }
@@ -47,7 +48,7 @@ class StoreUserRequest extends FormRequest
             // --- Password ---
             'password.required' => 'Le mot de passe est obligatoire.',
             'password.string' => 'Le mot de passe doit être une chaîne de caractères.',
-            'password.min' => 'Le mot de passe doit contenir au moins 6 caractères.',
+            'password.min' => 'Le mot de passe doit contenir au moins :min caractères.',
             'password.confirmed' => 'Les mots de passes ne correspondent pas.',
 
             // --- Is Admin ---

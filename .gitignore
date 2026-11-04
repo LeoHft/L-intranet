@@ -7,12 +7,11 @@
 
 # Environment variables
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
 # SSL Certificates
-ssl/certificate.crt
-ssl/private.key
+ssl/certs/
 *.pem
 
 # Database data
@@ -43,8 +42,10 @@ intranet-backend/storage/logs/*
 intranet-backend/storage/framework/cache/*
 intranet-backend/storage/framework/sessions/*
 intranet-backend/storage/framework/views/*
-!intranet-backend/storage/.gitkeep
-!intranet-backend/storage/logs/.gitkeep
+!intranet-backend/storage/framework/cache/.gitignore
+!intranet-backend/storage/framework/sessions/.gitignore
+!intranet-backend/storage/framework/views/.gitignore
+!intranet-backend/storage/logs/.gitignore
 intranet-backend/.env.backup
 intranet-backend/.phpunit.result.cache
 

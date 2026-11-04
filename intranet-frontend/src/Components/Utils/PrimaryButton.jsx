@@ -8,9 +8,7 @@ export default function PrimaryButton({
     <button
       {...props}
       className={
-        `btn btn-primary btn-sm uppercase tracking-widest ${
-          disabled && "btn-disabled"
-        } ` + className
+        `btn btn-primary btn-sm uppercase tracking-widest ${disabled ? "btn-disabled" : ""} ` + className
       }
       disabled={disabled}
     >

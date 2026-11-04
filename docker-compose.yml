@@ -1,133 +1,107 @@
+# Production. Lancez ./setup.sh pour générer le fichier .env, puis : docker compose up -d --build
+# Mode développement : voir docker-compose.dev.yml
+
 services:
-
-# =========== CERTIFICATS SSL ===========
-
   ssl-init:
-    build:
-      context: ./ssl
-      dockerfile: Dockerfile
-    container_name: intranet-ssl-init
+    build: ./ssl
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}
     volumes:
-      - ssl-certs:/ssl
-
-
-
-# =========== Databases ===========
+      - ./ssl/certs:/ssl
 
   intranetDB:
     image: mariadb:10.11
-    container_name: intranetDB
-    ports:
-      - "3307:3306"    
-    restart: always
+    restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
-      MARIADB_DATABASE: 'intranet'
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Fichier .env incomplet, lancez ./setup.sh}
+      MARIADB_DATABASE: intranet
+      MARIADB_USER: ${DB_USERNAME:-intranet}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Fichier .env incomplet, lancez ./setup.sh}
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 10
+      start_period: 30s
     volumes:
       - ./intranetDB_data:/var/lib/mysql
     networks:
-      - intra-net
+      - intranet
 
-#=========== Administration =========== 
-
-  phpmyadmin:
-    profiles:
-      - dev
-    image: phpmyadmin
-    restart: always
-    ports:
-      - 8080:80
-    environment:
-      - PMA_ARBITRARY=1
-      - PMA_HOST=intranetDB
-      - PMA_USER=root
-      - PMA_PASSWORD=${DB_PASSWORD}
+  intranet-backend:
+    build:
+      context: ./intranet-backend
+      target: prod
+    restart: unless-stopped
     depends_on:
-      - intranetDB
+      intranetDB:
+        condition: service_healthy
+    environment:
+      APP_NAME: intranet-backend
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_LOCALE: fr
+      APP_URL: ${APP_URL:-https://localhost}
+      APP_KEY: ${APP_KEY:?Fichier .env incomplet, lancez ./setup.sh}
+      JWT_SECRET: ${JWT_SECRET:?Fichier .env incomplet, lancez ./setup.sh}
+      JWT_TTL: ${JWT_TTL:-20160} # 2 semaines, en minutes
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      DB_CONNECTION: mariadb
+      DB_HOST: intranetDB
+      DB_PORT: 3306
+      DB_DATABASE: intranet
+      DB_USERNAME: ${DB_USERNAME:-intranet}
+      DB_PASSWORD: ${DB_PASSWORD}
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      SESSION_DRIVER: array
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      FILESYSTEM_DISK: local
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', 9000) ? 0 : 1);"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 180s
+    volumes:
+      - ./intranet-backend/storage/app/public:/var/www/html/storage/app/public
     networks:
-      - intra-net
+      - intranet
 
   nginx:
-    container_name: nginx
-    image: nginx:latest
+    build:
+      context: ./intranet-frontend
+      target: prod
+    restart: unless-stopped
     ports:
-      - "80:80"     # Port HTTP standard
-      - "443:443"   # Port HTTPS standard
-      - "8088:80"   # Port HTTP alternatif (même service)
-      - "8443:443"  # Port HTTPS alternatif (même service)
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
     depends_on:
       ssl-init:
         condition: service_completed_successfully
       intranet-backend:
-        condition: service_started
-      intranet-frontend:
-        condition: service_started
-    networks:
-      - intra-net
+        condition: service_healthy
     environment:
-      - NODE_ENV=${NODE_ENV:-dev}
-      - SERVER_NAME=${SERVER_NAME:-localhost}
-    entrypoint: ["/docker-entrypoint.sh"]
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      HTTPS_PORT: ${HTTPS_PORT:-443}
+      NGINX_MODE: prod
+    entrypoint: ["/bin/sh", "/opt/nginx/docker-entrypoint.sh"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "--no-check-certificate", "https://127.0.0.1/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf.template:ro
-      - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
-      - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf:ro
-      - ssl-certs:/etc/nginx/ssl:ro
-      - ./intranet-backend:/var/www/intranet-backend:ro
-      - ./intranet-frontend/dist:/var/www/intranet-frontend/dist:ro
-
-
-  intranet-backend:
-    container_name: intranet-backend
-    build: 
-      context: ./intranet-backend
-      dockerfile: Dockerfile
-    depends_on:
-      intranetDB:
-        condition: service_healthy 
+      - ./nginx:/opt/nginx:ro
+      - ./ssl/certs:/etc/nginx/ssl:ro
+      - ./intranet-backend/storage/app/public:/var/www/storage:ro
     networks:
-      - intra-net
-    volumes:
-      - ./intranet-backend:/var/www/html
-      - ./etc/php/php.ini:/usr/local/etc/php/conf.d/php.ini
-
-  intranet-frontend:
-    container_name: intranet-frontend
-    build:
-      context: ./intranet-frontend
-      dockerfile: Dockerfile
-      args:
-        NODE_ENV: ${NODE_ENV:-dev}
-    environment:
-      NODE_ENV: ${NODE_ENV:-dev}
-    command: npm run ${NODE_ENV:-dev}
-    networks:
-      - intra-net
-    volumes:
-      - ./intranet-frontend:/var/www/intranet-frontend
-      - /var/www/intranet-frontend/node_modules
-    develop:
-      watch:
-        - action: sync
-          path: ./intranet-frontend
-          target: /var/www/intranet-frontend
-          ignore:
-            - node_modules/**
-            - dist/**
-        - action: rebuild
-          path: ./intranet-frontend/package.json
+      - intranet
 
 networks:
-  intra-net:
-    name: intra-net
+  intranet:
     driver: bridge
-
-volumes:
-  ssl-certs:
-    name: intranet-ssl-certs
-    

@@ -120,3 +120,12 @@ html {
   overflow-y: scroll;
 }
 
+
+/* Barre de défilement masquée dans les modales */
+.modal-box {
+  scrollbar-width: none;
+}
+
+.modal-box::-webkit-scrollbar {
+  display: none;
+}
