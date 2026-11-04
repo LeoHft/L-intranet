@@ -4,13 +4,14 @@ export default function ResumeTabStatistiques({ statisticsData }) {
       {/* Affichage des résultats */}
       {statisticsData && statisticsData.length > 0 ? (
         <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
+          <div className="card-body p-4 sm:p-8">
             <div className="card-title justify-between mb-6">
-              <h3 className="text-2xl">Tableau des statistiques</h3>
+              <h3 className="text-xl sm:text-2xl">Tableau des statistiques</h3>
             </div>
 
-            <div className="card bg-base-200 p-6">
-              <table className="table table-zebra">
+            <div className="card bg-base-200 p-2 sm:p-6">
+              <div className="overflow-x-auto">
+              <table className="table table-zebra table-sm sm:table-md">
                 <thead>
                   <tr>
                     <th>Service</th>
@@ -41,9 +42,10 @@ export default function ResumeTabStatistiques({ statisticsData }) {
                   ))}
                 </tbody>
               </table>
+              </div>
 
               {/* Résumé */}
-              <div className="stats stats-vertical lg:stats-horizontal shadow mt-6">
+              <div className="stats stats-vertical lg:stats-horizontal w-full shadow mt-6">
                 <div className="stat">
                   <div className="stat-title">Total accès internes</div>
                   <div className="stat-value text-primary">

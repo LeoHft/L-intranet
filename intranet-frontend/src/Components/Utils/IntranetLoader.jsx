@@ -32,7 +32,7 @@ export default function IntranetLoader() {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="card glass w-96 z-10 relative overflow-hidden"
+        className="card glass w-[calc(100%-2rem)] max-w-96 z-10 relative overflow-hidden"
       >
         <div className="card-body items-center text-center py-10">
           {/* Titre avec dégradé */}

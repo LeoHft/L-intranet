@@ -69,11 +69,11 @@ export default function Modal({
           leaveFrom="opacity-100 translate-y-0 sm:scale-100"
           leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
         >
-          <DialogPanel className={`${modalClass} overflow-hidden`}>
+          <DialogPanel className={`${modalClass} max-h-[90dvh] overflow-y-auto`}>
             <button
               type="button"
               aria-label="Fermer"
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              className="btn btn-sm btn-circle absolute right-2 top-2 z-10 border-0 bg-base-100/70 backdrop-blur-sm"
               onClick={close}
             >
               ✕

@@ -21,15 +21,15 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="container mx-auto px-2 mt-4 sm:mt-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
+      <div className="container mx-auto mt-4 sm:mt-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 sm:mb-6 space-y-4 lg:space-y-0">
           <div className="flex items-center justify-between w-full">
             <div className="text-left">
               <p className="font-serif text-3xl">Bonjour,</p>
               <p className="font-serif text-2xl">{user.name}</p>
             </div>
 
-            <div className="flex md:hidden ml-4">
+            <div className="flex lg:hidden ml-4">
               <button
                 onClick={() => setShowingFilters(!showingFilters)}
                 className="btn btn-ghost btn-circle"
@@ -45,7 +45,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className={`w-full md:block ${showingFilters ? "block" : "hidden"}`}>
+          <div className={`w-full lg:block ${showingFilters ? "block" : "hidden"}`}>
             <FilterServices
               selectedCategories={selectedCategories}
               setSelectedCategories={setSelectedCategories}

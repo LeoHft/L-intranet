@@ -5,6 +5,7 @@ import { updateCategory } from "@/api/modules/category";
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 export default function ModifyCategoryForm({ category, onClose, onSuccess }) {
   const [data, setData] = useState({
@@ -38,9 +39,8 @@ export default function ModifyCategoryForm({ category, onClose, onSuccess }) {
     }
 
     setIsLoading(true);
-    toast.promise(updateCategory(data, category.id), {
-      loading: "Modification de la catégorie en cours ...",
-      success: (response) => {
+    notifyErrors(updateCategory(data, category.id), {
+      success: () => {
         setIsLoading(false);
         reset();
         if (onClose) {
@@ -49,7 +49,6 @@ export default function ModifyCategoryForm({ category, onClose, onSuccess }) {
         if (onSuccess) {
           onSuccess(); // Rafraîchit la liste
         }
-        return response.message;
       },
       error: (error) => {
         setIsLoading(false);

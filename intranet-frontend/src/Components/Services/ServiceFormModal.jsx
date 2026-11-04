@@ -5,13 +5,29 @@ import useSelectOptions from "@/hooks/useSelectOptions";
 import { getAllStatus } from "@/api/modules/status";
 import { getAllCategory } from "@/api/modules/category";
 import { getUsers } from "@/api/modules/users";
-import { editService, storeService } from "@/api/modules/services";
+import UsedAddresses from "@/Components/Services/UsedAddresses";
+import { editService, getAllServices, storeService } from "@/api/modules/services";
+import { servicesUsingAddress } from "@/utils/sortServices";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { Camera } from "lucide-react";
+import notifyErrors from "@/utils/notifyErrors";
+import { Camera, TriangleAlert } from "lucide-react";
 
 const toOptions = (items) => items?.map((item) => ({ value: item.id, label: item.name })) ?? [];
+
+// Simple avertissement : deux services peuvent partager une adresse, par exemple derrière un proxy.
+function AddressWarning({ url, services }) {
+  const used = servicesUsingAddress(url, services);
+  if (used.length === 0) return null;
+
+  return (
+    <p role="status" className="mt-1 flex items-start gap-1 text-sm text-warning">
+      <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+      <span>Adresse et port déjà utilisés par : {used.map((service) => service.name).join(", ")}</span>
+    </p>
+  );
+}
 
 // Formulaire de création, ou de modification si "service" est fourni.
 export default function ServiceFormModal({ service, onClose, onSuccess }) {
@@ -33,6 +49,16 @@ export default function ServiceFormModal({ service, onClose, onSuccess }) {
   const categories = useSelectOptions(getAllCategory);
   const status = useSelectOptions(getAllStatus);
   const users = useSelectOptions(getUsers);
+
+  // Les autres services : en modification, un service n'entre pas en conflit avec lui-même.
+  const [otherServices, setOtherServices] = useState([]);
+  const serviceId = service?.id;
+
+  useEffect(() => {
+    notifyErrors(getAllServices(), {
+      success: (response) => setOtherServices(response.data.filter((other) => other.id !== serviceId)),
+    });
+  }, [serviceId]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -64,13 +90,11 @@ export default function ServiceFormModal({ service, onClose, onSuccess }) {
     }
 
     setIsLoading(true);
-    toast.promise(isEditing ? editService(formData, service.id) : storeService(formData), {
-      loading: isEditing ? "Modification du service en cours ..." : "Ajout du service en cours ...",
-      success: (response) => {
+    notifyErrors(isEditing ? editService(formData, service.id) : storeService(formData), {
+      success: () => {
         setIsLoading(false);
         onClose();
         onSuccess?.();
-        return response.message;
       },
       error: (error) => {
         setIsLoading(false);
@@ -81,7 +105,7 @@ export default function ServiceFormModal({ service, onClose, onSuccess }) {
 
   return (
     <Modal show={true} onClose={onClose}>
-      <div className="max-h-[90vh] overflow-y-auto">
+      <div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <h1 className="text-lg font-medium">{isEditing ? "Modifier un service" : "Ajouter un service"}</h1>
           <div className="flex flex-row items-center gap-4">
@@ -140,6 +164,13 @@ export default function ServiceFormModal({ service, onClose, onSuccess }) {
               placeholder="http://192.168.1.10:8080"
               maxLength={255}
             />
+            <AddressWarning url={data.internal_url} services={otherServices} />
+            <UsedAddresses
+              services={otherServices}
+              field="internal_url"
+              title="Adresses internes déjà enregistrées"
+              defaultOpen
+            />
           </div>
           <div className="form-control">
             <InputLabel htmlFor="external_url" value="URL externe" />
@@ -151,6 +182,12 @@ export default function ServiceFormModal({ service, onClose, onSuccess }) {
               className="w-full input input-bordered focus:input-primary"
               placeholder="https://service.example.com"
               maxLength={255}
+            />
+            <AddressWarning url={data.external_url} services={otherServices} />
+            <UsedAddresses
+              services={otherServices}
+              field="external_url"
+              title="Adresses externes déjà enregistrées"
             />
           </div>
           <CustomSelect

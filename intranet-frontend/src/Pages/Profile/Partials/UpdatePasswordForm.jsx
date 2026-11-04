@@ -5,7 +5,7 @@ import { AUTH_TOKEN_KEY } from "@/api/apiClient";
 import { updateCurrentUserPassword } from "@/api/modules/users";
 
 import { useState } from "react";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 export default function UpdatePasswordForm() {
   const emptyForm = {
@@ -16,21 +16,22 @@ export default function UpdatePasswordForm() {
   const [data, setData] = useState(emptyForm);
   const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const updatePassword = async (e) => {
     e.preventDefault();
     setErrors({});
+    setSaved(false);
     setProcessing(true);
 
     const handleSuccess = (response) => {
       localStorage.setItem(AUTH_TOKEN_KEY, response.data); // Les anciens tokens sont révoqués.
       setData(emptyForm);
       setProcessing(false);
-      return response.message;
+      setSaved(true);
     };
 
-    toast.promise(updateCurrentUserPassword(data), {
-      loading: "Modification de votre profil en cours",
+    notifyErrors(updateCurrentUserPassword(data), {
       success: handleSuccess,
       error: (error) => {
         setProcessing(false);
@@ -104,6 +105,7 @@ export default function UpdatePasswordForm() {
 
           <div className="flex items-center gap-4">
             <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
+            {saved && <span role="status" className="text-sm text-success">Enregistré</span>}
           </div>
         </form>
       </div>

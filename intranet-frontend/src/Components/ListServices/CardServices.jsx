@@ -11,7 +11,7 @@ import safeUrl from "@/utils/safeUrl";
 import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import dayjs from "dayjs";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 const NO_IMAGE = "/storage/images/no-image-available.jpg";
 
@@ -33,14 +33,9 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-    toast.promise(getUserServices(), {
-      loading: "Chargements des services ...",
+    notifyErrors(getUserServices(), {
       success: (response) => {
         setServicesList(response.data);
-        return response.message;
-      },
-      error: (error) => {
-        return error.message;
       },
     });
   }, []);
@@ -103,7 +98,8 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
         target="_blank"
         rel="noopener noreferrer"
         onClick={(e) => trackClick(e, service, showInternalLinks)}
-        className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
+        title={url}
+        className="block max-w-full truncate text-center px-3 py-2 sm:py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
       >
         {url}
       </a>
@@ -121,7 +117,7 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
         onClick={(e) => trackClick(e, service, isInternalUrl)}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-center px-3 py-1 rounded-full text-sm transition-all"
+        className="break-all text-center px-3 py-2 sm:py-1 rounded-2xl text-sm transition-all"
         style={{
           background: "rgba(255,255,255,0.25)",
           backdropFilter: "blur(20px) saturate(180%)",
@@ -215,29 +211,28 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                       src={service.image_url || NO_IMAGE}
                       alt={service.name}
                     />
-                    <div className="absolute top-2 right-2 space-x-1">
+                    {/* Une seule rangée qui passe à la ligne : les badges ne peuvent plus se chevaucher. */}
+                    <div className="absolute inset-x-2 top-2 flex flex-wrap items-start gap-1">
+                      {Array.isArray(service.categories) &&
+                        service.categories.map((category) => (
+                          <span key={category.id} className="px-2 py-1 rounded-full text-xs sm:text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
+                            {category.name}
+                          </span>
+                        ))}
                       {service.status && (
-                        <span className="text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
+                        <span className="ml-auto px-2 py-1 rounded-full text-xs sm:text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
                           {service.status.name}
                         </span>
                       )}
                     </div>
-                    <div className="absolute top-2 left-2 space-x-1">
-                      {Array.isArray(service.categories) &&
-                        service.categories.map((category) => (
-                          <span key={category.id} className="text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10">
-                            {category.name}
-                          </span>
-                        ))}
-                    </div>
                   </div>
                   <div className="card-body">
-                    <div className="flex items-center justify-between">
-                      <p className="card-title text-base-content">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="card-title min-w-0 text-base-content">
                         {service.name}
                       </p>
 
-                      <div>{cardLink(service)}</div>
+                      <div className="min-w-0 max-w-full">{cardLink(service)}</div>
                     </div>
                   </div>
                 </>
@@ -307,26 +302,11 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                 transition={{ delay: 0.1, duration: 0.2 }}
               >
                 <motion.img
-                  className="w-full h-58 object-cover"
+                  className="w-full h-40 sm:h-58 object-cover"
                   src={selectedService.image_url || NO_IMAGE}
                   alt={selectedService.name}
                 />
-                {selectedService.status && (
-                  <motion.span
-                    initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                    transition={{ delay: 0.1, duration: 0.2 }}
-                    className="absolute top-2 right-2 text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow:
-                        "0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15)",
-                    }}
-                  >
-                    {selectedService.status.name}
-                  </motion.span>
-                )}
-                <div className="absolute top-2 left-2 space-x-1">
+                <div className="absolute left-2 right-11 top-2 flex flex-wrap items-start gap-1">
                   {Array.isArray(selectedService.categories) &&
                     selectedService.categories.map((category, index) => (
                       <motion.span
@@ -334,7 +314,7 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                         initial={{ opacity: 0, scale: 0.8, x: -20 }}
                         animate={{ opacity: 1, scale: 1, x: 0 }}
                         transition={{ delay: 0.1 + index * 0.1, duration: 0.2 }}
-                        className="inline-block text-center px-2 py-1 rounded-full text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
+                        className="px-2 py-1 rounded-full text-xs sm:text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
                         whileHover={{
                           scale: 1.05,
                           boxShadow:
@@ -344,6 +324,21 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                         {category.name}
                       </motion.span>
                     ))}
+                  {selectedService.status && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    transition={{ delay: 0.1, duration: 0.2 }}
+                    className="ml-auto px-2 py-1 rounded-full text-xs sm:text-sm transition-all bg-neutral/40 backdrop-blur-md border border-white/30 shadow-md shadow-black/10"
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow:
+                        "0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15)",
+                    }}
+                  >
+                    {selectedService.status.name}
+                  </motion.span>
+                )}
                 </div>
               </motion.div>
               <motion.div
@@ -352,7 +347,7 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.3 }}
               >
-                <div className="flex items-center-x justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
                   <motion.div
                     className="flex flex-col space-y-1"
                     initial={{ opacity: 0, x: -30 }}
@@ -376,7 +371,7 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
                     </p>
                   </motion.div>
                   <motion.div
-                    className="flex flex-col space-y-2 justify-end"
+                    className="flex min-w-0 flex-col space-y-2 justify-end"
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1, duration: 0.3 }}

@@ -3,7 +3,7 @@ import InputLabel from "@/Components/Utils/InputLabel";
 import InputError from "@/Components/Utils/InputError";
 
 import { updateUser } from "@/api/modules/users";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 import { useEffect, useState } from "react";
 
 export default function ModifyUserForm({ user, onClose, onSuccess }) {
@@ -33,9 +33,8 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
     e.preventDefault();
     setErrors({});
     setIsLoading(true);
-    toast.promise(updateUser(data, user.id), {
-      loading: "Modification de l'utilisateur ...",
-      success: (response) => {
+    notifyErrors(updateUser(data, user.id), {
+      success: () => {
         setIsLoading(false);
         if (onClose) {
           onClose(); // Ferme le modal dans le parent
@@ -43,7 +42,6 @@ export default function ModifyUserForm({ user, onClose, onSuccess }) {
         if (onSuccess) {
           onSuccess(); // Rafraîchit la liste
         }
-        return response.message;
       },
       error: (error) => {
         setIsLoading(false);

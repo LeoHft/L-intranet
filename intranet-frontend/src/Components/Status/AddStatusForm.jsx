@@ -4,7 +4,7 @@ import InputLabel from "@/Components/Utils/InputLabel";
 
 import { storeStatus } from "@/api/modules/status";
 
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 import { useState } from "react";
 
 export default function AddStatusForm({ onStatusAdded }) {
@@ -30,14 +30,12 @@ export default function AddStatusForm({ onStatusAdded }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    toast.promise(storeStatus(data), {
-      loading: "Ajout du statut en cours ...",
-      success: (response) => {
+    notifyErrors(storeStatus(data), {
+      success: () => {
         reset();
         setIsLoading(false);
         setShowingAddStatusModal(false);
         onStatusAdded();
-        return response.message;
       },
       error: (error) => {
         setIsLoading(false);

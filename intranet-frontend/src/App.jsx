@@ -10,6 +10,7 @@ import Edit from "@/Pages/Profile/Edit";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import useMediaQuery, { DESKTOP_QUERY } from "@/hooks/useMediaQuery";
 
 function AppRoutes() {
   const { userAttributes: user } = useAuthAttributes();
@@ -39,10 +40,13 @@ function AppRoutes() {
 }
 
 export default function App() {
+  // Sur mobile, en haut, les notifications masqueraient le bouton du menu.
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+
   return (
     <BrowserRouter>
       <AppRoutes />
-      <Toaster />
+      <Toaster position={isDesktop ? "top-center" : "bottom-center"} />
     </BrowserRouter>
   );
 }

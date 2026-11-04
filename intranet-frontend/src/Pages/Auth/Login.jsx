@@ -7,7 +7,7 @@ import { useAuthAttributes } from "@/context/AuthAttributsContext";
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,17 +24,14 @@ export default function Login() {
     localStorage.setItem(AUTH_TOKEN_KEY, response.data);
     await authContext.FetchUserAttributes();
     navigate("/dashboard");
-    return response.message;
   };
 
   const submit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    toast.promise(
+    notifyErrors(
       signIn().finally(() => setIsLoading(false)),
       {
-        loading: "Connexion en cours",
-        success: (message) => message,
         error: (error) => {
           setData((prev) => ({ ...prev, password: "" }));
           return error.message;
@@ -45,7 +42,7 @@ export default function Login() {
 
   return (
     <Layout>
-      <div className="hero min-h-screen">
+      <div className="hero min-h-[calc(100dvh-8rem)]">
         <form
           onSubmit={submit}
           className="card bg-base-100/10 backdrop-blur-sm shadow-xl max-w-96 w-full"

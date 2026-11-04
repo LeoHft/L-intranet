@@ -7,7 +7,7 @@ import { getAllStatus, deleteStatus } from "@/api/modules/status";
 
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 export default function ListStatus({ refreshTrigger }) {
   const [StatusList, setStatusList] = useState([]);
@@ -20,14 +20,9 @@ export default function ListStatus({ refreshTrigger }) {
   }, [refreshTrigger]);
 
   const fetchStatus = () => {
-    toast.promise(getAllStatus(), {
-      loading: "Chargement des status ...",
+    notifyErrors(getAllStatus(), {
       success: (response) => {
         setStatusList(response.data);
-        return response.message;
-      },
-      error: (error) => {
-        return error.message;
       },
     });
   };
@@ -45,24 +40,20 @@ export default function ListStatus({ refreshTrigger }) {
   const DeleteStatus = (e) => {
     e.preventDefault();
 
-    toast.promise(deleteStatus(selectedStatus.id), {
-      loading: "Suppression en cours ...",
-      success: (response) => {
+    notifyErrors(deleteStatus(selectedStatus.id), {
+      success: () => {
         setStatusList(
           StatusList.filter((stat) => stat.id !== selectedStatus.id)
         );
         setShowModalDeleteStatus(false);
-        return response.message;
-      },
-      error: (error) => {
-        return error.message;
       },
     });
   };
 
   return (
     <>
-      <table className="table table-zebra w-full">
+      <div className="overflow-x-auto">
+      <table className="table table-zebra w-full responsive-table">
         <thead>
           <tr>
             <th className="text-center">Nom</th>
@@ -77,11 +68,11 @@ export default function ListStatus({ refreshTrigger }) {
             StatusList.map((status) => (
               <tr key={status.id}>
                 <td className="text-center">{status.name}</td>
-                <td className="text-center">{status.description}</td>
-                <td className="text-center">{dayjs(status.created_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="text-center">{dayjs(status.updated_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td data-label="Description" className="text-center">{status.description}</td>
+                <td data-label="Ajouté le" className="text-center">{dayjs(status.created_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td data-label="Modifié le" className="text-center">{dayjs(status.updated_at).format("DD/MM/YYYY HH:mm")}</td>
                 <td>
-                  <div className="flex gap-2 items-center justify-center">
+                  <div className="flex gap-2 items-center justify-center ">
                   <SecondaryButton onClick={() => ModifyStatus(status)}>
                     Modifier
                   </SecondaryButton>
@@ -104,6 +95,7 @@ export default function ListStatus({ refreshTrigger }) {
           )}
         </tbody>
       </table>
+      </div>
 
       {showModalModifyStatus && (
         <ModifyStatusForm

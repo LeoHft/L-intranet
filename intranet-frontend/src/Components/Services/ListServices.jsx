@@ -5,29 +5,63 @@ import Modal from "@/Components/Utils/Modal";
 import ServiceFormModal from "@/Components/Services/ServiceFormModal";
 import { getAllServices, deleteService } from "@/api/modules/services";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
+import sortServices from "@/utils/sortServices";
+
+// Copie l'URL au clic : la pastille confirme elle-même la copie.
+function CopyableUrl({ url }) {
+  const [copied, setCopied] = useState(false);
+
+  if (!url) {
+    return (
+      <span className="px-3 py-1 rounded-full text-sm bg-error/15 backdrop-blur-md border border-white/30 text-error">
+        Aucun lien
+      </span>
+    );
+  }
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Impossible de copier l'URL");
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      title="Cliquer pour copier"
+      className="inline-block break-all lg:break-normal px-3 py-1 rounded-2xl text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10 cursor-pointer hover:bg-white/30"
+    >
+      {copied ? "Copié !" : url}
+    </button>
+  );
+}
 
 export default function ListServices({ refreshTrigger }) {
   const [servicesList, setServicesList] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [showModalModifyService, setShowModalModifyService] = useState(false);
   const [showModalDeleteService, setShowModalDeleteService] = useState(false);
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sort, setSort] = useState({ key: null, direction: "asc" });
+  // Calculé à l'affichage : le tri choisi survit au rechargement de la liste après un ajout.
+  const sortedServices = useMemo(() => sortServices(servicesList, sort), [servicesList, sort]);
 
   useEffect(() => {
     fetchServices();
   }, [refreshTrigger]);
 
   const fetchServices = () => {
-    toast.promise(getAllServices(), {
-      loading: "Chargement des services ...",
+    notifyErrors(getAllServices(), {
       success: (response) => {
         setServicesList(response.data);
-        return response.message;
-      },
-      error: (error) => {
-        return error.message;
       },
     });
   };
@@ -44,94 +78,83 @@ export default function ListServices({ refreshTrigger }) {
 
   const deleteServiceForm = (e) => {
     e.preventDefault();
-    toast.promise(deleteService(selectedService.id), {
-      loading: "Suppression du service ...",
-      success: (response) => {
+    notifyErrors(deleteService(selectedService.id), {
+      success: () => {
         setServicesList(
           servicesList.filter((service) => service.id !== selectedService.id)
         );
         setShowModalDeleteService(false);
-        return response.message;
-      },
-      error: (error) => {
-        return error.message;
       },
     });
   };
 
-  const sortServicesByName = () => {
-    if (servicesList.length === 0) return;
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    const sortedServices = [...servicesList].sort((a, b) =>
-      newSortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
-    );
-    setServicesList(sortedServices);
-  }
+  const toggleSort = (key) => {
+    setSort((current) => ({
+      key,
+      direction: current.key === key && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
 
+  const sortIcon = (key) => {
+    const Icon = sort.key !== key ? ArrowUpDown : sort.direction === "asc" ? ArrowUp : ArrowDown;
+    return <Icon className="h-4 w-4" aria-hidden="true" />;
+  };
 
-  const sortServicesByInternalUrl = () => {
-    if (servicesList.length === 0) return;
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    const sortedServices = [...servicesList].sort((a, b) => {
-      // Tri numérique sur les IP. Les noms d'hôtes (http://nas) passent après, par ordre alphabétique.
-      const ipToNumber = (url) => {
-        const match = url?.match(/\d+\.\d+\.\d+\.\d+/);
-        return match ? match[0].split('.').reduce((acc, octet) => acc * 256 + Number(octet), 0) : Infinity;
-      };
-      const numA = ipToNumber(a.internal_url);
-      const numB = ipToNumber(b.internal_url);
-      const order = numA === numB
-        ? (a.internal_url ?? '').localeCompare(b.internal_url ?? '')
-        : numA < numB ? -1 : 1;
-      return newSortOrder === "asc" ? order : -order;
-    });
-    setServicesList(sortedServices);
-  }
-
-  const sortServicesByStatus = () => {
-    if (servicesList.length === 0) return;
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    const sortedServices = [...servicesList].sort((a, b) => {
-      const statusA = a.status?.name || '';
-      const statusB = b.status?.name || '';
-      return newSortOrder === "asc" ? statusA.localeCompare(statusB) : statusB.localeCompare(statusA);
-    });
-    setServicesList(sortedServices);
-  }
+  const sortableHeader = (key, label) => (
+    <th
+      className="text-center"
+      aria-sort={sort.key !== key ? "none" : sort.direction === "asc" ? "ascending" : "descending"}
+    >
+      <button type="button" className="inline-flex cursor-pointer items-center gap-1" onClick={() => toggleSort(key)}>
+        {label}
+        {sortIcon(key)}
+      </button>
+    </th>
+  );
 
   return (
     <>
-      <table className="table table-zebra w-full">
+      <div className="mb-3 flex flex-wrap items-center gap-2 lg:hidden">
+        <span className="text-sm text-base-content/70">Trier par :</span>
+        {[
+          ["name", "Nom"],
+          ["internal_url", "URL interne"],
+          ["external_url", "URL externe"],
+          ["status", "Statut"],
+        ].map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            className={`btn btn-sm ${sort.key === key ? "btn-primary" : "btn-soft"}`}
+            aria-pressed={sort.key === key}
+            onClick={() => toggleSort(key)}
+          >
+            {label}
+            {sortIcon(key)}
+          </button>
+        ))}
+      </div>
+
+      <div className="overflow-x-auto">
+      <table className="table table-zebra w-full responsive-table">
         <thead>
           <tr>
-            <th className="text-center cursor-pointer" onClick={sortServicesByName}>Nom<svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-            </svg></th>
+            {sortableHeader("name", "Nom")}
             <th className="text-center">Description</th>
-            <th className="text-center cursor-pointer" onClick={sortServicesByInternalUrl}>URL Interne<svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-            </svg> </th>
-
-            <th className="text-center" >URL Externe</th>
+            {sortableHeader("internal_url", "URL Interne")}
+            {sortableHeader("external_url", "URL Externe")}
             <th className="text-center"> Catégorie(s) </th>
-            <th className="text-center cursor-pointer" onClick={sortServicesByStatus}>Statut<svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-            </svg></th>
+            {sortableHeader("status", "Statut")}
             <th className="text-center">Utilisateur(s)</th>
-            {/* <th>Date d'ajout</th>
-                        <th>Date de modification</th> */}
             <th className="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {servicesList.length > 0 ? (
-            servicesList.map((service) => (
+          {sortedServices.length > 0 ? (
+            sortedServices.map((service) => (
               <tr key={service.id}>
                 <td className="text-center">
-                  <div className="flex flex-col items-center text-center">
+                  <div className="flex items-center gap-2 lg:flex-col lg:gap-0 lg:text-center">
                     {service.image_url && (
                       <img
                         src={service.image_url}
@@ -142,83 +165,51 @@ export default function ListServices({ refreshTrigger }) {
                     {service.name}{" "}
                   </div>
                 </td>
-                <td className="truncate max-w-[160px] text-center">
+                <td data-label="Description" className="truncate max-w-[160px] text-center">
                   {service.description}
                 </td>
-                <td className="text-center">
-                  {service.internal_url ? (
-                    <span
-                      className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10 cursor-pointer hover:bg-white/30"
-                      onClick={(e) => {
-                      e.preventDefault();
-                      navigator.clipboard?.writeText(service.internal_url);
-                      toast.success('URL interne copiée !');
-                      }}
-                      title="Cliquer pour copier"
-                    >
-                      {service.internal_url}
-                    </span>
-                  ) : (
-                    <span className="text-center text-error px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30">
-                      Aucun lien
-                    </span>
-                  )}
+                <td data-label="URL interne" className="text-center">
+                  <CopyableUrl url={service.internal_url} />
 
                 </td>
-                <td className="text-center">
-                  {service.external_url ? (
-                    <span
-                      className="text-center px-3 py-1 rounded-full text-sm transition-all bg-white/25 backdrop-blur-md border border-white/30 shadow-md shadow-black/10 cursor-pointer hover:bg-white/30"
-                      onClick={(e) => {
-                      e.preventDefault();
-                      navigator.clipboard?.writeText(service.external_url);
-                      toast.success('URL externe copiée !');
-                      }}
-                      title="Cliquer pour copier"
-                    >
-                      {service.external_url}
-                    </span>
-                  ) : (
-                    <span className="text-center px-3 py-1 rounded-full text-sm transition-all bg-error/15 backdrop-blur-md border border-white/30 text-error">
-                      Aucun lien
-                    </span>
-                  )}
+                <td data-label="URL externe" className="text-center">
+                  <CopyableUrl url={service.external_url} />
                 </td>
-                <td className="text-center">
-                  {service.categories
-                    .filter((category) => category !== null)
-                    .map((category) => (
-                      <span
-                        key={category.id}
-                        className="badge badge-secondary mb-1 mt-1 mr-2"
-                      >
-                        {category.name}
-                      </span>
-                    ))}
+                <td data-label="Catégories" className="text-center">
+                  <div className="flex flex-wrap justify-end lg:block">
+                    {service.categories
+                      .filter((category) => category !== null)
+                      .map((category) => (
+                        <span
+                          key={category.id}
+                          className="badge badge-secondary mb-1 mt-1 mr-2"
+                        >
+                          {category.name}
+                        </span>
+                      ))}
+                  </div>
                 </td>
-                <td className="text-center">
-                  {service.status?.name ? (
+                <td data-label="Statut" className="text-center">
+                  {service.status?.name && (
                     <span className="badge badge-primary">
                       {service.status.name}
                     </span>
-                  ) : (
-                    <span className="text-base-content/50"> </span>
                   )}
                 </td>
-                <td className="text-center">
-                  {service.users
-                    .filter((user) => user !== null)
-                    .map((user) => (
-                      <span
-                        key={user.id}
-                        className="badge badge-accent mb-1 mt-1 mr-2"
-                      >
-                        {user.name}
-                      </span>
-                    ))}
+                <td data-label="Utilisateurs" className="text-center">
+                  <div className="flex flex-wrap justify-end lg:block">
+                    {service.users
+                      .filter((user) => user !== null)
+                      .map((user) => (
+                        <span
+                          key={user.id}
+                          className="badge badge-accent mb-1 mt-1 mr-2"
+                        >
+                          {user.name}
+                        </span>
+                      ))}
+                  </div>
                 </td>
-                {/* <td>{dayjs(service.created_at).format('DD/MM/YYYY HH:mm')}</td>
-                                <td>{dayjs(service.updated_at).format('DD/MM/YYYY HH:mm')}</td> */}
                 <td>
                   <div className="flex gap-2 items-center justify-center">
                     <SecondaryButton onClick={() => modifyService(service)}>
@@ -240,6 +231,7 @@ export default function ListServices({ refreshTrigger }) {
           )}
         </tbody>
       </table>
+      </div>
 
       {showModalModifyService && (
         <ServiceFormModal

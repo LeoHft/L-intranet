@@ -13,11 +13,11 @@ export default function Welcome() {
     <Layout>
       <div className="container mx-auto px-4 text-center">
         {/* HERO */}
-        <div className="hero min-h-[calc(100vh-5rem)]">
+        <div className="hero min-h-[calc(100dvh-8rem)]">
           <div className="hero-content text-center">
             <div className="max-w-md space-y-4">
-              <h1 className="text-6xl font-bold font-serif">Intranet</h1>
-              <p className="text-2xl font-light font-serif opacity-70">
+              <h1 className="text-5xl sm:text-6xl font-bold font-serif">Intranet</h1>
+              <p className="text-xl sm:text-2xl font-light font-serif opacity-70">
                 Centralisez vos services auto-hébergés, gérez les accès avec
                 finesse.
               </p>

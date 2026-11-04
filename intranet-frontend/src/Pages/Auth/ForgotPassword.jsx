@@ -8,7 +8,7 @@ export default function ForgotPassword() {
 
   return (
     <Layout>
-      <div className="hero min-h-screen">
+      <div className="hero min-h-[calc(100dvh-8rem)]">
         <div className="hero-content text-center">
           <div className="card bg-base-100/20 backdrop-blur-sm shadow-xl max-w-lg">
             <div className="card-body">

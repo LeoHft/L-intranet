@@ -6,7 +6,7 @@ import Modal from "@/Components/Utils/Modal";
 import { addUser } from "@/api/modules/users";
 
 import { useState } from "react";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 export default function AddUserForm({ onUserAdded }) {
   const [showingAddUserModal, setShowingAddUserModal] = useState(false);
@@ -40,13 +40,11 @@ export default function AddUserForm({ onUserAdded }) {
     e.preventDefault();
     setErrors({}); // Reset des erreurs
     setIsLoading(true);
-    toast.promise(addUser(data), {
-      loading: "Ajout de l'utilisateur ...",
-      success: (response) => {
+    notifyErrors(addUser(data), {
+      success: () => {
         setIsLoading(false);
         reset();
         onUserAdded();
-        return response.message;
       },
       error: (error) => {
         setIsLoading(false);

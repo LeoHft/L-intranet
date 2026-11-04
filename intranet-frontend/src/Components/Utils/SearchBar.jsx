@@ -1,8 +1,12 @@
+import useMediaQuery, { DESKTOP_QUERY } from "@/hooks/useMediaQuery";
+
 import { useState, useEffect } from "react";
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
-  const isAutoFocus = window.location.pathname === "/";
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  // Sur téléphone, le focus automatique ouvrirait le clavier dès l'arrivée sur la page.
+  const isAutoFocus = isDesktop && window.location.pathname === "/";
 
   // Gestion de la recherche
   const handleSearch = (query = searchQuery) => {
@@ -43,8 +47,8 @@ export default function SearchBar() {
             value={searchQuery}
             autoFocus={isAutoFocus}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher... (Ctrl+B)"
-            className="input input-bordered w-40 group-hover:w-64 focus:w-64 bg-base-200/50 backdrop-blur-md border-base-300/50 text-base-content placeholder-base-content/60 focus:border-primary transition-all duration-300 text-sm hover:bg-base-200/70"
+            placeholder={isDesktop ? "Rechercher... (Ctrl+B)" : "Rechercher..."}
+            className={`input input-bordered ${isDesktop ? "w-40 group-hover:w-64 focus:w-64" : "w-full"} bg-base-200/50 backdrop-blur-md border-base-300/50 text-base-content placeholder-base-content/60 focus:border-primary transition-all duration-300 text-sm hover:bg-base-200/70`}
           />
         </div>
       </form>

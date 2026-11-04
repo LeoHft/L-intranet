@@ -11,7 +11,7 @@ import InputLabel from "@/Components/Utils/InputLabel";
 import { motion } from "motion/react";
 import { getIcon, iconNames } from "@/utils/icons";
 
-export default function ListShortcuts() {
+export default function ListShortcuts({ className = "gap-2 pr-3" }) {
   const [shortcuts, setShortcuts] = useState([]);
   const [showAddShortcut, setShowAddShortcut] = useState(false);
   const [newShortcut, setNewShortcut] = useState({name: "", url: "", icon: "" });
@@ -65,16 +65,16 @@ export default function ListShortcuts() {
 
   return (
     <>
-      <div className="flex items-center gap-2 pr-2">
+      <div className={`flex items-center ${className}`}>
         {shortcuts &&
           shortcuts.length > 0 &&
           shortcuts.map((shortcut, index) => (
             <motion.div
               key={shortcut.id}
-              initial={{ opacity: 0, x: 50, scale: 0.8 }}
+              initial={{ opacity: 0, y: -8, scale: 0.8 }}
               animate={{ 
                 opacity: 1, 
-                x: 0, 
+                y: 0, 
                 scale: 1,
                 transition: {
                   duration: 0.4,
@@ -99,9 +99,10 @@ export default function ListShortcuts() {
         {shortcuts && shortcuts.length < 10 && (
           <motion.button
             className="btn btn-circle"
+            aria-label="Ajouter un raccourci"
             onClick={showAddShortcutForm}
-            initial={{ opacity: 0, x: 50, scale: 0.8 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
+            initial={{ opacity: 0, y: -8, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{
               duration: 0.4,
               delay: shortcuts.length * 0.1,
@@ -155,7 +156,7 @@ export default function ListShortcuts() {
                 className="w-full input input-bordered focus:input-primary mb-2"
                 placeholder="Rechercher une icône..."
               />
-              <div className="grid grid-cols-6 gap-2 max-h-60 overflow-y-auto border rounded p-2">
+              <div className="grid grid-cols-5 sm:grid-cols-6 gap-2 max-h-60 overflow-y-auto border rounded p-2">
                 {filteredIcons.slice(0, 48).map((iconName) => {
                   const IconComponent = getIcon(iconName);
                   return (

@@ -6,6 +6,7 @@ import { storeCategory } from "@/api/modules/category";
 
 import { useState } from "react";
 import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 export default function AddCategoryForm({ onCategoryAdded }) {
   const [showingAddCategoryModal, setShowingAddCategoryModal] = useState(false);
@@ -37,14 +38,12 @@ export default function AddCategoryForm({ onCategoryAdded }) {
 
     setIsLoading(true);
 
-    toast.promise(storeCategory(data), {
-      loading: "Ajout de la catégorie en cours...",
-      success: (response) => {
+    notifyErrors(storeCategory(data), {
+      success: () => {
         reset();
         setShowingAddCategoryModal(false);
         setIsLoading(false);
         onCategoryAdded();
-        return response.message;
       },
       error: (error) => {
         setIsLoading(false);

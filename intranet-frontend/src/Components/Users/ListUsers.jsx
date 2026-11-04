@@ -6,7 +6,7 @@ import ModifyUserForm from "@/Components/Users/ModifyUserForm";
 import { getUsers, deleteUser } from "@/api/modules/users";
 import { useAuthAttributes } from '@/context/AuthAttributsContext';
 
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 
@@ -24,14 +24,9 @@ export default function ListUsers({ refreshTrigger }) {
   }, [refreshTrigger]);
 
   const fetchUsers = () => {
-    toast.promise(getUsers(), {
-      loading: "Chargement des utilisateurs ...",
+    notifyErrors(getUsers(), {
       success: (response) => {
         setUsersList(response.data);
-        return response.message;
-      },
-      error: (error) => {
-        return error.message;
       },
     });
   };
@@ -48,22 +43,18 @@ export default function ListUsers({ refreshTrigger }) {
 
   const DeleteUsers = (e) => {
     e.preventDefault();
-    toast.promise(deleteUser(selectedUser.id), {
-      loading: "Suppression de l'utilisateur en cours ...",
-      success: (response) => {
+    notifyErrors(deleteUser(selectedUser.id), {
+      success: () => {
         setUsersList(usersList.filter((use) => use.id !== selectedUser.id));
         setShowModalDeleteUser(false);
-        return response.message;
-      },
-      error: (error) => {
-        return error.message;
       },
     });
   };
 
   return (
     <>
-      <table className="table table-zebra w-full">
+      <div className="overflow-x-auto">
+      <table className="table table-zebra w-full responsive-table">
         <thead>
           <tr>
             <th className="text-center">Nom</th>
@@ -81,29 +72,31 @@ export default function ListUsers({ refreshTrigger }) {
             usersList.map((user) => (
               <tr key={user.id}>
                 <td className="text-center">{user.name}</td>
-                <td className="text-center">{user.email}</td>
-                <td className="text-center">
-                  {user.services.map((service) => (
-                    <span
-                      key={service.id}
-                      className="badge badge-primary badge-outline mr-2 mb-1"
-                    >
-                      {service.name}
-                    </span>
-                  ))}
+                <td data-label="Email" className="text-center">{user.email}</td>
+                <td data-label="Applications" className="text-center">
+                  <div className="flex flex-wrap justify-end lg:block">
+                    {user.services.map((service) => (
+                      <span
+                        key={service.id}
+                        className="badge badge-primary badge-outline mr-2 mb-1"
+                      >
+                        {service.name}
+                      </span>
+                    ))}
+                  </div>
                 </td>
-                <td className="text-center">
+                <td data-label="Rôle" className="text-center">
                   {user.is_admin ? (
                     <span className="badge badge-info">Administrateur</span>
                   ) : (
                     <span className="badge badge-success">Utilisateur</span>
                   )}
                 </td>
-                <td className="text-center">{dayjs(user.created_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="text-center">{user.updated_at ? dayjs(user.updated_at).format("DD/MM/YYYY HH:mm") : "Jamais"}</td>
-                <td className="text-center">{user.last_login_at ? dayjs(user.last_login_at).format("DD/MM/YYYY HH:mm") : "Jamais"}</td>
+                <td data-label="Ajouté le" className="text-center">{dayjs(user.created_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td data-label="Modifié le" className="text-center">{user.updated_at ? dayjs(user.updated_at).format("DD/MM/YYYY HH:mm") : "Jamais"}</td>
+                <td data-label="Dernière connexion" className="text-center">{user.last_login_at ? dayjs(user.last_login_at).format("DD/MM/YYYY HH:mm") : "Jamais"}</td>
                 <td>
-                  <div className="flex gap-2 items-center justify-center">
+                  <div className="flex gap-2 items-center justify-center ">
                   <SecondaryButton onClick={() => ModifyUser(user)} disabled={user.id === authUser.id}>
                     Modifier
                   </SecondaryButton>
@@ -123,6 +116,7 @@ export default function ListUsers({ refreshTrigger }) {
           )}
         </tbody>
       </table>
+      </div>
 
       {showModalModifyUser && (
         <ModifyUserForm

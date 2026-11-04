@@ -19,12 +19,14 @@ export default function Shortcut({ shortcut, className = "", onDelete }) {
   return (
     <>
       <div className="indicator">
-        <span
-          className="indicator-item badge badge-xs badge-error cursor-pointer"
+        <button
+          type="button"
+          aria-label={`Supprimer le raccourci ${shortcut.name || shortcut.url}`}
+          className="indicator-item badge badge-xs badge-error cursor-pointer pointer-coarse:size-6 pointer-coarse:p-0"
           onClick={() => setShowDeleteModal(true)}
         >
-          <Trash2 className="h-2 w-2" />
-        </span>
+          <Trash2 className="h-2 w-2 pointer-coarse:h-3.5 pointer-coarse:w-3.5" />
+        </button>
         <div className="tooltip tooltip-bottom" data-tip={`${shortcut.name ? `${shortcut.name}` : `${shortcut.url}`}`}>
           <button
             disabled={!url}
@@ -43,7 +45,7 @@ export default function Shortcut({ shortcut, className = "", onDelete }) {
             <h2 className="text-lg font-bold">Supprimer le raccourci</h2>
             <p>
               Êtes-vous sûr de vouloir supprimer ce raccourci vers{" "}
-              <strong>{shortcut.url}</strong> ?
+              <strong className="break-all">{shortcut.url}</strong> ?
             </p>
             <div className="flex gap-2 justify-end">
               <button

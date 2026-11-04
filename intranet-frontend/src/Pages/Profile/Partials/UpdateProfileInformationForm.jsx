@@ -4,7 +4,7 @@ import PrimaryButton from "@/Components/Utils/PrimaryButton";
 import { useAuthAttributes } from "@/context/AuthAttributsContext";
 import { updateCurrentUser } from "@/api/modules/users";
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 export default function UpdateProfileInformation() {
   const authContext = useAuthAttributes();
@@ -16,6 +16,7 @@ export default function UpdateProfileInformation() {
   });
   const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   // Mettre à jour les données si l'utilisateur change
   useEffect(() => {
@@ -30,16 +31,16 @@ export default function UpdateProfileInformation() {
   const submit = async (e) => {
     e.preventDefault();
     setErrors({});
+    setSaved(false);
     setProcessing(true);
 
-    const handleSuccess = (response) => {
+    const handleSuccess = () => {
       authContext.FetchUserAttributes(); // Met à jour les attributs de l'utilisateur dans le contexte
       setProcessing(false);
-      return response.message;
+      setSaved(true);
     };
 
-    toast.promise(updateCurrentUser(data), {
-      loading: "Modification de votre profil en cours",
+    notifyErrors(updateCurrentUser(data), {
       success: handleSuccess,
       error: (error) => {
         setProcessing(false);
@@ -91,6 +92,7 @@ export default function UpdateProfileInformation() {
           </div>
           <div className="flex items-center gap-4">
             <PrimaryButton disabled={processing}>Enregistrer</PrimaryButton>
+            {saved && <span role="status" className="text-sm text-success">Enregistré</span>}
           </div>
         </form>
       </div>

@@ -7,7 +7,7 @@ import { getAllCategory, deleteCategory } from "@/api/modules/category";
 
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 export default function ListCategory({ refreshTrigger }) {
   const [categoriesList, setCategoriesList] = useState([]);
@@ -20,14 +20,9 @@ export default function ListCategory({ refreshTrigger }) {
   }, [refreshTrigger]);
 
   const fetchCategories = () => {
-    toast.promise(getAllCategory(), {
-      loading: "Chargement des catégories...",
+    notifyErrors(getAllCategory(), {
       success: (response) => {
         setCategoriesList(response.data);
-        return response.message;
-      },
-      error: (error) => {
-        return error.message;
       },
     });
   };
@@ -45,24 +40,20 @@ export default function ListCategory({ refreshTrigger }) {
   const DeleteCategory = (e) => {
     e.preventDefault();
 
-    toast.promise(deleteCategory(selectedCategory.id), {
-      loading: "Suppression en cours...",
-      success: (response) => {
+    notifyErrors(deleteCategory(selectedCategory.id), {
+      success: () => {
         setCategoriesList(
           categoriesList.filter((cat) => cat.id !== selectedCategory.id)
         );
         setShowModalDeleteCategory(false);
-        return response.message;
-      },
-      error: (error) => {
-        return error.message;
       },
     });
   };
 
   return (
     <>
-      <table className="table table-zebra w-full">
+      <div className="overflow-x-auto">
+      <table className="table table-zebra w-full responsive-table">
         <thead>
           <tr>
             <th className="text-center">Nom</th>
@@ -77,11 +68,11 @@ export default function ListCategory({ refreshTrigger }) {
             categoriesList.map((category) => (
               <tr key={category.id}>
                 <td className="text-center">{category.name}</td>
-                <td className="text-center">{category.description}</td>
-                <td className="text-center">{dayjs(category.created_at).format("DD/MM/YYYY HH:mm")}</td>
-                <td className="text-center">{dayjs(category.updated_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td data-label="Description" className="text-center">{category.description}</td>
+                <td data-label="Ajoutée le" className="text-center">{dayjs(category.created_at).format("DD/MM/YYYY HH:mm")}</td>
+                <td data-label="Modifiée le" className="text-center">{dayjs(category.updated_at).format("DD/MM/YYYY HH:mm")}</td>
                 <td>
-                  <div className="flex gap-2 items-center justify-center">
+                  <div className="flex gap-2 items-center justify-center ">
                   <SecondaryButton onClick={() => ModifyCategory(category)}>
                     Modifier
                   </SecondaryButton>
@@ -101,6 +92,7 @@ export default function ListCategory({ refreshTrigger }) {
           )}
         </tbody>
       </table>
+      </div>
 
       {showModalModifyCategory && (
         <ModifyCategoryForm

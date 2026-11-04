@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
 import { HouseWifi } from "lucide-react";
 
 export default function ToggleSwitch() {
@@ -15,30 +14,15 @@ export default function ToggleSwitch() {
     );
   }, [enabled]);
 
-  const notification = (newValue) => {
-    if (newValue === true) {
-      toast("Accès depuis le réseau local", {
-        icon: "🏠",
-      });
-    } else if (newValue === false) {
-      toast("Accès depuis l'extérieur du réseau", {
-        icon: "🌐",
-      });
-    }
-  };
-
   return (
     <>
       <div className="flex items-center gap-3">
         <input
           type="checkbox"
           className="toggle toggle-primary"
+          aria-label="Utiliser les liens du réseau local"
           checked={enabled}
-          onChange={() => {
-            const newValue = !enabled;
-            setEnabled(newValue);
-            notification(newValue);
-          }}
+          onChange={() => setEnabled(!enabled)}
         />
         <HouseWifi />
       </div>

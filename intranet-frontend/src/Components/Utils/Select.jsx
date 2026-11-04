@@ -1,3 +1,5 @@
+import useMediaQuery, { TOUCH_QUERY } from "@/hooks/useMediaQuery";
+
 import React from "react";
 import Select from "react-select";
 
@@ -10,6 +12,9 @@ export default function CustomSelect({
   isMulti = true,
   required = false,
 }) {
+  // Le clavier virtuel masquerait la liste, qui reste courte : la saisie ne sert qu'avec un vrai clavier.
+  const isTouch = useMediaQuery(TOUCH_QUERY);
+
   return (
     <div className="form-control">
       <label className="label-text font-medium">
@@ -23,11 +28,13 @@ export default function CustomSelect({
         placeholder={placeholder}
         isMulti={isMulti}
         isClearable
+        isSearchable={!isTouch}
+        menuPlacement="auto"
         unstyled
         className="w-full"
         classNames={{
           control: () =>
-            "input input-bordered flex items-center w-full h-12 min-h-12 max-h-32 overflow-auto",
+            "input input-bordered flex items-center w-full h-auto min-h-12 max-h-32 overflow-auto",
           placeholder: () => "text-base-content/50",
           input: () => "text-base-content",
           valueContainer: () => "flex flex-wrap gap-1 mr-6 pr-2",

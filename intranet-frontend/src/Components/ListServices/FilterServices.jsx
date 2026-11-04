@@ -18,13 +18,13 @@ export default function FilterServices({
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-end justify-end">
+      <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:items-end justify-end">
         <div className="form-control">
           <InputLabel htmlFor="Service" value="Service" />
           <input
             type="text"
             placeholder="Rechercher un service..."
-            className="input input-bordered w-full sm:w-auto focus:input-primary"
+            className="input input-bordered w-full lg:w-auto focus:input-primary"
             id="Service"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

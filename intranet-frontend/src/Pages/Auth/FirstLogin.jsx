@@ -5,7 +5,7 @@ import { logout, updateCurrentUserFirstLogin } from "@/api/modules/users";
 import { useAuthAttributes } from "@/context/AuthAttributsContext";
 
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 // Affichée à la place de toute l'application tant que le mot de passe provisoire n'est pas changé.
 export default function FirstLogin() {
@@ -28,18 +28,15 @@ export default function FirstLogin() {
     const response = await updateCurrentUserFirstLogin(data);
     localStorage.setItem(AUTH_TOKEN_KEY, response.data); // Les anciens tokens sont révoqués.
     await authContext.FetchUserAttributes();
-    return response.message;
   };
 
   const submit = (e) => {
     e.preventDefault();
     setErrors({});
     setIsLoading(true);
-    toast.promise(
+    notifyErrors(
       save().finally(() => setIsLoading(false)),
       {
-        loading: "Enregistrement ...",
-        success: (message) => message,
         error: (error) => {
           setErrors(error.errors ?? {});
           return error.message;

@@ -4,7 +4,7 @@ import InputLabel from "@/Components/Utils/InputLabel";
 import { updateStatus } from "@/api/modules/status";
 
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 
 export default function ModifyStatusForm({ status, onClose, onSuccess }) {
   const [data, setData] = useState({
@@ -33,9 +33,8 @@ export default function ModifyStatusForm({ status, onClose, onSuccess }) {
     e.preventDefault();
 
     setIsLoading(true);
-    toast.promise(updateStatus(data, status.id), {
-      loading: "Modification du statut en cours ...",
-      success: (response) => {
+    notifyErrors(updateStatus(data, status.id), {
+      success: () => {
         setIsLoading(false);
         reset();
         if (onClose) {
@@ -44,7 +43,6 @@ export default function ModifyStatusForm({ status, onClose, onSuccess }) {
         if (onSuccess) {
           onSuccess(); // Rafraîchit la liste
         }
-        return response.message;
       },
       error: (error) => {
         setIsLoading(false);

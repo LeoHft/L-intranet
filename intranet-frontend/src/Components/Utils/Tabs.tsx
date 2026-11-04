@@ -14,7 +14,7 @@ const TabsList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Tab.List
     ref={ref}
-    className={cn("tabs tabs-bordered", className)}
+    className={cn("tabs tabs-bordered flex-nowrap overflow-x-auto [scrollbar-width:none]", className)}
     {...props}
   />
 ));
@@ -23,11 +23,16 @@ TabsList.displayName = "TabsList";
 const TabsTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => (
+>(({ className, onClick, ...props }, ref) => (
   <Tab
     ref={ref}
+    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+      // Sur petit écran, la liste défile : on garde l'onglet choisi entièrement visible.
+      e.currentTarget.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      onClick?.(e);
+    }}
     className={({ selected }) =>
-      cn("tab", selected ? "tab-active" : "", className)
+      cn("tab shrink-0 whitespace-nowrap", selected ? "tab-active" : "", className)
     }
     {...props}
   />

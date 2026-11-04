@@ -129,3 +129,103 @@ html {
 .modal-box::-webkit-scrollbar {
   display: none;
 }
+
+
+/* Sous 1024 px (préfixe lg: de Tailwind), chaque ligne de tableau devient une carte.
+   Les cellules portent leur intitulé dans data-label, puisque l'en-tête est masqué. */
+@media (max-width: 1023.98px) {
+  .responsive-table,
+  .responsive-table tbody {
+    display: block;
+  }
+
+  .responsive-table thead {
+    display: none;
+  }
+
+  .responsive-table tbody tr {
+    display: block;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-base-300);
+    border-radius: var(--radius-box);
+    background-color: var(--color-base-100);
+  }
+
+  .responsive-table td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: none;
+    padding: 0.375rem 0;
+    overflow: visible;
+    overflow-wrap: anywhere;
+    text-align: right;
+    white-space: normal;
+  }
+
+  .responsive-table td[data-label]::before {
+    content: attr(data-label);
+    flex: none;
+    max-width: 40%;
+    color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+    font-size: 0.875rem;
+    text-align: left;
+  }
+
+  /* Pas de ligne vide pour une valeur absente */
+  .responsive-table td:empty,
+  .responsive-table td:has(> div:empty) {
+    display: none;
+  }
+
+  /* Le nom sert de titre à la carte */
+  .responsive-table td:first-child {
+    font-weight: 600;
+    text-align: left;
+  }
+
+  /* Dernière cellule : les actions prennent toute la largeur */
+  .responsive-table td:last-child:not([data-label]) {
+    padding-top: 0.75rem;
+  }
+
+  .responsive-table td:last-child:not([data-label]) > div {
+    width: 100%;
+  }
+
+  .responsive-table td:last-child:not([data-label]) > div > * {
+    flex: 1;
+  }
+
+  /* Message « aucun résultat » */
+  .responsive-table td[colspan] {
+    justify-content: center;
+    text-align: center;
+  }
+
+}
+
+/* Un intitulé long passe à la ligne sans sortir du badge */
+.responsive-table .badge {
+  height: auto;
+  max-width: 100%;
+  white-space: normal;
+}
+
+
+@media (pointer: coarse) {
+  /* iOS zoome sur tout champ dont le texte fait moins de 16 px. */
+  .input,
+  .input input,
+  .textarea,
+  .select {
+    font-size: 16px;
+  }
+
+  /* Cibles tactiles d'au moins 44 px */
+  .btn-sm {
+    --size: 2.75rem;
+  }
+}

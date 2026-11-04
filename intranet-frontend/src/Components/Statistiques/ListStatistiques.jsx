@@ -11,6 +11,7 @@ import useSelectOptions from "@/hooks/useSelectOptions";
 
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import notifyErrors from "@/utils/notifyErrors";
 import CustomSelect from "@/Components/Utils/Select";
 
 export default function ListStatistiques() {
@@ -46,7 +47,7 @@ export default function ListStatistiques() {
     }
 
     setIsLoading(true);
-    toast.promise(
+    notifyErrors(
       getBarStatByUserByServiceByDate(
         selectedService,
         selectedUsers,
@@ -55,11 +56,9 @@ export default function ListStatistiques() {
         endDate
       ),
       {
-        loading: "Récupération des statistiques en cours...",
         success: (response) => {
           setStatisticsData(response.data);
           setIsLoading(false);
-          return response.message;
         },
         error: (error) => {
           setIsLoading(false);
@@ -79,14 +78,12 @@ export default function ListStatistiques() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-4 items-end w-full">
-          <div className="flex gap-4 items-end w-full justify-end">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-end lg:justify-end">
             <div>
               <label className="label">Date de début</label>
               <input
                 type="date"
-                className="input input-bordered input-glass"
+                className="input input-bordered input-glass w-full"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 disabled={isLoading}
@@ -96,13 +93,13 @@ export default function ListStatistiques() {
               <label className="label">Date de fin</label>
               <input
                 type="date"
-                className="input input-bordered input-glass"
+                className="input input-bordered input-glass w-full"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 disabled={isLoading}
               />
             </div>
-            <div className="">
+            <div>
               <CustomSelect
                 options={linkTypes}
                 name="Types de liens"
@@ -111,7 +108,7 @@ export default function ListStatistiques() {
                 setSelectedOption={setSelectedLinkType}
               />
             </div>
-            <div className="">
+            <div>
               <CustomSelect
                 options={servicesOptions}
                 name="Services"
@@ -120,7 +117,7 @@ export default function ListStatistiques() {
                 setSelectedOption={setSelectedService}
               />
             </div>
-            <div className="">
+            <div>
               <CustomSelect
                 options={users}
                 name="Utilisateurs"
@@ -129,8 +126,6 @@ export default function ListStatistiques() {
                 setSelectedOption={setSelectedUsers}
               />
             </div>
-          </div>
-        </div>
       </div>
 
       <ByUsersBarStatistiques statisticsData={statisticsData} />
