@@ -2,12 +2,14 @@ import SecondaryButton from "@/Components/Utils/SecondaryButton";
 import DangerButton from "@/Components/Utils/DangerButton";
 import Modal from "@/Components/Utils/Modal";
 
+import FilterServices from "@/Components/ListServices/FilterServices";
 import ServiceFormModal from "@/Components/Services/ServiceFormModal";
 import { getAllServices, deleteService } from "@/api/modules/services";
 
 import { useState, useEffect, useMemo } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import toast from "react-hot-toast";
+import filterServices from "@/utils/filterServices";
 import notifyErrors from "@/utils/notifyErrors";
 import sortServices from "@/utils/sortServices";
 
@@ -51,8 +53,14 @@ export default function ListServices({ refreshTrigger }) {
   const [showModalModifyService, setShowModalModifyService] = useState(false);
   const [showModalDeleteService, setShowModalDeleteService] = useState(false);
   const [sort, setSort] = useState({ key: null, direction: "asc" });
-  // Calculé à l'affichage : le tri choisi survit au rechargement de la liste après un ajout.
-  const sortedServices = useMemo(() => sortServices(servicesList, sort), [servicesList, sort]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  // Calculé à l'affichage : les filtres et le tri choisis survivent au rechargement de la liste après un ajout.
+  const sortedServices = useMemo(
+    () => sortServices(filterServices(servicesList, { selectedStatus, selectedCategories, searchQuery }), sort),
+    [servicesList, selectedStatus, selectedCategories, searchQuery, sort]
+  );
 
   useEffect(() => {
     fetchServices();
@@ -114,6 +122,17 @@ export default function ListServices({ refreshTrigger }) {
 
   return (
     <>
+      <div className="mb-4">
+        <FilterServices
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      </div>
+
       <div className="mb-3 flex flex-wrap items-center gap-2 lg:hidden">
         <span className="text-sm text-base-content/70">Trier par :</span>
         {[

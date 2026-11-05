@@ -6,6 +6,7 @@ import {
   updateNumberServiceClick,
 } from "@/api/modules/services";
 
+import filterServices from "@/utils/filterServices";
 import safeUrl from "@/utils/safeUrl";
 
 import { useState, useEffect, useMemo } from "react";
@@ -55,28 +56,10 @@ export default function CardServices({ selectedCategories, selectedStatus, searc
     };
   }, []);
 
-  const filteredServices = useMemo(() => {
-    let filtered = servicesList;
-
-    if (selectedStatus?.length > 0) {
-      const statusIds = selectedStatus.map((status) => status.value);
-      filtered = filtered.filter((service) => statusIds.includes(service.status_id));
-    }
-
-    if (selectedCategories?.length > 0) {
-      const categoryIds = selectedCategories.map((cat) => cat.value);
-      filtered = filtered.filter((service) =>
-        service.categories?.some((cat) => categoryIds.includes(cat.id))
-      );
-    }
-
-    const query = searchQuery?.trim().toLowerCase();
-    if (query) {
-      filtered = filtered.filter((service) => service.name.toLowerCase().includes(query));
-    }
-
-    return filtered;
-  }, [servicesList, selectedCategories, selectedStatus, searchQuery]);
+  const filteredServices = useMemo(
+    () => filterServices(servicesList, { selectedStatus, selectedCategories, searchQuery }),
+    [servicesList, selectedCategories, selectedStatus, searchQuery]
+  );
 
   const DetailService = (service) => {
     setSelectedService(service);

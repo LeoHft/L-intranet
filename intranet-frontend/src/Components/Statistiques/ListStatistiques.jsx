@@ -9,7 +9,7 @@ import { getBarStatByUserByServiceByDate } from "@/api/modules/statistiques";
 
 import useSelectOptions from "@/hooks/useSelectOptions";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import notifyErrors from "@/utils/notifyErrors";
 import CustomSelect from "@/Components/Utils/Select";
@@ -20,6 +20,7 @@ export default function ListStatistiques() {
   const [isLoading, setIsLoading] = useState(false);
   const [statisticsData, setStatisticsData] = useState(null);
   const [selectedLinkType, setSelectedLinkType] = useState([]);
+  const lastRequest = useRef(0);
   const linkTypes = [
     { value: "internal", label: "Interne" },
     { value: "external", label: "Externe" },
@@ -46,6 +47,9 @@ export default function ListStatistiques() {
       return;
     }
 
+    // Chaque coche relance une requête : seule la réponse à la dernière compte, même si elle arrive avant les autres.
+    const request = ++lastRequest.current;
+
     setIsLoading(true);
     notifyErrors(
       getBarStatByUserByServiceByDate(
@@ -57,11 +61,12 @@ export default function ListStatistiques() {
       ),
       {
         success: (response) => {
+          if (request !== lastRequest.current) return;
           setStatisticsData(response.data);
           setIsLoading(false);
         },
         error: (error) => {
-          setIsLoading(false);
+          if (request === lastRequest.current) setIsLoading(false);
           return (
             error.message || "Erreur lors de la récupération des statistiques"
           );
@@ -79,53 +84,53 @@ export default function ListStatistiques() {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-end lg:justify-end">
-            <div>
-              <label className="label">Date de début</label>
-              <input
-                type="date"
-                className="input input-bordered input-glass w-full"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <label className="label">Date de fin</label>
-              <input
-                type="date"
-                className="input input-bordered input-glass w-full"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <CustomSelect
-                options={linkTypes}
-                name="Types de liens"
-                placeholder="Sélectionnez un type de lien..."
-                selectedOption={selectedLinkType}
-                setSelectedOption={setSelectedLinkType}
-              />
-            </div>
-            <div>
-              <CustomSelect
-                options={servicesOptions}
-                name="Services"
-                placeholder="Sélectionnez un service..."
-                selectedOption={selectedService}
-                setSelectedOption={setSelectedService}
-              />
-            </div>
-            <div>
-              <CustomSelect
-                options={users}
-                name="Utilisateurs"
-                placeholder="Sélectionnez une ou plusieurs utilisateurs..."
-                selectedOption={selectedUsers}
-                setSelectedOption={setSelectedUsers}
-              />
-            </div>
+        <div className="lg:w-44">
+          <label className="label-text font-medium">Date de début</label>
+          <input
+            type="date"
+            className="input input-bordered input-glass h-12 w-full"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            disabled={isLoading}
+          />
+        </div>
+        <div className="lg:w-44">
+          <label className="label-text font-medium">Date de fin</label>
+          <input
+            type="date"
+            className="input input-bordered input-glass h-12 w-full"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            disabled={isLoading}
+          />
+        </div>
+        <CustomSelect
+          options={linkTypes}
+          name="Types de liens"
+          placeholder="Tous les types"
+          selectedOption={selectedLinkType}
+          setSelectedOption={setSelectedLinkType}
+          fixedSize
+          className="lg:w-64"
+        />
+        <CustomSelect
+          options={servicesOptions}
+          name="Services"
+          placeholder="Tous les services"
+          selectedOption={selectedService}
+          setSelectedOption={setSelectedService}
+          fixedSize
+          className="lg:w-64"
+        />
+        <CustomSelect
+          options={users}
+          name="Utilisateurs"
+          placeholder="Tous les utilisateurs"
+          selectedOption={selectedUsers}
+          setSelectedOption={setSelectedUsers}
+          fixedSize
+          className="lg:w-64"
+        />
       </div>
 
       <ByUsersBarStatistiques statisticsData={statisticsData} />

@@ -19,12 +19,12 @@ export default function FilterServices({
   return (
     <>
       <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 lg:items-end justify-end">
-        <div className="form-control">
+        <div className="form-control lg:w-56">
           <InputLabel htmlFor="Service" value="Service" />
           <input
             type="text"
             placeholder="Rechercher un service..."
-            className="input input-bordered w-full lg:w-auto focus:input-primary"
+            className="input input-bordered h-12 w-full focus:input-primary"
             id="Service"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -35,16 +35,20 @@ export default function FilterServices({
         <CustomSelect
           options={status}
           name="Statut"
-          placeholder="Sélectionnez un ou plusieurs statuts..."
+          placeholder="Tous les statuts"
           selectedOption={selectedStatus}
           setSelectedOption={setSelectedStatus}
+          fixedSize
+          className="lg:w-64"
         />
         <CustomSelect
           options={categories}
           name="Catégories"
-          placeholder="Sélectionnez une ou plusieurs catégories..."
+          placeholder="Toutes les catégories"
           selectedOption={selectedCategories}
           setSelectedOption={setSelectedCategories}
+          fixedSize
+          className="lg:w-64"
         />
       </div>
     </>
