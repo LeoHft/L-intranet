@@ -7,8 +7,8 @@ export default function AddServiceForm({ onServiceAdded }) {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <section>
-      <PrimaryButton onClick={() => setShowModal(true)}> Ajouter un service </PrimaryButton>
+    <section className="shrink-0">
+      <PrimaryButton className="lg:h-12" onClick={() => setShowModal(true)}> Ajouter un service </PrimaryButton>
 
       {showModal && (
         <ServiceFormModal onClose={() => setShowModal(false)} onSuccess={onServiceAdded} />

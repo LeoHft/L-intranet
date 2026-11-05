@@ -5,7 +5,6 @@ import {
   TabsTrigger,
 } from "@/Components/Utils/Tabs";
 
-import AddServiceForm from "@/Components/Services/AddServiceForm";
 import AddCategoryForm from "@/Components/Category/AddCategoryForm";
 import ListCategory from "@/Components/Category/ListCategory";
 import AddStatusForm from "@/Components/Status/AddStatusForm";
@@ -44,8 +43,7 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent className="space-y-8">
-          <AddServiceForm onServiceAdded={triggerRefresh} />
-          <ListServices refreshTrigger={refreshTrigger} />
+          <ListServices />
         </TabsContent>
 
         <TabsContent className="space-y-8">

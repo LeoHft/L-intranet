@@ -3,6 +3,7 @@ import DangerButton from "@/Components/Utils/DangerButton";
 import Modal from "@/Components/Utils/Modal";
 
 import FilterServices from "@/Components/ListServices/FilterServices";
+import AddServiceForm from "@/Components/Services/AddServiceForm";
 import ServiceFormModal from "@/Components/Services/ServiceFormModal";
 import { getAllServices, deleteService } from "@/api/modules/services";
 
@@ -47,7 +48,7 @@ function CopyableUrl({ url }) {
   );
 }
 
-export default function ListServices({ refreshTrigger }) {
+export default function ListServices() {
   const [servicesList, setServicesList] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [showModalModifyService, setShowModalModifyService] = useState(false);
@@ -64,7 +65,7 @@ export default function ListServices({ refreshTrigger }) {
 
   useEffect(() => {
     fetchServices();
-  }, [refreshTrigger]);
+  }, []);
 
   const fetchServices = () => {
     notifyErrors(getAllServices(), {
@@ -122,7 +123,8 @@ export default function ListServices({ refreshTrigger }) {
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <AddServiceForm onServiceAdded={fetchServices} />
         <FilterServices
           selectedCategories={selectedCategories}
           setSelectedCategories={setSelectedCategories}
