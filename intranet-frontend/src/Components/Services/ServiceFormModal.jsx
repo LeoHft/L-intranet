@@ -14,6 +14,9 @@ import toast from "react-hot-toast";
 import notifyErrors from "@/utils/notifyErrors";
 import { Camera, TriangleAlert } from "lucide-react";
 
+// Même limite que le serveur : refuser tout de suite évite d'envoyer un fichier pour rien.
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
 const toOptions = (items) => items?.map((item) => ({ value: item.id, label: item.name })) ?? [];
 
 // Simple avertissement : deux services peuvent partager une adresse, par exemple derrière un proxy.
@@ -62,6 +65,11 @@ export default function ServiceFormModal({ service, onClose, onSuccess }) {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    if (file && file.size > MAX_IMAGE_SIZE) {
+      toast.error("L'image ne doit pas dépasser 5 Mo.");
+      e.target.value = "";
+      return;
+    }
     if (file) {
       setImageFile(file);
       const reader = new FileReader();

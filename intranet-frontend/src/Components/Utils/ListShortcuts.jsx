@@ -4,7 +4,7 @@ import {
   addShortcut,
   deleteShortcut,
 } from "@/api/modules/shortcut";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Modal from "@/Components/Utils/Modal";
 import InputLabel from "@/Components/Utils/InputLabel";
@@ -117,9 +117,9 @@ export default function ListShortcuts({ className = "gap-2 pr-3" }) {
       {showAddShortcut && (
         <Modal show={showAddShortcut} onClose={() => setShowAddShortcut(false)}>
           <form onSubmit={handleAddShortcut} className="space-y-4">
-            <h1 className="text-lg font-medium">Ajouter un shortcut</h1>
+            <h1 className="text-lg font-medium">Ajouter un raccourci</h1>
             <div className="form-control">
-              <InputLabel htmlFor="name" value="Nom du shortcut"/><span className="text-error">*</span>
+              <InputLabel htmlFor="name" value="Nom du raccourci"/><span className="text-error">*</span>
               <input
                 type="text"
                 id="name"
@@ -133,7 +133,7 @@ export default function ListShortcuts({ className = "gap-2 pr-3" }) {
               />
             </div>
             <div className="form-control">
-              <InputLabel htmlFor="url" value="Lien du shortcut"/><span className="text-error">*</span>
+              <InputLabel htmlFor="url" value="Lien du raccourci"/><span className="text-error">*</span>
               <input
                 type="url"
                 id="url"
@@ -171,7 +171,9 @@ export default function ListShortcuts({ className = "gap-2 pr-3" }) {
                       }`}
                       title={iconName}
                     >
-                      <IconComponent size={24} />
+                      <Suspense fallback={<span className="h-6 w-6" />}>
+                        <IconComponent size={24} />
+                      </Suspense>
                     </button>
                   );
                 })}

@@ -11,7 +11,7 @@ export default function ThemeSettings() {
   return (
     <div className="dropdown">
       <div tabIndex={0} role="button" className="btn m-1">
-        Theme
+        Thème
         <svg
           width="12px"
           height="12px"
@@ -31,7 +31,7 @@ export default function ThemeSettings() {
             type="radio"
             name="theme-dropdown"
             className="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-            aria-label="Light"
+            aria-label="Clair"
             value="pastel"
             checked={theme === "pastel"}
             onChange={handleThemeChange}

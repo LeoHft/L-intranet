@@ -105,6 +105,15 @@ Un administrateur peut aussi réinitialiser le mot de passe d'un utilisateur dep
 
 **À sauvegarder :** le fichier `.env`, le dossier `intranetDB_data/` (la base de données) et `intranet-backend/storage/app/public/` (les images).
 
+### Installer sur un téléphone
+
+L'intranet peut s'ajouter à l'écran d'accueil et s'ouvrir en plein écran, comme une application :
+
+- **iPhone (Safari) :** bouton Partager, puis « Sur l'écran d'accueil ».
+- **Android (Chrome) :** menu ⋮, puis « Installer l'application » ou « Ajouter à l'écran d'accueil ».
+
+L'installation complète demande un certificat auquel le téléphone fait confiance. Avec le certificat auto-signé, le navigateur peut se limiter à un simple raccourci : utilisez un certificat reconnu (voir ci-dessus) pour en profiter pleinement.
+
 ---
 
 ## Mettre à jour une ancienne installation

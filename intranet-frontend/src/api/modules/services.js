@@ -1,7 +1,7 @@
 import { apiClient } from '@/api/apiClient';
 
-// Les images peuvent peser jusqu'à 32 Mo.
-const UPLOAD_OPTIONS = { timeout: 120000 };
+// Les images peuvent peser jusqu'à 5 Mo.
+const UPLOAD_OPTIONS = { timeout: 60000 };
 
 
 export const getAllServices = async () => {

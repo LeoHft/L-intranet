@@ -89,7 +89,7 @@ export default function ListStatus({ refreshTrigger }) {
                 colSpan="5"
                 className="text-center text-base-content/70 py-4 "
               >
-                Aucun status trouvée.
+                Aucun statut trouvé.
               </td>
             </tr>
           )}
@@ -110,10 +110,9 @@ export default function ListStatus({ refreshTrigger }) {
         onClose={() => setShowModalDeleteStatus(false)}
       >
         <form onSubmit={DeleteStatus} className="space-y-6">
-          <h1 className="text-lg font-medium">Supprimer un status</h1>
+          <h1 className="text-lg font-medium">Supprimer un statut</h1>
           <p>
-            Êtes-vous sûr de vouloir supprimer le status "{selectedStatus?.name}
-            " ?
+            Êtes-vous sûr de vouloir supprimer le statut "{selectedStatus?.name}" ?
           </p>
           <div className="flex gap-2 justify-end">
             <SecondaryButton onClick={() => setShowModalDeleteStatus(false)}>

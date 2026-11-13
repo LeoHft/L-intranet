@@ -23,7 +23,7 @@ export default function FilterServices({
           <InputLabel htmlFor="Service" value="Service" />
           <input
             type="text"
-            placeholder="Rechercher un service..."
+            placeholder="Nom, URL ou IP..."
             className="input input-bordered h-12 w-full focus:input-primary"
             id="Service"
             value={searchQuery}

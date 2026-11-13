@@ -26,7 +26,7 @@ class StoreServiceRequest extends FormRequest
             'description' => 'nullable|string|max:255',
             'internal_url' => 'nullable|url:http,https|max:255',
             'external_url' => 'nullable|url:http,https|max:255',
-            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,ico|max:32768', // Max 32 Mo (SVG exclu : risque de XSS)
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,ico|max:5120', // Max 5 Mo (SVG exclu : risque de XSS)
             'status_id' => 'nullable|exists:status,id',
             'category_id' => 'nullable|array',
             'category_id.*' => 'exists:categories,id',
@@ -55,7 +55,7 @@ class StoreServiceRequest extends FormRequest
 
             // --- Image ---
             'image.mimes' => "L'image doit être au format : jpeg, png, jpg, gif, ico ou webp.",
-            'image.max' => "L'image ne doit pas dépasser 32 Mo.",
+            'image.max' => "L'image ne doit pas dépasser 5 Mo.",
 
             // --- Status ---
             'status_id.exists' => "Le statut sélectionné est invalide ou n'existe pas.",

@@ -2,15 +2,19 @@ import { useAuthAttributes } from "@/context/AuthAttributsContext";
 import "@/App.css";
 import Welcome from "@/Pages/Welcome";
 import Login from "@/Pages/Auth/Login";
-import FirstLogin from "@/Pages/Auth/FirstLogin";
-import ForgotPassword from "@/Pages/Auth/ForgotPassword";
 import Dashboard from "@/Pages/Dashboard";
-import AdminDashboard from "@/Pages/AdminDashboard";
-import Edit from "@/Pages/Profile/Edit";
+
+import { lazy, Suspense } from "react";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import useMediaQuery, { DESKTOP_QUERY } from "@/hooks/useMediaQuery";
+
+// Pages moins fréquentes, chargées à la demande : l'administration embarque notamment les graphiques.
+const AdminDashboard = lazy(() => import("@/Pages/AdminDashboard"));
+const Edit = lazy(() => import("@/Pages/Profile/Edit"));
+const FirstLogin = lazy(() => import("@/Pages/Auth/FirstLogin"));
+const ForgotPassword = lazy(() => import("@/Pages/Auth/ForgotPassword"));
 
 function AppRoutes() {
   const { userAttributes: user } = useAuthAttributes();
@@ -18,12 +22,17 @@ function AppRoutes() {
 
   // Le serveur refuse toute autre action tant que le mot de passe provisoire n'est pas changé.
   if (isAuth && user.must_change_password) {
-    return <FirstLogin />;
+    return (
+      <Suspense fallback={null}>
+        <FirstLogin />
+      </Suspense>
+    );
   }
 
   const authenticated = (page) => (isAuth ? page : <Login />);
 
   return (
+    <Suspense fallback={null}>
     <Routes>
       <Route path="/" element={authenticated(<Welcome />)} />
       <Route path="/login" element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} />
@@ -36,6 +45,7 @@ function AppRoutes() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   );
 }
 

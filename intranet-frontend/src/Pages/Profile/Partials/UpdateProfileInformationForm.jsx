@@ -57,7 +57,7 @@ export default function UpdateProfileInformation() {
           <h2 className="card-title text-lg">Informations personnelles</h2>
 
           <p className="text-sm opacity-70">
-            Mettez à jour les informations de profile et l'adresse e-mail de
+            Mettez à jour les informations de profil et l'adresse e-mail de
             votre compte.
           </p>
         </header>

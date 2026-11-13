@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export default function ForgotPassword() {
   useEffect(() => {
-    document.title = "Forgot password - Intranet";
+    document.title = "Mot de passe oublié - Intranet";
   }, []);
 
   return (

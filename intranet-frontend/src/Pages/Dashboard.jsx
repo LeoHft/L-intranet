@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 export default function Dashboard() {
   useEffect(() => {
-    document.title = "Dashboard - Intranet";
+    document.title = "Menu - Intranet";
   }, []);
 
   const authContext = useAuthAttributes();

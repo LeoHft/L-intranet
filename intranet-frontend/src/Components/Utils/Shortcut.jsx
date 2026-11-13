@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Modal from "@/Components/Utils/Modal";
 import { getIcon } from "@/utils/icons";
 import safeUrl from "@/utils/safeUrl";
@@ -34,7 +34,11 @@ export default function Shortcut({ shortcut, className = "", onDelete }) {
             className={`btn btn-soft btn-circle hover:btn-primary transition-all duration-200 ${className}`}
             aria-label={`Ouvrir ${shortcut.url}`}
           >
-            {IconComponent && <IconComponent className="h-6 w-6" />}
+            {IconComponent && (
+              <Suspense fallback={<span className="h-6 w-6" />}>
+                <IconComponent className="h-6 w-6" />
+              </Suspense>
+            )}
           </button>
         </div>
       </div>

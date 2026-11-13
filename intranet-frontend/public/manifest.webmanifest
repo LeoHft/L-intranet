@@ -1,0 +1,16 @@
+{
+  "name": "L'intranet",
+  "short_name": "Intranet",
+  "description": "Vos services auto-hébergés, au même endroit.",
+  "lang": "fr",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1a273a",
+  "theme_color": "#1a273a",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

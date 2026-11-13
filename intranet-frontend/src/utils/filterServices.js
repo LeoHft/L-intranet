@@ -16,7 +16,10 @@ export default function filterServices(services, { selectedStatus, selectedCateg
 
   const query = searchQuery?.trim().toLowerCase();
   if (query) {
-    filtered = filtered.filter((service) => service.name.toLowerCase().includes(query));
+    // Par nom ou par adresse : l'URL interne n'est renvoyée par l'API qu'aux administrateurs.
+    filtered = filtered.filter((service) =>
+      [service.name, service.internal_url, service.external_url].some((value) => value?.toLowerCase().includes(query))
+    );
   }
 
   return filtered;

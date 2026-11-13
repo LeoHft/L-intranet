@@ -17,6 +17,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // En développement, pré-assembler cette liste découperait toutes les icônes en morceaux
+  // partagés avec lucide-react, chargés d'un coup au démarrage. Non assemblée, chaque icône
+  // reste un fichier chargé à la demande, comme en production.
+  optimizeDeps: {
+    exclude: ['lucide-react/dynamicIconImports'],
+  },
   server: {
     host: '0.0.0.0',
     port: 5173,

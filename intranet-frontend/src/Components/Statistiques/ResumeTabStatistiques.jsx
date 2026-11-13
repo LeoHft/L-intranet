@@ -84,9 +84,7 @@ export default function ResumeTabStatistiques({ statisticsData }) {
         <div className="alert alert-warning">
           <p>Aucune donnée trouvée pour les critères sélectionnés.</p>
         </div>
-      ) : (
-        <p>Comment à utiliser le dashboard pour générer des statistiques</p>
-      )}
+      ) : null}
     </>
   );
 }

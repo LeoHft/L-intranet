@@ -21,7 +21,7 @@ export default function AdminDashboard() {
   const [refreshTrigger, setRefreshTrigger] = useState(false);
 
   useEffect(() => {
-    document.title = "AdminDashboard - Intranet";
+    document.title = "Administration - Intranet";
   }, []);
 
   const triggerRefresh = () => setRefreshTrigger((prev) => !prev);

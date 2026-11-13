@@ -12,7 +12,7 @@ export default function Edit() {
   return (
     <Layout>
       <h2 className="text-xl font-semibold leading-tight mx-auto max-w-7xl sm:px-6 lg:px-8 pt-6">
-        Profile
+        Profil
       </h2>
       <div className="py-5">
         <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
