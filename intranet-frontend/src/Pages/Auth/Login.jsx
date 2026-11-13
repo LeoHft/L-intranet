@@ -1,7 +1,6 @@
 import InputLabel from "@/Components/Utils/InputLabel";
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
 import Layout from "@/Components/Utils/Layout";
-import { AUTH_TOKEN_KEY } from "@/api/apiClient";
 import { login } from "@/api/modules/users";
 import { useAuthAttributes } from "@/context/AuthAttributsContext";
 
@@ -20,8 +19,7 @@ export default function Login() {
   }, []);
 
   const signIn = async () => {
-    const response = await login(data);
-    localStorage.setItem(AUTH_TOKEN_KEY, response.data);
+    await login(data); // L'API pose le cookie de session.
     await authContext.FetchUserAttributes();
     navigate("/dashboard");
   };

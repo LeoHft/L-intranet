@@ -1,4 +1,4 @@
-import { apiClient, AUTH_TOKEN_KEY } from '@/api/apiClient';
+import { apiClient } from '@/api/apiClient';
 
 
 export const getCurrentUserInfo = async () => {
@@ -46,11 +46,8 @@ export const deleteUser = async (userId) => {
   return response.data;
 }
 
+// L'API efface le cookie de session, y compris quand la session a déjà expiré.
 export const logout = async () => {
-  try {
-    const response = await apiClient.post('/logout');
-    return response.data;
-  } finally {
-    localStorage.removeItem(AUTH_TOKEN_KEY);
-  }
+  const response = await apiClient.post('/logout');
+  return response.data;
 };

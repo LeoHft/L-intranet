@@ -1,7 +1,6 @@
 import InputLabel from "@/Components/Utils/InputLabel";
 import PrimaryButton from "@/Components/Utils/PrimaryButton";
 import InputError from "@/Components/Utils/InputError";
-import { AUTH_TOKEN_KEY } from "@/api/apiClient";
 import { updateCurrentUserPassword } from "@/api/modules/users";
 
 import { useState } from "react";
@@ -24,8 +23,8 @@ export default function UpdatePasswordForm() {
     setSaved(false);
     setProcessing(true);
 
-    const handleSuccess = (response) => {
-      localStorage.setItem(AUTH_TOKEN_KEY, response.data); // Les anciens tokens sont révoqués.
+    // L'API remplace le cookie de session : les anciens tokens sont révoqués, cette session continue.
+    const handleSuccess = () => {
       setData(emptyForm);
       setProcessing(false);
       setSaved(true);

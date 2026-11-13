@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Route;
 // Public
 Route::post('login', [UserController::class, 'login'])->middleware('throttle:login');
 Route::get('getCurrentUserInfo', [UserController::class, 'getCurrentUserInfo']);
+// Publique pour pouvoir effacer le cookie même quand la session a déjà expiré.
+Route::post('logout', [UserController::class, 'logout']);
 
 // Authentifié, y compris lorsque le mot de passe doit encore être changé
 Route::middleware('jwt')->group(function () {
-    Route::post('logout', [UserController::class, 'logout']);
     Route::put('updateCurrentUserFirstLogin', [UserController::class, 'updateCurrentUserFirstLogin'])->middleware('throttle:sensitive');
 });
 

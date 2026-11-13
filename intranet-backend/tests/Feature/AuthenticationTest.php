@@ -1,14 +1,21 @@
 <?php
 
 use App\Models\User;
+use App\Support\AuthCookie;
 use Illuminate\Support\Facades\Artisan;
+use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 const STRONG_PASSWORD = 'correct-horse-battery';
 
 function bearer(User $user): array
 {
-    return ['Authorization' => 'Bearer '.JWTAuth::fromUser($user)];
+    return [TestCase::TOKEN_HEADER => JWTAuth::fromUser($user)];
+}
+
+function sessionCookie($response): ?string
+{
+    return $response->getCookie(AuthCookie::NAME, false)?->getValue();
 }
 
 it('refuse des identifiants invalides avec une erreur 401', function () {
@@ -30,17 +37,63 @@ it('limite les tentatives de connexion', function () {
 
 it('renvoie 401 et non 200 pour un token absent ou invalide', function () {
     $this->getJson('/api/getUserServices')->assertUnauthorized();
-    $this->getJson('/api/getUserServices', ['Authorization' => 'Bearer invalide'])->assertUnauthorized();
+    $this->getJson('/api/getUserServices', [TestCase::TOKEN_HEADER => 'invalide'])->assertUnauthorized();
 });
 
-it('révoque le token à la déconnexion', function () {
+it('pose le token dans un cookie httpOnly, Secure et SameSite=Strict, jamais dans la réponse', function () {
+    $user = User::factory()->create(['password' => STRONG_PASSWORD]);
+
+    $response = $this->postJson('/api/login', ['email' => $user->email, 'password' => STRONG_PASSWORD])->assertOk();
+
+    $cookie = $response->getCookie(AuthCookie::NAME, false);
+    expect($cookie)->not->toBeNull()
+        ->and($cookie->isHttpOnly())->toBeTrue()
+        ->and($cookie->isSecure())->toBeTrue()
+        ->and($cookie->getSameSite())->toBe('strict')
+        ->and($cookie->getPath())->toBe('/api')
+        ->and($cookie->getExpiresTime())->toBeGreaterThan(time())
+        ->and($response->getContent())->not->toContain($cookie->getValue());
+
+    auth()->forgetGuards();
+    $this->getJson('/api/getUserServices', [TestCase::TOKEN_HEADER => $cookie->getValue()])->assertOk();
+});
+
+it('ignore un token passé ailleurs que dans le cookie', function () {
+    $token = JWTAuth::fromUser(User::factory()->create());
+
+    $this->getJson('/api/getUserServices', ['Authorization' => 'Bearer '.$token])->assertUnauthorized();
+    $this->getJson('/api/getUserServices?token='.$token)->assertUnauthorized();
+    $this->postJson('/api/addShortcut', ['token' => $token, 'name' => 'x', 'url' => 'https://example.com', 'icon' => 'House'])->assertUnauthorized();
+});
+
+it('refuse les requêtes qui modifient des données sans en-tête anti-CSRF', function () {
+    $user = User::factory()->create(['password' => STRONG_PASSWORD]);
+    $headers = bearer($user) + ['X-Requested-With' => ''];
+
+    $this->postJson('/api/addShortcut', ['name' => 'x', 'url' => 'https://example.com', 'icon' => 'House'], $headers)
+        ->assertForbidden()
+        ->assertExactJson(['message' => 'Requête refusée.']);
+    $this->postJson('/api/login', ['email' => $user->email, 'password' => STRONG_PASSWORD], ['X-Requested-With' => ''])->assertForbidden();
+
+    // La lecture reste possible : elle ne modifie rien.
+    $this->getJson('/api/getUserServices', $headers)->assertOk();
+});
+
+it('révoque le token et efface le cookie à la déconnexion', function () {
     $headers = bearer(User::factory()->create());
 
     $this->getJson('/api/getUserServices', $headers)->assertOk();
-    $this->postJson('/api/logout', [], $headers)->assertOk();
+    $this->postJson('/api/logout', [], $headers)->assertOk()->assertCookieExpired(AuthCookie::NAME);
 
     auth()->forgetGuards();
     $this->getJson('/api/getUserServices', $headers)->assertUnauthorized();
+});
+
+it('efface un cookie expiré ou révoqué', function () {
+    $this->postJson('/api/logout', [], [TestCase::TOKEN_HEADER => 'invalide'])->assertOk()->assertCookieExpired(AuthCookie::NAME);
+    $this->getJson('/api/getCurrentUserInfo', [TestCase::TOKEN_HEADER => 'invalide'])
+        ->assertJsonPath('connected', false)
+        ->assertCookieExpired(AuthCookie::NAME);
 });
 
 it('bloque tout tant que le mot de passe provisoire n\'est pas changé, même après rechargement', function () {
@@ -73,8 +126,10 @@ it('accepte le premier changement en gardant le même e-mail', function () {
     auth()->forgetGuards();
     $this->getJson('/api/getUserServices', $oldHeaders)->assertUnauthorized();
 
+    expect($response->json('data'))->toBeNull();
+
     auth()->forgetGuards();
-    $this->getJson('/api/getUserServices', ['Authorization' => 'Bearer '.$response->json('data')])->assertOk();
+    $this->getJson('/api/getUserServices', [TestCase::TOKEN_HEADER => sessionCookie($response)])->assertOk();
 });
 
 it('refuse de garder le mot de passe provisoire', function () {
@@ -104,7 +159,7 @@ it('révoque les anciens tokens lors d\'un changement de mot de passe', function
     $user = User::factory()->create(['password' => STRONG_PASSWORD]);
     $oldHeaders = bearer($user);
 
-    $this->putJson('/api/updateCurrentUserPassword', [
+    $response = $this->putJson('/api/updateCurrentUserPassword', [
         'current_password' => STRONG_PASSWORD,
         'new_password' => 'un-autre-mot-de-passe',
         'new_password_confirmation' => 'un-autre-mot-de-passe',
@@ -112,6 +167,10 @@ it('révoque les anciens tokens lors d\'un changement de mot de passe', function
 
     auth()->forgetGuards();
     $this->getJson('/api/getUserServices', $oldHeaders)->assertUnauthorized();
+
+    // La session en cours continue avec le nouveau cookie.
+    auth()->forgetGuards();
+    $this->getJson('/api/getUserServices', [TestCase::TOKEN_HEADER => sessionCookie($response)])->assertOk();
 });
 
 it('exige un mot de passe d\'au moins 12 caractères', function () {

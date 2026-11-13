@@ -1,19 +1,15 @@
 import axios from "axios";
 
-export const AUTH_TOKEN_KEY = "auth_token";
+// La session tient dans un cookie httpOnly posé par l'API : le navigateur l'envoie seul, et ce code
+// ne peut pas le lire. Les anciennes versions gardaient le token ici : on l'efface.
+localStorage.removeItem("auth_token");
 
 // Le frontend et l'API sont servis sur la même origine par nginx.
 export const apiClient = axios.create({
   baseURL: "/api",
   timeout: 30000,
-});
-
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem(AUTH_TOKEN_KEY);
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+  // Exigé par l'API pour toute modification : un autre site ne peut pas l'ajouter (protection CSRF).
+  headers: { "X-Requested-With": "XMLHttpRequest" },
 });
 
 const getErrorMessage = (error) => {
@@ -32,8 +28,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     // Session expirée ou révoquée. Le 401 de /login signale seulement de mauvais identifiants.
-    if (error.response?.status === 401 && error.config?.url !== "/login" && localStorage.getItem(AUTH_TOKEN_KEY)) {
-      localStorage.removeItem(AUTH_TOKEN_KEY);
+    if (error.response?.status === 401 && error.config?.url !== "/login" && window.location.pathname !== "/login") {
       window.location.assign("/login");
     }
 

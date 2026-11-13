@@ -1,6 +1,5 @@
 import InputError from "@/Components/Utils/InputError";
 import InputLabel from "@/Components/Utils/InputLabel";
-import { AUTH_TOKEN_KEY } from "@/api/apiClient";
 import { logout, updateCurrentUserFirstLogin } from "@/api/modules/users";
 import { useAuthAttributes } from "@/context/AuthAttributsContext";
 
@@ -25,8 +24,7 @@ export default function FirstLogin() {
   }, []);
 
   const save = async () => {
-    const response = await updateCurrentUserFirstLogin(data);
-    localStorage.setItem(AUTH_TOKEN_KEY, response.data); // Les anciens tokens sont révoqués.
+    await updateCurrentUserFirstLogin(data); // L'API remplace le cookie : les anciens tokens sont révoqués.
     await authContext.FetchUserAttributes();
   };
 

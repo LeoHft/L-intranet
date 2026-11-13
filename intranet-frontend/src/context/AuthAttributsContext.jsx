@@ -1,6 +1,5 @@
 import IntranetLoader from "@/Components/Utils/IntranetLoader";
 
-import { AUTH_TOKEN_KEY } from "@/api/apiClient";
 import { getCurrentUserInfo } from "@/api/modules/users";
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
@@ -15,9 +14,6 @@ export const AuthAttributesProvider = ({ children }) => {
   const FetchUserAttributes = useCallback(async () => {
     try {
       const response = await getCurrentUserInfo();
-      if (!response.connected) {
-        localStorage.removeItem(AUTH_TOKEN_KEY);
-      }
       setUserAttributes(response);
       setHasError(false);
     } catch {

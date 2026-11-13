@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateUserFirstLoginRequest;
 use App\Http\Requests\UpdateUserPasswordRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Support\AuthCookie;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -26,12 +27,15 @@ class UserController extends Controller
         ]);
     }
 
-    public function getCurrentUserInfo(): JsonResponse
+    public function getCurrentUserInfo(Request $request): JsonResponse
     {
         $user = JwtMiddleware::resolveUser();
 
         if (! $user) {
-            return response()->json(['connected' => false]);
+            $response = response()->json(['connected' => false]);
+
+            // Cookie expiré ou révoqué : inutile que le navigateur continue de l'envoyer.
+            return $request->hasCookie(AuthCookie::NAME) ? $response->withCookie(AuthCookie::forget()) : $response;
         }
 
         return response()->json([
@@ -64,9 +68,8 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Connexion réussie',
-            'data' => JWTAuth::fromUser($user),
             'must_change_password' => $user->must_change_password,
-        ]);
+        ])->withCookie(AuthCookie::make(JWTAuth::fromUser($user)));
     }
 
     public function store(StoreUserRequest $request): JsonResponse
@@ -118,10 +121,10 @@ class UserController extends Controller
         $user->update(['name' => $data['name'], 'email' => $data['email']]);
         $user->resetPassword($data['password']);
 
+        // Les anciens tokens viennent d'être révoqués : la session continue avec un nouveau.
         return response()->json([
             'message' => 'Informations de votre compte mises à jour avec succès',
-            'data' => JWTAuth::fromUser($user),
-        ]);
+        ])->withCookie(AuthCookie::make(JWTAuth::fromUser($user)));
     }
 
     public function updateCurrentUser(UpdateUserRequest $request): JsonResponse
@@ -146,10 +149,10 @@ class UserController extends Controller
 
         $user->resetPassword($data['new_password']);
 
+        // Les anciens tokens viennent d'être révoqués : la session continue avec un nouveau.
         return response()->json([
             'message' => 'Mot de passe mis à jour avec succès',
-            'data' => JWTAuth::fromUser($user), // Les anciens tokens viennent d'être révoqués.
-        ]);
+        ])->withCookie(AuthCookie::make(JWTAuth::fromUser($user)));
     }
 
     public function delete(Request $request, User $user): JsonResponse
@@ -165,8 +168,10 @@ class UserController extends Controller
 
     public function logout(): JsonResponse
     {
-        JWTAuth::invalidate();
+        if (JwtMiddleware::resolveUser()) {
+            JWTAuth::invalidate(); // Liste noire : le token ne sert plus, même recopié ailleurs.
+        }
 
-        return response()->json(['message' => 'Déconnexion réussie']);
+        return response()->json(['message' => 'Déconnexion réussie'])->withCookie(AuthCookie::forget());
     }
 }

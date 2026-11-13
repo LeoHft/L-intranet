@@ -3,15 +3,17 @@
 use App\Models\NumberClickByServiceByUserByDay;
 use App\Models\Services;
 use App\Models\Shortcuts;
+use App\Models\Status;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 function headersFor(User $user): array
 {
-    return ['Authorization' => 'Bearer '.JWTAuth::fromUser($user)];
+    return [TestCase::TOKEN_HEADER => JWTAuth::fromUser($user)];
 }
 
 function admin(): User
@@ -151,7 +153,7 @@ it('gère le cycle de vie des images et le retrait du statut', function () {
     expect($first)->toStartWith('/storage/images/');
     Storage::disk('public')->assertExists(substr($first, 9));
 
-    $status = \App\Models\Status::create(['name' => 'UP']);
+    $status = Status::create(['name' => 'UP']);
     Services::find($id)->update(['status_id' => $status->id]);
 
     $this->post("/api/updateService/{$id}", [...$payload, 'image' => UploadedFile::fake()->image('b.png')], $headers + ['Accept' => 'application/json'])->assertOk();

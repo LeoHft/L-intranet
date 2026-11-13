@@ -159,4 +159,5 @@ docker compose exec intranet-frontend npm run lint       # Lint du frontend
 
 - **Exposition :** seuls les ports 80 et 443 sont ouverts en production. Pour un accès depuis Internet, préférez un VPN, ou placez l'intranet derrière un reverse proxy avec un vrai certificat.
 - **Comptes :** les mots de passe provisoires doivent être changés avant tout accès. Changer un mot de passe déconnecte toutes les sessions du compte. Les tentatives de connexion sont limitées à 5 par minute.
+- **Sessions :** la session tient dans un cookie `httpOnly`, `Secure` et `SameSite=Strict`, que le JavaScript de la page ne peut pas lire : une faille XSS ne suffirait pas à la voler. L'API n'accepte le token que dans ce cookie (ni en-tête `Authorization`, ni paramètre d'URL), et refuse toute modification sans l'en-tête `X-Requested-With: XMLHttpRequest`, qu'un autre site ne peut pas ajouter.
 - **Recherche :** la barre de recherche de l'interface envoie vos requêtes à Google.
